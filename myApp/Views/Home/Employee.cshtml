@@ -1,0 +1,115 @@
+﻿@model IEnumerable<myApp.Models.User>
+@{
+    ViewBag.Title = "Employee";
+}
+
+<main class="mb-2" style="margin-top: 50px">
+    <div class="card shadow">
+        <div class="card-header bg-primary">
+            <h2 class="text-center" style="color:white"><i class="fa fa-user" aria-hidden="true"></i> <strong>พนักงาน</strong></h2>
+        </div>
+        <div class="card-body">
+    
+            <a href="@Url.Action("UploadEmployee")" class="btn btn-primary mb-3 position-relative" style="width: 8rem; border-radius: 1rem">
+                <i class="fa fa-upload" aria-hidden="true"><strong> อัปโหลด</strong></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">
+                    <i class="fa fa-file-excel-o" style="font-size: medium" aria-hidden="true"></i>
+                    <span class="visually-hidden">unread messages</span>
+                </span>
+            </a>
+            <table class="table table-hover table-responsive" id="myTable">
+                <thead class="table-primary" style="font-size: 16   px">
+                    <tr>
+                        <th width="5%">รหัส</th>
+                        <th width="30%">ชื่อพนักงาน</th>
+                        <th width="20%">ตำแหน่ง</th>
+                        <th width="10%">ตำแหน่งขั้น</th>
+                        <th width="20%">ชื่อแผนก</th>
+                        <th width="10%">บริษัท</th>
+                        <th width="5%"></th>
+                    </tr>
+                </thead>
+                <tbody style="height: 100px">
+                    @foreach (var emp in Model)
+                    {
+                        <tr>
+                            <td>@emp.Id</td>
+                            @if (emp.Prefix == "นาง" || emp.Prefix == "นางสาว")
+                            {
+                                <td>
+
+                                    @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
+                                    <i class="fa fa-female" style="color:palevioletred; font-size:large" aria-hidden="true"></i>
+                                </td>
+                            }
+                            else if (emp.Prefix == "นาย" || emp.Prefix == " นาย")
+                            {
+                                <td>
+
+                                    @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
+                                    <i class="fa fa-male" style="color:cornflowerblue; font-size:large" aria-hidden="true"></i>
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+
+                                    @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
+
+                                </td>
+                            }
+                            <td>@emp.Position</td>
+                            <td>@emp.JobLevel</td>
+                            <td>@emp.DepartmentName</td>
+                            <td>@emp.Company</td>
+                            <td>
+                                <div class="btn-group me-2" role="group" aria-label="Second group">
+                                    <button type="button" class="btn btn-danger" style="width: auto; height: auto" data-bs-toggle="modal" data-bs-target="#deleteModal-@emp.Id" title="ลบ">
+                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div class="modal fade" id="deleteModal-@emp.Id" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-4">ต้องการที่จะลบ<strong>พนักงาน</strong>คนนี้หรือไม่?</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <h5>รหัสพนักงาน: @emp.Id</h5>
+                                                <h5>ชื่อพนักงาน: @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)</h5>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                                                <a href="@Url.Action("DeleteEmployee", new { id = emp.Id })" class="btn btn-danger">ยืนยัน</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script type="text/javascript">
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+        js('#myTable').DataTable({
+            language: {
+                search: "ค้นหา:", 
+            },
+
+        });
+    });
+</script>

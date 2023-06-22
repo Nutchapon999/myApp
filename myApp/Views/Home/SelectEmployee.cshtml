@@ -1,0 +1,100 @@
+﻿@model IEnumerable<myApp.Models.User>
+
+@{
+    ViewBag.Title = "SelectEmployee";
+}
+
+<main class="mb-2" style="margin-top: 50px">
+    @using (Html.BeginForm("SelectedEmployee", "Home", new { competencyFormId = ViewBag.CompetencyFormId }, FormMethod.Post))
+    {
+        <div class="card shadow">
+            <div class="card-header bg-primary">
+                <h2 class="text-center" style="color:white"><i class="fa fa-user" aria-hidden="true"></i> <strong>เลือกพนักงาน</strong></h2>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover table-responsive" id="myTable">
+                    <thead class="table-primary" style="font-size: 16px">
+                        <tr>
+                            <th width="5%"></th>
+                            <th width="5%">รหัส</th>
+                            <th width="30%">ชื่อพนักงาน</th>
+                            <th width="20%">ตำแหน่ง</th>
+                            <th width="10%">ชื่อแผนก</th>
+                            <th width="22%">ตำแหน่งขั้น</th>
+                            <th width="18%">บริษัท</th>
+                        </tr>
+                    </thead>
+                    <tbody style="height: 100px">
+                        @foreach (var emp in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="userIds" value="@emp.Id" />
+                                    </div>
+                                </td>
+                                <td>@emp.Id</td>
+                                @if (emp.Prefix == "นาง" || emp.Prefix == "นางสาว")
+                                {
+                                    <td>
+
+                                        @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
+                                        <i class="fa fa-female" style="color:palevioletred; font-size:large" aria-hidden="true"></i>
+                                    </td>
+                                }
+                                else if (emp.Prefix == "นาย" || emp.Prefix == " นาย")
+                                {
+                                    <td>
+
+                                        @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
+                                        <i class="fa fa-male" style="color:cornflowerblue; font-size:large" aria-hidden="true"></i>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+
+                                        @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
+
+                                    </td>
+                                }
+                                <td>@emp.Position</td>
+                                <td>@emp.JobLevel</td>
+                                <td>@emp.DepartmentName</td>
+                                <td>@emp.Company</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <button type="submit" class="btn btn-primary">ยืนยัน</button>
+                <a href="@Url.Action("AddEmployee", new { id = ViewBag.CompetencyFormId })" class="btn btn-danger">ยกเลิก</a>
+            </div>
+        </div>
+     }
+</main>
+
+
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script type="text/javascript">
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+        js('#myTable').DataTable({
+            language: {
+                search: "ค้นหา:",
+            },
+
+        });
+    });
+</script>
+<style>
+    .form-check-input[type="checkbox"] {
+        width: 25px;
+        height: 25px;
+    }
+</style>
+

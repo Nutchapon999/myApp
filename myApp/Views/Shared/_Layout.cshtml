@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - My ASP.NET Application</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <link href="~/Content/font-awesome.min.css" rel="stylesheet" />
+</head>
+<body>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-secondary shadow">
+        <div class="container">
+            <a href="@Url.Action("")" class="navbar-brand"><img height="80" src="~/images/logo.png" /></a>
+            <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
+                <input type="text" class="form-control" id="txtUsername" style="display:none" value="@ViewBag.Username" />
+                <ul class="navbar-nav flex-grow-1">
+                    <li>@Html.ActionLink("Competency", "Index", "Home", new { area = "" }, new { @class = "btn btn-warning rounded-5 mb-2", style = "width: auto; font-weight:bold; color:white;" })</li>
+                    <li>@Html.ActionLink("IDP Group", "CompetencyForm", "Home", new { area = "" }, new { @class = "btn btn-warning rounded-5 ms-2 mb-2", style = "width: auto; font-weight:bold; color:white;" })</li>
+                    <li>@Html.ActionLink("พนักงาน", "Employee", "Home", new { area = "" }, new { @class = "btn btn-warning rounded-5 ms-2 mb-2", style = "width: auto; font-weight:bold; color:white;" })</li>
+                    <div class="dropdown dropend">
+                        <button class="btn btn-danger rounded-5 ms-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <strong>อัปโหลด</strong>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Competency", "UploadCompetency", "Home", new { area = "" }, new {@class= "dropdown-item" })</li>
+                            <li>@Html.ActionLink("พนักงาน", "UploadEmployee", "Home", new { area = "" }, new { @class = "dropdown-item" })</li>
+                        </ul>
+                    </div>
+                </ul>
+                
+                <ul class="nav navbar-nav">
+                    <li style="color: gainsboro">
+                        <div class="bg-light position-relative rounded-5 text-center" style="width: auto; color: black; height: 2.5rem; padding: 10px">
+                            @ViewBag.Username
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                <i class="fa fa-user mt-2" aria-hidden="true" style="font-size: smaller"></i> ผู้ใช้งาน
+                                <span class="visually-hidden">unread messages</span>
+                            </span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="m-4">
+        @RenderBody()
+        <br />
+        <br />
+        <hr />
+        <footer>
+            <h6 class="dark-grey-text mb-3">
+                © 2020 Copyright By Somboon Advance Technology |  <a href="http://web.sbg.com:84/IT/wp-content/uploads/2021/07/User-Manual-K2-Memo-Approval.pdf" target="_blank" style="text-decoration:none">คู่มือใช้งาน</a>
+            </h6>
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
