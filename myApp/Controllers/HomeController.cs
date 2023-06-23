@@ -12,6 +12,11 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Data;
 using Antlr.Runtime.Misc;
+using MailKit.Net.Smtp;
+using MailKit;
+using MimeKit;
+using System.Diagnostics;
+using System.Threading;
 
 namespace myApp.Controllers
 {
@@ -177,7 +182,7 @@ namespace myApp.Controllers
         }
         public ActionResult DeleteCompetencyForm(string id)
         {
-            app.GetDeleteCompetencyForm(id);
+            app.DeleteCompetencyForm(id);
             return RedirectToAction("CompetencyForm");
         }
 
@@ -501,9 +506,54 @@ namespace myApp.Controllers
         //Email
         public ActionResult SendEmail()
         {
-            return View();
+            List<CompetencyForm> competencyForms = app.SelectIDPGroup();
+            return View(competencyForms);
         }
-        public ActionResult FormEmail()
+        [HttpPost]
+        public ActionResult SendEmail(string CompetencyFormId, string SelectedUser)
+        {
+            MimeMessage message = new MimeMessage();
+            message.From.Add(new MailboxAddress("PondPoP Za", "pondpopza19@gmail.com"));
+            message.To.Add(MailboxAddress.Parse(SelectedUser));
+            message.Subject = "แบบประเมิน IDP";
+            message.Body = new TextPart("plain")
+            {
+                Text = @"กรุณาช่วยระบุลำดับความสำคัญของ IDP Group ด้วย
+                        ขอขอบพระคุณอย่างยิ่ง :D"
+            };
+
+            string senderEmail = "pondpopza19@gmail.com";
+            string senderPassword = "xnuqpadqupsyahgv";
+
+            using (SmtpClient smtpClient = new SmtpClient())
+            {
+                try
+                {
+                    smtpClient.Connect("smtp.gmail.com", 465, true);
+                    smtpClient.Authenticate(senderEmail, senderPassword);
+
+
+                    smtpClient.Send(message);
+
+                    TempData["SendSuccess"] = true;
+                    
+
+                }
+                catch (Exception ex)
+                {
+                    ViewBag.ErrorMessage = ex.Message;
+                }
+                finally
+                {
+                    smtpClient.Disconnect(true);
+                }
+            }
+
+           
+
+            return RedirectToAction("SendEmail");
+        }
+        public ActionResult FormEmail(string id)
         {
             return View();
         }

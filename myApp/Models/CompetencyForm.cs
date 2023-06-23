@@ -16,5 +16,7 @@ namespace myApp.Models
         public string CompetencyFormName { get; set;}
         [DisplayName("ปี")]
         public string Year { get; set;}
+
+        public virtual User User { get; set;}
     }
 }
