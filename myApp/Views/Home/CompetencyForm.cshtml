@@ -29,7 +29,7 @@
                             <td>
                                 <div class="btn-group me-2" role="group" aria-label="Second group">
                                     <a href="@Url.Action("SendEmail", new { id = cmptyfm.CompetencyFormId })" class="btn btn-success" title="ส่ง E-mail"><i class="fa fa-envelope" aria-hidden="true"></i></a>
-                                    <a href="@Url.Action(" AddCompetency", new { id=cmptyfm.CompetencyFormId })" class="btn btn-info" title="เพิ่ม competency"><i class="fa fa-list-alt" aria-hidden="true"></i></a>
+                                    <a href="@Url.Action("AddCompetency", new { id=cmptyfm.CompetencyFormId })" class="btn btn-info" title="เพิ่ม competency"><i class="fa fa-list-alt" aria-hidden="true"></i></a>
                                     <a href="@Url.Action("AddEmployee", new { id = cmptyfm.CompetencyFormId })" class="btn btn-warning" title="เพิ่มพนักงาน"><i class="fa fa-graduation-cap" aria-hidden="true"></i></a>
                                     <a href="@Url.Action("EditCompetencyForm", new { id = cmptyfm.CompetencyFormId })" class="btn btn-primary" title="แก้ไข"><i class="fa fa-pencil" aria-hidden="true"></i></a>
                                     <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-@cmptyfm.CompetencyFormId" title="ลบ">

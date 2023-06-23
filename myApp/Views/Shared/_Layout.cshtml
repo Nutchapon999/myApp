@@ -22,12 +22,13 @@
                     <li>@Html.ActionLink("Competency", "Index", "Home", new { area = "" }, new { @class = "btn btn-warning rounded-5 mb-2", style = "width: auto; font-weight:bold; color:white;" })</li>
                     <li>@Html.ActionLink("IDP Group", "CompetencyForm", "Home", new { area = "" }, new { @class = "btn btn-warning rounded-5 ms-2 mb-2", style = "width: auto; font-weight:bold; color:white;" })</li>
                     <li>@Html.ActionLink("พนักงาน", "Employee", "Home", new { area = "" }, new { @class = "btn btn-warning rounded-5 ms-2 mb-2", style = "width: auto; font-weight:bold; color:white;" })</li>
+                    <li>@Html.ActionLink("อีเมล", "SendEmail", "Home", new { area = "" }, new { @class = "btn btn-info rounded-5 ms-2 mb-2", style = "width: auto; font-weight:bold; color:white;" })</li>
                     <div class="dropdown dropend">
                         <button class="btn btn-danger rounded-5 ms-2 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <strong>อัปโหลด</strong>
                         </button>
                         <ul class="dropdown-menu">
-                            <li>@Html.ActionLink("Competency", "UploadCompetency", "Home", new { area = "" }, new {@class= "dropdown-item" })</li>
+                            <li>@Html.ActionLink("Competency", "UploadCompetency", "Home", new { area = "" }, new { @class = "dropdown-item" })</li>
                             <li>@Html.ActionLink("พนักงาน", "UploadEmployee", "Home", new { area = "" }, new { @class = "dropdown-item" })</li>
                         </ul>
                     </div>

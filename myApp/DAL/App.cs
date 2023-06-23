@@ -15,7 +15,7 @@ namespace myApp.DAL
             connectionString = ConfigurationManager.ConnectionStrings["MyConnection"].ConnectionString;
         }
 
-        public List<Competency> GetCompetencies() 
+        public List<Competency> GetCompetencies()
         {
             List<Competency> competencies = new List<Competency>();
 
@@ -70,7 +70,7 @@ namespace myApp.DAL
                     command.Parameters.AddWithValue("@TH", (object)competency.CompetencyNameTH ?? DBNull.Value);
                     command.Parameters.AddWithValue("@EN", (object)competency.CompetencyNameEN ?? DBNull.Value);
                     command.Parameters.AddWithValue("@Desc", (object)competency.CompetencyDesc ?? DBNull.Value);
-            
+
                     command.Parameters.AddWithValue("@Pl1", (object)competency.Pl1 ?? DBNull.Value);
                     command.Parameters.AddWithValue("@Pl2", (object)competency.Pl2 ?? DBNull.Value);
                     command.Parameters.AddWithValue("@Pl3", (object)competency.Pl3 ?? DBNull.Value);
@@ -130,7 +130,7 @@ namespace myApp.DAL
                             competency.Pl3 = reader.IsDBNull(reader.GetOrdinal("PL3")) ? null : (string)reader["PL3"];
                             competency.Pl4 = reader.IsDBNull(reader.GetOrdinal("PL4")) ? null : (string)reader["PL4"];
                             competency.Pl5 = reader.IsDBNull(reader.GetOrdinal("PL5")) ? null : (string)reader["PL5"];
-                            competency.Active =  (bool)reader["ACTIVE"];
+                            competency.Active = (bool)reader["ACTIVE"];
                             return competency;
                         }
                     }
@@ -172,10 +172,25 @@ namespace myApp.DAL
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
 
-                //DeleteCourseItemByCourseId(id);
-                //DeleteEnrollmentByCourseId(id);
+                DeleteCompetencyItemByCompetencyId(competencyId);
 
                 string query = "DELETE FROM COMPTY WHERE COMPETENCY_ID = @CompetencyId";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@CompetencyId", competencyId);
+
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        private void DeleteCompetencyItemByCompetencyId(string competencyId)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+
+                string query = "DELETE FROM COMPTY_ITEM WHERE COMPETENCY_ID = @CompetencyId";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
@@ -308,7 +323,7 @@ namespace myApp.DAL
                             competencyForm.CompetencyFormId = (string)reader["COMPETENCY_FORM_ID"];
                             competencyForm.CompetencyFormName = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_FORM_NAME")) ? null : (string)reader["COMPETENCY_FORM_NAME"];
                             competencyForm.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
-                       
+
                             return competencyForm;
                         }
                     }
@@ -334,13 +349,13 @@ namespace myApp.DAL
                 }
             }
         }
-        public void GetDeleteCompetencyForm(string competencyFormId)
+        public void DeleteCompetencyForm(string competencyFormId)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
 
                 DeleteCompetencyItemBycompetencyFormId(competencyFormId);
-                
+                DeleteEnrollByCompetencyFormId(competencyFormId);
 
                 string query = "DELETE FROM COMPTY_FORM WHERE COMPETENCY_FORM_ID = @CompetencyFormId";
 
@@ -358,6 +373,21 @@ namespace myApp.DAL
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 string query = "DELETE FROM COMPTY_ITEM WHERE COMPETENCY_FORM_ID = @CompetencyFormId";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@CompetencyFormId", competencyFormId);
+
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        private void DeleteEnrollByCompetencyFormId(string competencyFormId)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "DELETE FROM USER_ENROLL WHERE COMPETENCY_FORM_ID = @CompetencyFormId";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
@@ -386,7 +416,7 @@ namespace myApp.DAL
                 }
             }
         }
-        public string GetCompetencyFormNameById(string competencyFormId) 
+        public string GetCompetencyFormNameById(string competencyFormId)
         {
             string competencyFormName = string.Empty;
 
@@ -582,6 +612,7 @@ namespace myApp.DAL
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
+
                 string query = "DELETE FROM COMPTY_ITEM WHERE COMPETENCY_ITEM_ID = @Id";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
@@ -593,7 +624,6 @@ namespace myApp.DAL
                 }
             }
         }
-
 
         public List<User> GetUsers()
         {
@@ -635,9 +665,9 @@ namespace myApp.DAL
                     user.WorkCenter = reader.IsDBNull(reader.GetOrdinal("WORK_CENTER")) ? null : (string)reader["WORK_CENTER"];
                     user.HRPositionCode = reader.IsDBNull(reader.GetOrdinal("HRPositionCode")) ? null : (string)reader["HRPositionCode"];
                     user.JobRole = reader.IsDBNull(reader.GetOrdinal("JobRole")) ? null : (string)reader["JobRole"];
-                    user.WorkAge =  reader["WorkAge"].ToString();
+                    user.WorkAge = reader["WorkAge"].ToString();
                     user.StateWorkDate = reader.IsDBNull(reader.GetOrdinal("StartWorkDate")) ? null : (string)reader["StartWorkDate"];
-                   
+
                     users.Add(user);
                 }
                 reader.Close();
@@ -649,9 +679,7 @@ namespace myApp.DAL
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-
-                //DeleteCourseItemByCourseId(id);
-                //DeleteEnrollmentByCourseId(id);
+                DeleteEnrollById(id);
 
                 string query = "DELETE FROM MAS_USER_HR WHERE ID = @Id";
 
@@ -664,7 +692,22 @@ namespace myApp.DAL
                 }
             }
         }
+        private void DeleteEnrollById(string id)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
 
+                string query = "DELETE FROM USER_ENROLL WHERE ID = @Id";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", id);
+
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
 
         public List<Enrollment> GetEnrollments(string competencyFormId)
         {
@@ -708,7 +751,6 @@ namespace myApp.DAL
 
             return enrollments;
         }
-
         public List<User> GetEmployeeAtActive()
         {
             List<User> users = new List<User>();
@@ -798,7 +840,7 @@ namespace myApp.DAL
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        
+
                         command.Parameters.AddWithValue("@CompetencyFormId", competencyFormId);
                         command.Parameters.AddWithValue("@Id", user.Id);
 
@@ -807,5 +849,50 @@ namespace myApp.DAL
                 }
             }
         }
+
+
+
+        public List<CompetencyForm> SelectIDPGroup()
+        {
+            List<CompetencyForm> competencyForms = new List<CompetencyForm>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT F.COMPETENCY_FORM_ID, F.COMPETENCY_FORM_NAME, F.YEAR, HR.PREFIX, HR.FIRSTNAME_TH, HR.LASTNAME_TH, HR.JOBLEVEL, HR.EMAIL " +
+                                "FROM COMPTY_FORM F, MAS_USER_HR HR";
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                connection.Open();
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    CompetencyForm competencyForm = new CompetencyForm();
+
+                    competencyForm.CompetencyFormId = (string)reader["COMPETENCY_FORM_ID"];
+                    competencyForm.CompetencyFormName = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_FORM_NAME")) ? null : (string)reader["COMPETENCY_FORM_NAME"];
+                    competencyForm.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
+
+                    User user = new User();
+                    user.Prefix = reader.IsDBNull(reader.GetOrdinal("PREFIX")) ? null : (string)reader["PREFIX"];
+                    user.FirstNameTH = reader.IsDBNull(reader.GetOrdinal("FIRSTNAME_TH")) ? null : (string)reader["FIRSTNAME_TH"];
+                    user.LastNameTH = reader.IsDBNull(reader.GetOrdinal("LASTNAME_TH")) ? null : (string)reader["LASTNAME_TH"];
+                    user.JobLevel = reader.IsDBNull(reader.GetOrdinal("JOBLEVEL")) ? null : (string)reader["JOBLEVEL"];
+                    user.Email = reader.IsDBNull(reader.GetOrdinal("EMAIL")) ? null : (string)reader["EMAIL"];
+
+
+                    competencyForm.User = user;
+
+                    competencyForms.Add(competencyForm);
+                }
+                reader.Close();
+            }
+
+            return competencyForms;
+        }
+
+
     }
 }
