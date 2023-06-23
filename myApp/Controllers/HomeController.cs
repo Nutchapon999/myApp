@@ -15,6 +15,7 @@ using Antlr.Runtime.Misc;
 using MailKit.Net.Smtp;
 using MailKit;
 using MimeKit;
+using OfficeOpenXml; 
 
 
 namespace myApp.Controllers
@@ -331,11 +332,13 @@ namespace myApp.Controllers
         {
             if (file != null && file.ContentLength > 0)
             {
+                int rowCount = GetExcelRowCount(file) - 1;
                 string filename = Guid.NewGuid() + Path.GetExtension(file.FileName);
                 string filepath = "/Excel/" + filename;
                 file.SaveAs(Server.MapPath(filepath));
                 InsertExceldata1(filepath, filename);
                 TempData["UploadSuccess"] = true;
+                TempData["RowCount"] = rowCount.ToString();
             }
 
             return RedirectToAction("UploadCompetency");
@@ -403,6 +406,24 @@ namespace myApp.Controllers
                 TempData["UploadError"] = "เกิดข้อผิดพลาดในการอัปโหลด: " + ex.Message;
             }
         }
+        private int GetExcelRowCount(HttpPostedFileBase file)
+        {
+            using (var package = new ExcelPackage(file.InputStream))
+            {
+                ExcelWorkbook workbook = package.Workbook;
+
+                if (workbook.Worksheets.Count > 0)
+                {
+                    ExcelWorksheet worksheet = workbook.Worksheets[1];
+                    int rowCount = worksheet.Dimension.Rows;
+                    return rowCount;
+                }
+
+                
+                return 0;
+            }
+        }
+
 
 
         //Upload Employee
