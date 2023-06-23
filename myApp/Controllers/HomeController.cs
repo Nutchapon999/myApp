@@ -15,8 +15,7 @@ using Antlr.Runtime.Misc;
 using MailKit.Net.Smtp;
 using MailKit;
 using MimeKit;
-using System.Diagnostics;
-using System.Threading;
+
 
 namespace myApp.Controllers
 {
@@ -512,47 +511,51 @@ namespace myApp.Controllers
         [HttpPost]
         public ActionResult SendEmail(string CompetencyFormId, string SelectedUser)
         {
-            MimeMessage message = new MimeMessage();
-            message.From.Add(new MailboxAddress("PondPoP Za", "pondpopza19@gmail.com"));
-            message.To.Add(MailboxAddress.Parse(SelectedUser));
-            message.Subject = "แบบประเมิน IDP";
-            message.Body = new TextPart("plain")
+            if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
             {
-                Text = @"กรุณาช่วยระบุลำดับความสำคัญของ IDP Group ด้วย
-                        ขอขอบพระคุณอย่างยิ่ง :D"
-            };
-
-            string senderEmail = "pondpopza19@gmail.com";
-            string senderPassword = "xnuqpadqupsyahgv";
-
-            using (SmtpClient smtpClient = new SmtpClient())
-            {
-                try
+                MimeMessage message = new MimeMessage();
+                message.From.Add(new MailboxAddress("PondPoP Za", "pondpopza19@gmail.com"));
+                message.To.Add(MailboxAddress.Parse(SelectedUser));
+                message.Subject = "แบบประเมิน IDP";
+                message.Body = new TextPart("plain")
                 {
-                    smtpClient.Connect("smtp.gmail.com", 465, true);
-                    smtpClient.Authenticate(senderEmail, senderPassword);
+                    Text = @"กรุณาช่วยระบุลำดับความสำคัญของ IDP Group ด้วย " +
+                           "รหัส IDP Group: " + CompetencyFormId +
+                           " และได้แนบลิ้งค์ไว้ดังนี้ https://www.google.com ขอขอบพระคุณอย่างยิ่ง :D"
+                };
 
+                string senderEmail = "pondpopza19@gmail.com";
+                string senderPassword = "xnuqpadqupsyahgv";
 
-                    smtpClient.Send(message);
-
-                    TempData["SendSuccess"] = true;
-                    
-
-                }
-                catch (Exception ex)
+                using (SmtpClient smtpClient = new SmtpClient())
                 {
-                    ViewBag.ErrorMessage = ex.Message;
-                }
-                finally
-                {
-                    smtpClient.Disconnect(true);
+                    try
+                    {
+                        smtpClient.Connect("smtp.gmail.com", 465, true);
+                        smtpClient.Authenticate(senderEmail, senderPassword);
+
+                        smtpClient.Send(message);
+
+                        TempData["SendSuccess"] = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        ViewBag.ErrorMessage = ex.Message;
+                    }
+                    finally
+                    {
+                        smtpClient.Disconnect(true);
+                    }
                 }
             }
-
-           
+            else
+            {
+                TempData["ConnectionError"] = "ไม่สามารถเชื่อมต่อกับ Wi-Fi ได้";
+            }
 
             return RedirectToAction("SendEmail");
         }
+
         public ActionResult FormEmail(string id)
         {
             return View();

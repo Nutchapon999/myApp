@@ -15,6 +15,12 @@
                     </h3>
                 </div>
                 <div class="card-body">
+                    <div class="alert alert-info alert-dismissible fade show text-center" role="alert">
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                        <strong>ข้อควรระวัง:</strong> รหัส CompetencyForm นั้นหากสร้างแล้วไม่อาจแก้ไขได้ โปรดตรวจสอบให้แน่ใจก่อนทำการ <strong>"บันทึก"</strong>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    
                     @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
                     {
                         <div class="alert alert-danger alert-dismissible fade show text-center" role="alert" id="alertBox">
@@ -59,7 +65,7 @@
                                 @Html.LabelFor(model => model.Year, new { @class = "form-label" })
                             </i>
                         </span>
-                        <input type="number" class="form-control" min="2560" max="9999" name="Year" value="Year"/>
+                        <input type="number" class="form-control" min="2560" max="9999" name="Year" value="Year" />
                     </div>
 
 

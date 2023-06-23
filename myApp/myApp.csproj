@@ -203,6 +203,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\FormController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="DAL\App.cs" />
     <Compile Include="Global.asax.cs">
@@ -287,6 +288,7 @@
     <Content Include="Views\Home\SelectEmployee.cshtml" />
     <Content Include="Views\Home\SendEmail.cshtml" />
     <Content Include="Views\Home\FormEmail.cshtml" />
+    <Content Include="Views\Form\Form_1.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

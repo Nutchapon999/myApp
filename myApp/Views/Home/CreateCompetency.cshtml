@@ -16,6 +16,11 @@
                     </h3>
                 </div>
                 <div class="card-body">
+                    <div class="alert alert-info alert-dismissible fade show text-center" role="alert">
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                        <strong>ข้อควรระวัง:</strong> รหัส Competency นั้นหากสร้างแล้วไม่อาจแก้ไขได้ โปรดตรวจสอบให้แน่ใจก่อนทำการ <strong>"บันทึก"</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                     @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
                     {
                         <div class="alert alert-danger alert-dismissible fade show text-center" role="alert" id="alertBox">
@@ -67,7 +72,7 @@
                                 @Html.LabelFor(model => model.CompetencyNameTH, new { @class = "form-label" })
                             </i>
                         </span>
-                        @Html.TextBoxFor(model => model.CompetencyNameTH, new { @class = "form-control"})
+                        @Html.TextBoxFor(model => model.CompetencyNameTH, new { @class = "form-control" })
                         @Html.ValidationMessageFor(model => model.CompetencyNameTH)
                     </div>
 
@@ -129,11 +134,11 @@
                     <hr />
 
                     <div class="mt-3 list-group" style="width: 300px; margin-left: 14rem">
-                        
-                            <div class="input-group-text">
-                                <div><strong>มีการใช้ Competency นี้หรือไม่?</strong></div>
-                            </div>
-                       
+
+                        <div class="input-group-text">
+                            <div><strong>มีการใช้ Competency นี้หรือไม่?</strong></div>
+                        </div>
+
                         <div class="input-group mt-2">
                             <div class="input-group-text">
                                 <input class="form-check-input mt-0" type="radio" value="true" name="Active" aria-label="Radio button for following text input" checked>

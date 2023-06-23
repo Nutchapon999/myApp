@@ -14,7 +14,7 @@
         <div class="card-body text-center justify-content-center">
             @if (TempData["UploadError"] != null)
             {
-                <div class="alert alert-danger mt-3">
+                <div class="alert alert-danger mt-1">
                     <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
                     <strong>@TempData["UploadError"]</strong>
                 </div>
@@ -29,7 +29,7 @@
             }
             else if (TempData["SendSuccess"] != null && (bool)TempData["SendSuccess"])
             {
-                <div class="alert alert-success mt-3">
+                <div class="alert alert-success mt-1">
                     <i class="fa fa-check" aria-hidden="true"></i>
                     <strong>อีเมลส่งแล้ว!</strong>
                 </div>
@@ -37,6 +37,21 @@
                 <script>
                     window.setTimeout(function () {
                         $(".alert-success").fadeTo(500, 0).slideUp(500, function () {
+                            $(this).remove();
+                        });
+                    }, 5000);
+                </script>
+            }
+            else if (TempData["ConnectionError"] != null)
+            {
+                <div class="alert alert-danger mt-1">
+                    <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                    <strong>@TempData["ConnectionError"]</strong>
+                </div>
+
+                <script>
+                    window.setTimeout(function () {
+                        $(".alert-danger").fadeTo(500, 0).slideUp(500, function () {
                             $(this).remove();
                         });
                     }, 5000);
@@ -70,7 +85,7 @@
                             {
                                 foreach (var gm in gmList)
                                 {
-                                    var fullName = $"{gm.FirstNameTH} {gm.LastNameTH}";
+                                    var fullName = $"{gm.FirstNameTH} {gm.LastNameTH} | {gm.JobLevel}";
                                     if (!selectedGMs.Contains(fullName))
                                     {
                                         <option value="@gm.Email">@fullName</option>
