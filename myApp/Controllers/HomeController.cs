@@ -36,6 +36,7 @@ namespace myApp.Controllers
         public ActionResult Index()
         {
             var username = "";
+
             // Cookie
             if (ConfigurationManager.AppSettings["IsDev"].ToString().ToLower() == "true")
             {
@@ -47,9 +48,10 @@ namespace myApp.Controllers
             {
                 username = K2UserAuthen.GetUserAut(ConfigurationManager.AppSettings["PageK2Five"].ToString()).Username;
             }
-           
+
             ViewBag.Username = username;
             List<Competency> competencies = app.GetCompetencies();
+
             return View(competencies);
         }
         public ActionResult CreateCompetency()
@@ -75,7 +77,7 @@ namespace myApp.Controllers
                 {
                     if (ex.Message.Contains("@Id"))
                     {
-                        ViewBag.ErrorMessage = "  กรุณากรอกรหัสวิชา";
+                        ViewBag.ErrorMessage = "  กรุณากรอกรหัส Competency";
                     }
                     else
                     {
@@ -116,76 +118,96 @@ namespace myApp.Controllers
         }
 
 
-        //Competency Form
-        public ActionResult CompetencyForm()
+        //IDP GROUP
+        public ActionResult IDPGroup()
         {
             ViewBag.Username = Request.Cookies["username"].Value;
-            List<CompetencyForm> competencyForms = app.GetCompetencyForms();   
-            return View(competencyForms);
+            List<IDPGroup> iDPGroups = app.GetIDPGroups();
+
+            // Loop through each IDPGroup and update the enrollment count
+            foreach (var idpGroup in iDPGroups)
+            {
+                idpGroup.EmployeeEnrollmentCount = app.GetCountEmployee(idpGroup.IDPGroupId);
+            }
+
+            return View(iDPGroups);
         }
-        public ActionResult CreateCompetencyForm()
+        public ActionResult CreateIDPGroup()
         {
-
             ViewBag.Username = Request.Cookies["username"].Value;
-
             return View();
         }
         [HttpPost]
-        public ActionResult CreateCompetencyForm(CompetencyForm competencyForm)
+        public ActionResult CreateIDPGroup(IDPGroup iDPGroup)
         {
             ViewBag.Username = Request.Cookies["username"].Value;
             if (ModelState.IsValid)
             {
                 try
                 {
-                    app.CreateCompetencyForm(competencyForm);
+                    app.CreateIDPGroup(iDPGroup);
 
-                    return RedirectToAction("CompetencyForm", "Home");
+                    return RedirectToAction("IDPGroup", "Home");
                 }
                 catch (Exception ex)
                 {
                     if (ex.Message.Contains("@Id"))
                     {
-                        ViewBag.ErrorMessage = "  กรุณากรอกรหัสหลักสูตร";
+                        ViewBag.ErrorMessage = "  กรุณากรอกรหัส IDP Group";
                     }
                     else
                     {
                         ViewBag.ErrorMessage = ex.Message;
                     }
 
-                    return View(competencyForm);
+                    return View(iDPGroup);
                 }
             }
-            return View(competencyForm);
+            return View(iDPGroup);
         }
-        public ActionResult EditCompetencyForm(string id)
+        public ActionResult EditIDPGroup(string id)
         {
-            string competencyFormName = app.GetCompetencyFormNameById(id);
+            string idpGroupName = app.GetIDPGroupNameById(id);
             string year = app.GetYearById(id);
-            ViewBag.CompetencyFormId = id;
-            ViewBag.CompetencyFormName = competencyFormName;
+            ViewBag.IDPGroupId = id;
+            ViewBag.IDPGroupName = idpGroupName;
             ViewBag.Year = year;
             ViewBag.Username = Request.Cookies["username"].Value;
-            CompetencyForm competencyForm = app.EditCompetencyForm(id);
-            return View(competencyForm);
+            IDPGroup iDPGroup = app.EditIDPGroup(id);
+            return View(iDPGroup);
         }
         [HttpPost]
-        public ActionResult EditCompetencyForm(CompetencyForm competencyForm)
+        public ActionResult EditIDPGroup(IDPGroup iDPGroup)
         {
             ViewBag.Username = Request.Cookies["username"].Value;
             if (ModelState.IsValid)
             {
-                app.UpdateCompetencyForm(competencyForm);
-                return RedirectToAction("CompetencyForm");
+                app.UpdateIDPGroup(iDPGroup);
+                return RedirectToAction("IDPGroup");
             }
-            return View(competencyForm);
+            return View(iDPGroup);
         }
-        public ActionResult DeleteCompetencyForm(string id)
+        public ActionResult DeleteIDPGroup(string id)
         {
-            app.DeleteCompetencyForm(id);
-            return RedirectToAction("CompetencyForm");
+            app.DeleteIDPGroup(id);
+            return RedirectToAction("IDPGroup");
         }
-
+        public ActionResult DetailIDPGroup(string id)
+        {
+            string idpGroupName = app.GetIDPGroupNameById(id);
+            string year = app.GetYearById(id);
+            int members = app.GetCountEmployee(id);
+            int competencies = app.GetCountCompetency(id);
+            ViewBag.Username = Request.Cookies["username"].Value;
+            List<IDPGroup> iDPGroups = app.GetDetails(id);
+            ViewBag.IDPGroupId = id;
+            ViewBag.IDPGroupName = idpGroupName;
+            ViewBag.Year = year;
+            ViewBag.Member = members;
+            ViewBag.Competency = competencies;
+            return View(iDPGroups);
+        }
+       
 
         //HR User
         public ActionResult Employee()
@@ -199,16 +221,78 @@ namespace myApp.Controllers
             app.DeleteEmployee(id);
             return RedirectToAction("Employee");
         }
+        public ActionResult AddIDPGroup(string id)
+        {
+            List<Enrollment> enrollments = app.GetIDPGroupByEmployee(id);
 
+            ViewBag.Id = id;
+
+            return View(enrollments);
+        }
+        public ActionResult SelectIDPGroup(string id)
+        {
+            List<IDPGroup> iDPGroups = app.GetIDPGroups();
+
+            List<string> enrolledIDPGroupId = app.GetCheckedIDPGroup(id);
+
+            List<IDPGroup> availableIDPGroupId = iDPGroups.Where(g => !enrolledIDPGroupId.Contains(g.IDPGroupId)).ToList();
+
+            availableIDPGroupId.ForEach(g => g.Enrollment = new Enrollment());
+
+            ViewBag.Id = id;
+            return View(availableIDPGroupId);
+        }
+        [HttpPost]
+        public ActionResult SelectedIDPGroup(List<string> iDPGroupIds, string userId)
+        {
+            if (iDPGroupIds == null)
+            {
+                return RedirectToAction("AddIDPGroup", new { id = userId });
+            }
+
+            List<IDPGroup> selectedIDPGroups = new List<IDPGroup>();
+
+            string id = userId;
+
+            List<string> enrolledIDPGroups = app.GetCheckedIDPGroup(userId);
+
+            foreach (string iDPGroupId in iDPGroupIds)
+            {
+                if (enrolledIDPGroups.Contains(iDPGroupId))
+                {
+
+                    return RedirectToAction("SelectStudent", new { id = userId });
+                }
+
+                IDPGroup iDPGroup = app.GetIDPGroups().FirstOrDefault(g => g.IDPGroupId == iDPGroupId);
+                if (iDPGroup != null)
+                {
+                    selectedIDPGroups.Add(iDPGroup);
+                }
+            }
+
+            app.InsertIDPGroup(selectedIDPGroups, id);
+
+            return RedirectToAction("AddIDPGroup", new { id = userId });
+        }
+        public ActionResult DeleteIDPGroupByEmployee(int id)
+        {
+            string userId = app.GetIdByEnrollment(id);
+
+            app.DeleteIDPGroupByEmployee(id);
+
+            return RedirectToAction("AddIDPGroup", new { id = userId });
+
+        }
 
 
         //Competency Item
         public ActionResult AddCompetency(string id)
         {
-            string competencyFormName = app.GetCompetencyFormNameById(id);
+            string idpGroupName = app.GetIDPGroupNameById(id);
             List<CompetencyItem> competencyItems = app.GetCompetencyItems(id);
-            ViewBag.CompetencyFormId = id;
-            ViewBag.CompetencyName = competencyFormName;
+            ViewBag.IDPGroupId = id;
+            ViewBag.IDPGroupName = idpGroupName;
             return View(competencyItems);
         }
         public ActionResult SelectCompetency(string id)
@@ -221,21 +305,22 @@ namespace myApp.Controllers
 
             availableSubjects.ForEach(c => c.CompetencyItem = new CompetencyItem());
 
-            ViewBag.CompetencyFormId = id;
+            ViewBag.IDPGroupId = id;
             return View(availableSubjects);
         }
         [HttpPost]
-        public ActionResult SelectedCompetency(List<string> competencyIds, string competencyFormId, Dictionary<string, string> plValues, Dictionary<string, string> priorityValues)
+        public ActionResult SelectedCompetency(List<string> competencyIds, string idpGroupId, Dictionary<string, string> plValues, Dictionary<string, string> priorityValues)
         {
             if (competencyIds == null)
             {
-                return RedirectToAction("AddCompetency", new { id = competencyFormId });
+                return RedirectToAction("AddCompetency", new { id = idpGroupId });
             }
 
             List<Competency> selectedCompetencies = new List<Competency>();
-            string id = competencyFormId;
 
-            List<string> enrolledSubjectCodes = app.GetCheckedCompetencyId(competencyFormId);
+            string id = idpGroupId;
+
+            List<string> enrolledSubjectCodes = app.GetCheckedCompetencyId(idpGroupId);
 
             foreach (string competencyId in competencyIds)
             {
@@ -255,15 +340,15 @@ namespace myApp.Controllers
 
             app.InsertCompetency(selectedCompetencies, id);
 
-            return RedirectToAction("AddCompetency", new { id = competencyFormId });
+            return RedirectToAction("AddCompetency", new { id = idpGroupId });
         }
         public ActionResult DeleteCompetencyItem(int id)
         {
-            string competencyFormId = app.GetCompetencyFormIdByCompetencyItem(id); // Retrieve the courseId associated with the deleted enrollment
+            string idpGroupId = app.GetIDPGroupIdByCompetencyItem(id); 
 
             app.DeleteCompetencyItem(id);
 
-            return RedirectToAction("AddCompetency", new { id = competencyFormId });
+            return RedirectToAction("AddCompetency", new { id = idpGroupId });
         }
         
 
@@ -271,7 +356,9 @@ namespace myApp.Controllers
         public ActionResult AddEmployee(string id)
         {
             List<Enrollment> enrollments = app.GetEnrollments(id);
-            ViewBag.CompetencyFormId = id;
+
+            ViewBag.IDPGroupID = id;
+      
             return View(enrollments);
         }
         public ActionResult SelectEmployee(string id)
@@ -284,28 +371,30 @@ namespace myApp.Controllers
 
             availableIds.ForEach(u => u.Enrollment = new Enrollment());
 
-            ViewBag.CompetencyFormId = id;
+            ViewBag.IDPGroupID = id;
+
             return View(availableIds);
         }
         [HttpPost]
-        public ActionResult SelectedEmployee(List<string> userIds, string competencyFormId)
+        public ActionResult SelectedEmployee(List<string> userIds, string idpGroupId)
         {
             if (userIds == null)
             {
-                return RedirectToAction("AddEmployee", new { id = competencyFormId });
+                return RedirectToAction("AddEmployee", new { id = idpGroupId });
             }
 
             List<User> selectedUsers = new List<User>();
-            string id = competencyFormId;
 
-            List<string> enrolledUsers = app.GetCheckedId(competencyFormId);
+            string id = idpGroupId;
+
+            List<string> enrolledUsers = app.GetCheckedId(idpGroupId);
 
             foreach (string userId in userIds)
             {
                 if (enrolledUsers.Contains(userId))
                 {
 
-                    return RedirectToAction("SelectStudent", new { id = competencyFormId });
+                    return RedirectToAction("SelectStudent", new { id = idpGroupId });
                 }
 
                 User user = app.GetEmployeeAtActive().FirstOrDefault(u => u.Id == userId);
@@ -317,14 +406,25 @@ namespace myApp.Controllers
 
             app.InsertEmployee(selectedUsers, id);
 
-            return RedirectToAction("AddEmployee", new { id = competencyFormId });
+            return RedirectToAction("AddEmployee", new { id = idpGroupId });
         }
+        public ActionResult DeleteEmployeeByIDPGroup(int id)
+        {
+            string idpGroupId = app.GetIDPGroupIdByEnrollment(id);
+
+            app.DeleteEmployeeByIDPGroup(id);
+
+            return RedirectToAction("AddEmployee", new { id = idpGroupId });
+        }
+
 
 
         //Upload Competency
         public ActionResult UploadCompetency()
         {
             ViewBag.Username = Request.Cookies["username"].Value;
+            int rowCount = TempData.ContainsKey("RowCount") ? int.Parse(TempData["RowCount"].ToString()) : 0;
+            TempData["RowCount"] = rowCount.ToString();
             return View();
         }
         [HttpPost]
@@ -332,13 +432,15 @@ namespace myApp.Controllers
         {
             if (file != null && file.ContentLength > 0)
             {
-                int rowCount = GetExcelRowCount(file) - 1;
+                //int rowCount = GetExcelRowCount(file) - 1;
                 string filename = Guid.NewGuid() + Path.GetExtension(file.FileName);
                 string filepath = "/Excel/" + filename;
+
                 file.SaveAs(Server.MapPath(filepath));
                 InsertExceldata1(filepath, filename);
+
                 TempData["UploadSuccess"] = true;
-                TempData["RowCount"] = rowCount.ToString();
+                //TempData["RowCount"] = rowCount.ToString();
             }
 
             return RedirectToAction("UploadCompetency");
@@ -398,6 +500,27 @@ namespace myApp.Controllers
 
                             insertCommand.ExecuteNonQuery();
                         }
+                        else
+                        {
+                            SqlCommand updateCommand = new SqlCommand("UPDATE COMPTY SET CompetencyNameTH = @CompetencyNameTH, CompetencyNameEN = @CompetencyNameEN, CompetencyDesc = @CompetencyDesc, " +
+                                "Pl1 = @Pl1, Pl2 = @Pl2, Pl3 = @Pl3, Pl4 = @Pl4, Pl5 = @Pl5, Active = @Active, Type = @Type WHERE COMPETENCY_ID = @CompetencyId", con);
+
+                            updateCommand.Parameters.AddWithValue("@CompetencyId", competencyId);
+                            updateCommand.Parameters.AddWithValue("@CompetencyNameTH", row["COMPETENCY_NAME_TH"]);
+                            updateCommand.Parameters.AddWithValue("@CompetencyNameEN", row["COMPETENCY_NAME_EN"]);
+                            updateCommand.Parameters.AddWithValue("@CompetencyDesc", row["COMPETENCY_DESC"]);
+                            updateCommand.Parameters.AddWithValue("@Pl1", row["PL1"]);
+                            updateCommand.Parameters.AddWithValue("@Pl2", row["PL2"]);
+                            updateCommand.Parameters.AddWithValue("@Pl3", row["PL3"]);
+                            updateCommand.Parameters.AddWithValue("@Pl4", row["PL4"]);
+                            updateCommand.Parameters.AddWithValue("@Pl5", row["PL5"]);
+                            updateCommand.Parameters.AddWithValue("@Active", row["ACTIVE"]);
+                            updateCommand.Parameters.AddWithValue("@Type", row["TYPE"]);
+                           
+
+                            updateCommand.ExecuteNonQuery();
+                        }
+
                     }
                 }
             }
@@ -406,7 +529,7 @@ namespace myApp.Controllers
                 TempData["UploadError"] = "เกิดข้อผิดพลาดในการอัปโหลด: " + ex.Message;
             }
         }
-        private int GetExcelRowCount(HttpPostedFileBase file)
+        /*private int GetExcelRowCount(HttpPostedFileBase file)
         {
             using (var package = new ExcelPackage(file.InputStream))
             {
@@ -422,9 +545,9 @@ namespace myApp.Controllers
                 
                 return 0;
             }
-        }
+        }*/
 
-
+        
 
         //Upload Employee
         public ActionResult UploadEmployee()
@@ -463,7 +586,6 @@ namespace myApp.Controllers
                 oda.Fill(ds);
 
                 DataTable dt = ds.Tables[0];
-
 
                 using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyConnection"].ConnectionString))
                 {
@@ -513,6 +635,43 @@ namespace myApp.Controllers
                                     
                             insertCommand.ExecuteNonQuery();
                         }
+                        else
+                        {
+                            SqlCommand updateCommand = new SqlCommand("UPDATE MAS_USER_HR SET PREFIX = @Prefix, FIRSTNAME_TH = @FirstNameTH, LASTNAME_TH = @LastNameTH, " +
+                                "FIRSTNAME_EN = @FirstNameEN, LASTNAME_EN = @LastNameEN, STATUS = @Status, STATUS_DATE = @StatusDate, COMPANY = @Company, LOCATION = @Location, " +
+                                "POSITION = @Position, JOBLEVEL = @JobLevel, COSTCENTER = @CostCenter, DEPARTMENT = @Department, DEPARTMENT_NAME = @DepartmentName, EMAIL = @Email, " +
+                                "USER_LOGIN = @UserLogin, Enabled = @Enabled, SHIFTWORK = @ShiftWork, WORK_CENTER = @WorkCenter, HRPositionCode = @HRPositionCode, JobRole = @JobRole, " +
+                                "WorkAge = @WorkAge, StartWorkDate = @StartWorkDate WHERE Id = @Id", con);
+
+                            updateCommand.Parameters.AddWithValue("@Id", Id);
+                            updateCommand.Parameters.AddWithValue("@Prefix", row["PREFIX"]);
+                            updateCommand.Parameters.AddWithValue("@FirstNameTH", row["FIRSTNAME_TH"]);
+                            updateCommand.Parameters.AddWithValue("@LastNameTH", row["LASTNAME_TH"]);
+                            updateCommand.Parameters.AddWithValue("@FirstNameEN", row["FIRSTNAME_EN"]);
+                            updateCommand.Parameters.AddWithValue("@LastNameEN", row["LASTNAME_EN"]);
+                            updateCommand.Parameters.AddWithValue("@Status", row["STATUS"]);
+                            updateCommand.Parameters.AddWithValue("@StatusDate", row["STATUS_DATE"]);
+                            updateCommand.Parameters.AddWithValue("@Company", row["COMPANY"]);
+                            updateCommand.Parameters.AddWithValue("@Location", row["LOCATION"]);
+                            updateCommand.Parameters.AddWithValue("@Position", row["POSITION"]);
+                            updateCommand.Parameters.AddWithValue("@JobLevel", row["JOBLEVEL"]);
+                            updateCommand.Parameters.AddWithValue("@CostCenter", row["COSTCENTER"]);
+                            updateCommand.Parameters.AddWithValue("@Department", row["DEPARTMENT"].ToString());
+                            updateCommand.Parameters.AddWithValue("@DepartmentName", row["DEPARTMENT_NAME"]);
+                            updateCommand.Parameters.AddWithValue("@Email", row["EMAIL"]);
+                            updateCommand.Parameters.AddWithValue("@UserLogin", row["USER_LOGIN"]);
+                            updateCommand.Parameters.AddWithValue("@Enabled", row["Enabled"]);
+                            updateCommand.Parameters.AddWithValue("@ShiftWork", row["SHIFTWORK"]);
+                            updateCommand.Parameters.AddWithValue("@WorkCenter", row["WORK_CENTER"]);
+                            updateCommand.Parameters.AddWithValue("@HRPositionCode", row["HRPositionCode"]);
+                            updateCommand.Parameters.AddWithValue("@JobRole", row["JobRole"]);
+                            updateCommand.Parameters.AddWithValue("@WorkAge", row["WorkAge"]);
+                            updateCommand.Parameters.AddWithValue("@StartWorkDate", row["StartWorkDate"]);
+                          
+
+                            updateCommand.ExecuteNonQuery();
+                        }
+
                     }
                 }
             }
@@ -526,23 +685,23 @@ namespace myApp.Controllers
         //Email
         public ActionResult SendEmail()
         {
-            List<CompetencyForm> competencyForms = app.SelectIDPGroup();
+            List<IDPGroup> competencyForms = app.SelectIDPGroup();
             return View(competencyForms);
         }
         [HttpPost]
-        public ActionResult SendEmail(string CompetencyFormId, string SelectedUser)
+        public ActionResult SendEmail(string IDPGroupId, string SelectedUser)
         {
             if (System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
             {
                 MimeMessage message = new MimeMessage();
                 message.From.Add(new MailboxAddress("PondPoP Za", "pondpopza19@gmail.com"));
-                message.To.Add(MailboxAddress.Parse(SelectedUser));
+                message.To.Add(MailboxAddress.Parse("sr.nutchapon_st@tni.ac.th"));
                 message.Subject = "แบบประเมิน IDP";
                 message.Body = new TextPart("plain")
                 {
                     Text = @"กรุณาช่วยระบุลำดับความสำคัญของ IDP Group ด้วย " +
-                           "รหัส IDP Group: " + CompetencyFormId +
-                           " และได้แนบลิ้งค์ไว้ดังนี้ https://www.google.com ขอขอบพระคุณอย่างยิ่ง :D"
+                           "รหัส IDP Group: " +
+                           " และได้แนบลิ้งค์ไว้ดังนี้ ขอขอบพระคุณอย่างยิ่ง :D"
                 };
 
                 string senderEmail = "pondpopza19@gmail.com";
@@ -576,6 +735,7 @@ namespace myApp.Controllers
 
             return RedirectToAction("SendEmail");
         }
+
 
         public ActionResult FormEmail(string id)
         {

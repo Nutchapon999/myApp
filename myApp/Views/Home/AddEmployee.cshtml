@@ -6,10 +6,10 @@
 <main class="mb-3" style="margin-top: 50px">
     <div class="card shadow">
         <div class="card-header bg-primary">
-            <h2 class="text-center" style="color:white"><i class="fa fa-book" aria-hidden="true"></i> <strong>พนักงานของของ "@ViewBag.CompetencyFormId"</strong></h2>
+            <h2 class="text-center" style="color:white"><i class="fa fa-book" aria-hidden="true"></i> <strong>พนักงานของของ "@ViewBag.IDPGroupId"</strong></h2>
         </div>
         <div class="card-body">
-            <a href="@Url.Action("SelectEmployee", new { id = ViewBag.CompetencyFormId })" class="btn btn-success mb-3" style="width: 6rem; border-radius: 1rem"><i class="fa fa-plus" aria-hidden="true"><strong> เพิ่ม</strong></i></a>
+            <a href="@Url.Action("SelectEmployee", new { id = ViewBag.IDPGroupId })" class="btn btn-success mb-3" style="width: 6rem; border-radius: 1rem"><i class="fa fa-plus" aria-hidden="true"><strong> เพิ่ม</strong></i></a>
             <table class="table table-hover table-responsive" id="myTable">
                 <thead class="table-primary">
                     <tr>
@@ -56,13 +56,13 @@
                             <td>@enroll.User.DepartmentName</td>
                             <td>@enroll.User.Company</td>
                             <td>
-                                <a href="@Url.Action("", new { id = enroll.Id })" class="btn btn-danger" title="ลบ"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                <a href="@Url.Action("DeleteEmployeeByIDPGroup", new { id = enroll.EnrollId })" class="btn btn-danger" title="ลบ"><i class="fa fa-trash" aria-hidden="true"></i></a>
                             </td>
                         </tr>
                     }
                 </tbody>
             </table>
-            <a href="@Url.Action("CompetencyForm")" class="btn btn-danger">ออก</a>
+            <a href="@Url.Action("IDPGroup")" class="btn btn-danger">ออก</a>
         </div>
     </div>
 </main>

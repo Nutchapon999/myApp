@@ -3,14 +3,14 @@
     ViewBag.Title = "Employee";
 }
 
-<main class="mb-2" style="margin-top: 50px">
-    <div class="card shadow">
-        <div class="card-header bg-primary">
-            <h2 class="text-center" style="color:white"><i class="fa fa-user" aria-hidden="true"></i> <strong>พนักงาน</strong></h2>
+<main class="container">
+    <div class="card shadow border-0 m-3">
+        <div class="card-header text-center border-0 py-3" style="background-color: #d4edda;">
+            <i class="fa fa-user text-success" style="font-size: 60px;"></i>
+            <h1><strong>พนักงาน</strong></h1>
         </div>
-        <div class="card-body">
-    
-            <a href="@Url.Action("UploadEmployee")" class="btn btn-primary mb-3 position-relative" style="width: 8rem; border-radius: 1rem">
+        <div class="card-body border-0">
+            <a href="@Url.Action("UploadEmployee")" class="btn btn-primary btn-lg mb-3 position-relative" style="width: auto; border-radius: 2rem">
                 <i class="fa fa-upload" aria-hidden="true"><strong> อัปโหลด</strong></i>
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">
                     <i class="fa fa-file-excel-o" style="font-size: medium" aria-hidden="true"></i>
@@ -18,7 +18,7 @@
                 </span>
             </a>
             <table class="table table-hover table-responsive" id="myTable">
-                <thead class="table-primary" style="font-size: 16   px">
+                <thead class="table-primary" style="font-size: 16px">
                     <tr>
                         <th width="5%">รหัส</th>
                         <th width="30%">ชื่อพนักงาน</th>
@@ -29,7 +29,7 @@
                         <th width="5%"></th>
                     </tr>
                 </thead>
-                <tbody style="height: 100px">
+                <tbody>
                     @foreach (var emp in Model)
                     {
                         <tr>
@@ -37,7 +37,6 @@
                             @if (emp.Prefix == "นาง" || emp.Prefix == "นางสาว")
                             {
                                 <td>
-
                                     @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
                                     <i class="fa fa-female" style="color:palevioletred; font-size:large" aria-hidden="true"></i>
                                 </td>
@@ -53,9 +52,7 @@
                             else
                             {
                                 <td>
-
                                     @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
-
                                 </td>
                             }
                             <td>@emp.Position</td>
@@ -64,6 +61,7 @@
                             <td>@emp.Company</td>
                             <td>
                                 <div class="btn-group me-2" role="group" aria-label="Second group">
+                                    <a id="link" href="@Url.Action("AddIDPGroup", new { id = emp.Id })" class="btn btn-success" title="เพิ่ม IDP Group"><i class="fa fa-book" aria-hidden="true"></i></a>
                                     <button type="button" class="btn btn-danger" style="width: auto; height: auto" data-bs-toggle="modal" data-bs-target="#deleteModal-@emp.Id" title="ลบ">
                                         <i class="fa fa-trash" aria-hidden="true"></i>
                                     </button>

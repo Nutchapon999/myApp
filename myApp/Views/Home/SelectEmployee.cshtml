@@ -5,7 +5,7 @@
 }
 
 <main class="mb-2" style="margin-top: 50px">
-    @using (Html.BeginForm("SelectedEmployee", "Home", new { competencyFormId = ViewBag.CompetencyFormId }, FormMethod.Post))
+    @using (Html.BeginForm("SelectedEmployee", "Home", new { idpGroupId = ViewBag.IDPGroupId }, FormMethod.Post))
     {
         <div class="card shadow">
             <div class="card-header bg-primary">
@@ -67,7 +67,7 @@
                     </tbody>
                 </table>
                 <button type="submit" class="btn btn-primary">ยืนยัน</button>
-                <a href="@Url.Action("AddEmployee", new { id = ViewBag.CompetencyFormId })" class="btn btn-danger">ยกเลิก</a>
+                <a href="@Url.Action("AddEmployee", new { id = ViewBag.IDPGroupId })" class="btn btn-danger">ยกเลิก</a>
             </div>
         </div>
      }

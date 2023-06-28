@@ -30,7 +30,7 @@ namespace myApp.Models
         public string HRPositionCode { get; set; }
         public string JobRole { get; set; }
         public string WorkAge { get; set; }
-        public string StateWorkDate { get; set; }
+        public string StartWorkDate { get; set; }
 
         public virtual Enrollment Enrollment { get; set; }
     }

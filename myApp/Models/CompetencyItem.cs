@@ -9,7 +9,7 @@ namespace myApp.Models
     {
         public int CompetencyItemId { get; set; }   
         public string CompetencyId { get; set; }
-        public string CompetencyFormId { get; set; }
+        public string IDPGroupId { get; set; }
         public string Pl { get; set; }
         public string Priority { get; set; }
 

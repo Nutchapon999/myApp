@@ -1,4 +1,4 @@
-﻿@model IEnumerable<myApp.Models.CompetencyForm>
+﻿@model IEnumerable<myApp.Models.IDPGroup>
 @{
     ViewBag.Title = "SendEmail";
 }
@@ -60,7 +60,7 @@
 
             <div id="loadingSpinner" class="d-none">
                 <div class="d-flex justify-content-center">
-                    <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+                    <div class="fa fa-cog fa-spin fa-3x fa-fw" style="width: 3rem; height: 3rem;" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
@@ -70,10 +70,10 @@
                 <div>
                     <select class="form-select mt-3" name="CompetencyFormId" style="width: 350px; margin-left: 6.5rem" aria-label="Default select example">
                         @{
-                            var distinctCompetencies = Model.Select(c => new { c.CompetencyFormId, c.CompetencyFormName }).Distinct().ToList();
+                            var distinctCompetencies = Model.Select(c => new { c.IDPGroupId, c.IDPGroupName }).Distinct().ToList();
                             foreach (var competency in distinctCompetencies)
                             {
-                                <option value="@competency.CompetencyFormId">@competency.CompetencyFormId | @competency.CompetencyFormName</option>
+                                <option value="@competency.IDPGroupId">@competency.IDPGroupId | @competency.IDPGroupName</option>
                             }
                         }
                     </select>

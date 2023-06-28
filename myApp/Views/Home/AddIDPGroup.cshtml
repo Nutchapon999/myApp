@@ -1,0 +1,40 @@
+﻿@model IEnumerable<myApp.Models.Enrollment> 
+@{
+    ViewBag.Title = "AddIDPGroup";
+}
+
+<main>
+    <div class="card shadow border-0 m-3">
+        <div class="card-header text-center border-0 py-3" style="background-color: #fff3cd;">
+            <i class="fa fa-book text-warning" style="font-size: 60px;"></i>
+            <h1><strong>เพิ่ม IDP Group</strong></h1>
+        </div>
+        <div class="card-body">
+            <a href="@Url.Action("SelectIDPGroup", new { id = ViewBag.Id })" class="btn btn-success mb-3 btn-lg" style="width: auto; border-radius: 2rem"><i class="fa fa-plus" aria-hidden="true"><strong> เพิ่ม</strong></i></a>
+            <table class="table table-hover table-responsive" id="myTable">
+                <thead class="table-primary">
+                    <tr>
+                        <th width="10%">รหัส IDP Group</th>
+                        <th width="75%">ชื่อ IDP Group</th>
+                        <th width="10%">ปี</th>
+                        <th width="5%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var enroll in Model)
+                    {
+                        <tr>
+                            <td>@enroll.IDPGroupId</td>
+                            <td>@enroll.IDPGroup.IDPGroupName</td>
+                            <td>@enroll.IDPGroup.Year</td>
+                            <td>
+                                <a href="@Url.Action("DeleteIDPGroupByEmployee", new { id = enroll.EnrollId })" class="btn btn-danger" title="ลบ"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+

@@ -1,0 +1,131 @@
+﻿@model IEnumerable<myApp.Models.IDPGroup>
+@{
+    ViewBag.Title = "CompetencyForm";
+}
+
+<main>
+    <div class="card shadow border-0 m-3">
+        <div class="card-header text-center border-0 py-3" style="background-color: #fff3cd;">
+            <i class="fa fa-book text-warning" style="font-size: 60px;"></i>
+            <h1><strong>IDP Group</strong></h1>
+        </div>
+        <div class="card-body">
+            <a href="@Url.Action("CreateIDPGroup")" class="btn btn-success mb-3 btn-lg" style="width: auto; border-radius: 2rem"><i class="fa fa-plus" aria-hidden="true"><strong> เพิ่ม</strong></i></a>
+            <table class="table table-hover table-responsive" id="myTable">
+                <thead class="table-primary">
+                    <tr>
+                        <th width="10%">รหัส IDP Group</th>
+                        <th width="55%">ชื่อ IDP Group</th>
+                        <th width="10%">จำนวนคน</th>
+                        <th width="10%">ปี</th>
+                        <th width="15%"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var idp in Model)
+                    {
+                        <tr>
+                            <td>@idp.IDPGroupId</td>
+                            <td>@idp.IDPGroupName</td>
+                            <td>@idp.EmployeeEnrollmentCount</td>
+                            <td>@idp.Year</td>
+                            <td>
+                                <div class="btn-group me-2" role="group" aria-label="Second group">
+                                    <a id="link" href="@Url.Action("DetailIDPGroup", new { id = idp.IDPGroupId })" class="btn btn-success" title="รายละเอียด"><i class="fa fa-file" aria-hidden="true"></i></a>
+                                    <a id="link" href="@Url.Action("AddCompetency", new { id = idp.IDPGroupId })" class="btn btn-info" title="เพิ่ม competency"><i class="fa fa-list-alt" aria-hidden="true"></i></a>
+                                    <a id="link" href="@Url.Action("AddEmployee", new { id = idp.IDPGroupId })" class="btn btn-warning" title="เพิ่มพนักงาน"><i class="fa fa-graduation-cap" aria-hidden="true"></i></a>
+                                    <button id="link" type="button" class="btn btn-primary" title="แก้ไข" data-bs-toggle="modal" data-bs-target="#editModal-@idp.IDPGroupId">
+                                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                                    </button>
+                                    <button id="link" type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-@idp.IDPGroupId" title="ลบ">
+                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div class="modal fade modal-lg" id="editModal-@idp.IDPGroupId" aria-labelledby="editModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content container">
+                                            <div class="modal-body">
+                                                <div class="py-2 text-center bg- rounded" style="background-color: #f8d7da">
+                                                    <i class="fa fa-list-alt text-danger" style="font-size:50px;"></i>
+                                                    <h2><strong>แก้ไข IDP Group</strong></h2>
+                                                    <h3>รหัส IDP Group: @idp.IDPGroupId</h3>
+                                                </div>
+                                            </div>
+                                            @using (Html.BeginForm("EditIDPGroup", "Home", FormMethod.Post))
+                                            {
+                                                <input type="hidden" name="IDPGroupId" value="@idp.IDPGroupId" />
+                                                <div class="input-group mt-3 d-flex justify-content-center">
+                                                    <span class="input-group-text">
+                                                        <i class="fa fa-tag mt-2" aria-hidden="true">
+                                                            <strong><label for="editName">ชื่อ IDP Group</label></strong>
+                                                        </i>
+                                                    </span>
+                                                    <input type="text" class="form-control" id="editName" name="IDPGroupName" value="@idp.IDPGroupName" />
+                                                </div>
+                                                <div class="input-group mt-3 d-flex justify-content-center">
+                                                    <span class="input-group-text" style="width: 5rem;background-color: #d1ecf1; border-color: #99e9eb; color: #05487f ">
+                                                        <i class="fa fa-calendar mt-2" aria-hidden="true">
+                                                            <strong><label for="Year">ปี</label></strong>
+                                                        </i>
+                                                    </span>
+                                                    <select class="form-select" id="Year" name="Year">
+                                                        @for (int year = 2560; year <= 2568; year++)
+                                                        {
+                                                            <option value="@year">@year</option>
+                                                        }
+                                                    </select>
+
+                                                </div>
+
+                                                <div class="modal-footer mt-5">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                                                    <button type="submit" class="btn btn-primary">บันทึก</button>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal fade" id="deleteModal-@idp.IDPGroupId" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-4">ต้องการที่จะลบรายวิชานี้หรือไม่?</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <h5>รหัส Competency: @idp.IDPGroupId</h5>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                                                <a href="@Url.Action("DeleteIDPGroup", new { id = idp.IDPGroupId })" class="btn btn-danger">ยืนยัน</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<script src="~/Scripts/jquery-3.4.1.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script type="text/javascript">
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+        js('#myTable').DataTable({
+            language: {
+                search: "ค้นหา:", // Change the search label here
+            },
+            scrollY: 500,
+
+        });
+    });
+</script>

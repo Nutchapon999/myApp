@@ -1,0 +1,89 @@
+﻿@model myApp.Models.IDPGroup
+@{
+    ViewBag.Title = "CreateCompetencyForm";
+}
+<main class="container">
+    @using (Html.BeginForm("CreateIDPGroup", "Home", FormMethod.Post))
+    {
+        <div class="py-5 text-center bg- p-5 rounded" style="background-color: #eeeeee60">
+            <i class="fa fa-book text-danger" style="font-size:60px;"></i>
+            <h1><strong>เพิ่ม IDP Group</strong></h1>
+            <div class="alert alert-info alert-dismissible fade show text-center mt-3" role="alert">
+                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                <strong>ข้อควรระวัง:</strong> รหัส IDP Group นั้นหากสร้างแล้วไม่อาจแก้ไขได้ โปรดตรวจสอบให้แน่ใจก่อนทำการ <strong>"บันทึก"</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+            {
+                <div class="alert alert-danger alert-dismissible fade show text-center" role="alert" id="alertBox">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>@ViewBag.ErrorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <script>
+                    // Automatically close the alert after 5 seconds
+                    window.setTimeout(function () {
+                        $("#alertBox").fadeTo(300, 0).slideUp(300, function () {
+                            $(this).remove();
+                        });
+                    }, 3000);
+                </script>
+            }
+        </div>
+        <hr />
+        <div class="container">
+            <div class="row">
+                <div class="col-md">
+                    <div class="input-group mt-3 d-flex justify-content-center">
+                        <span class="input-group-text" style="background-color: #f8d7da; border-color: #ae6070; color: #b34045">
+                            <i class="fa fa-key mt-2" aria-hidden="true">
+                                <strong>@Html.LabelFor(model => model.IDPGroupId, new { @class = "form-label" })</strong>
+                            </i>
+                        </span>
+                        @Html.TextBoxFor(model => model.IDPGroupId, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.IDPGroupId)
+                    </div>
+                    <div class="input-group mt-3 d-flex justify-content-center">
+                        <span class="input-group-text">
+                            <i class="fa fa-tag mt-2" aria-hidden="true">
+                                @Html.LabelFor(model => model.IDPGroupName, new { @class = "form-label" })
+                            </i>
+                        </span>
+                        @Html.TextBoxFor(model => model.IDPGroupName, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.IDPGroupName)
+                    </div>
+                </div>
+                <div class="col-md">
+                    <div class="input-group mt-3 d-flex justify-content-center">
+                        <span class="input-group-text" style="width: 5rem;background-color: #d1ecf1; border-color: #99e9eb; color: #05487f ">
+                            <i class="fa fa-calendar mt-2" aria-hidden="true">
+                                <strong>@Html.LabelFor(model => model.Year, new { @class = "form-label" })</strong>
+                            </i>
+                        </span>
+                        <select class="form-select" id="Year" name="Year">
+                            @for (int year = 2560; year <= 2568; year++)
+                            {
+                                <option value="@year">@year</option>
+                            }
+                        </select>
+                        @Html.ValidationMessageFor(model => model.Year)
+                    </div>
+                </div>
+            </div>
+        
+
+
+        <hr />
+
+        <div class="row justify-content-evenly text-center mt-5">
+            <div class="col-4">
+                <a href="@Url.Action("IDPGroup")" class="btn btn-danger btn-lg"><i class="fa fa-ban" aria-hidden="true"></i> <strong>ยกเลิก</strong></a>
+            </div>
+            <div class="col-4">
+                <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-floppy-o" aria-hidden="true"></i> <strong>บันทึก</strong></button>
+            </div>
+        </div>
+        </div>
+
+    }
+</main>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"></script>

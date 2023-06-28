@@ -4,55 +4,55 @@
     ViewBag.Title = "CreateCompetency";
 }
 
-<main>
-    <div class="container d-flex flex-column justify-content-center align-items-center">
+<main class="container">
+    <div>
         @using (Html.BeginForm("CreateCompetency", "Home", FormMethod.Post))
         {
-            <div class="card shadow" style="width: 800px; margin-top: 50px">
-                <div class="card-header bg-danger">
-                    <h3 class="text-center mt-1" style="color: azure;">
-                        <i class="fa fa-plus" aria-hidden="true"></i>
-                        <strong>เพิ่ม Competency</strong>
-                    </h3>
+            <div class="py-5 text-center bg- p-5 rounded" style="background-color: #eeeeee60">
+                <i class="fa fa-list-alt text-danger" style="font-size:60px;"></i>
+                <h1><strong>เพิ่ม Competency</strong></h1>
+                <div class="alert alert-info alert-dismissible fade show text-center mt-3" role="alert">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+                    <strong>ข้อควรระวัง:</strong> รหัส Competency นั้นหากสร้างแล้วไม่อาจแก้ไขได้ โปรดตรวจสอบให้แน่ใจก่อนทำการ <strong>"บันทึก"</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-                <div class="card-body">
-                    <div class="alert alert-info alert-dismissible fade show text-center" role="alert">
-                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                        <strong>ข้อควรระวัง:</strong> รหัส Competency นั้นหากสร้างแล้วไม่อาจแก้ไขได้ โปรดตรวจสอบให้แน่ใจก่อนทำการ <strong>"บันทึก"</strong>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+                {
+                    <div class="alert alert-danger alert-dismissible fade show text-center" role="alert" id="alertBox">
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>@ViewBag.ErrorMessage
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
-                    {
-                        <div class="alert alert-danger alert-dismissible fade show text-center" role="alert" id="alertBox">
-                            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>@ViewBag.ErrorMessage
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                        <script>
-                            // Automatically close the alert after 5 seconds
-                            window.setTimeout(function () {
-                                $("#alertBox").fadeTo(300, 0).slideUp(300, function () {
-                                    $(this).remove();
-                                });
-                            }, 3000);
-                        </script>
-                    }
-
-                    @Html.AntiForgeryToken()
-
-                    <dic class="row">
-                        <div class="input-group mt-3" style="width: 400px; margin-left: 5rem">
-                            <span class="input-group-text d-flex justify-content-center" style="width: 10rem">
+                    <script>
+                        // Automatically close the alert after 5 seconds
+                        window.setTimeout(function () {
+                            $("#alertBox").fadeTo(300, 0).slideUp(300, function () {
+                                $(this).remove();
+                            });
+                        }, 3000);
+                    </script>
+                }
+            </div>
+            <hr />
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-6">
+                        
+                           
+                        <div class="input-group mt-3">
+                            <span class="input-group-text d-flex justify-content-center" style="background-color: #f8d7da; border-color: #ae6070; color: #b34045 ">
                                 <i class="fa fa-key mt-2" aria-hidden="true">
-                                    @Html.LabelFor(model => model.CompetencyId, new { @class = "form-label" })
+                                    <strong>@Html.LabelFor(model => model.CompetencyId, new { @class = "form-label" })</strong>
                                 </i>
                             </span>
                             @Html.TextBoxFor(model => model.CompetencyId, new { @class = "form-control" })
                             @Html.ValidationMessageFor(model => model.CompetencyId)
                         </div>
-                        <div class="input-group mt-3" style="width: 200px; margin-left: 1rem">
-                            <span class="input-group-text d-flex justify-content-center" style="width: 5rem">
+                            
+                            
+                        <div class="input-group mt-3">
+                            <span class="input-group-text d-flex justify-content-center" style="background-color: #f8d7da; border-color: #ae6070; color: #b34045 ">
                                 <i class="fa fa-key mt-2" aria-hidden="true">
-                                    @Html.LabelFor(model => model.Type, new { @class = "form-label" })
+                                    <strong>@Html.LabelFor(model => model.Type, new { @class = "form-label" })</strong>
                                 </i>
                             </span>
                             <select class="form-select" id="Type" name="Type">
@@ -63,108 +63,112 @@
                             </select>
                             @Html.ValidationMessageFor(model => model.Type)
                         </div>
-
-                    </dic>
-
-                    <div class="input-group mt-3" style="width: 500px; margin-left: 10rem">
-                        <span class="input-group-text d-flex justify-content-center" style="width: 10rem">
-                            <i class="fa fa-book mt-2" aria-hidden="true">
-                                @Html.LabelFor(model => model.CompetencyNameTH, new { @class = "form-label" })
-                            </i>
-                        </span>
-                        @Html.TextBoxFor(model => model.CompetencyNameTH, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.CompetencyNameTH)
-                    </div>
-
-                    <div class="input-group mt-3" style="width: 500px; margin-left: 10rem">
-                        <span class="input-group-text d-flex justify-content-center" style="width: 10rem">
-                            <i class="fa fa-book mt-2" aria-hidden="true">
-                                @Html.LabelFor(model => model.CompetencyNameEN, new { @class = "form-label" })
-                            </i>
-                        </span>
-                        @Html.TextBoxFor(model => model.CompetencyNameEN, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.CompetencyNameEN)
-                    </div>
-
-                    <hr>
-
-                    <div class="input-group mt-3" style="width: 600px; margin-left: 11rem">
-                        <span class="input-group-text d-flex justify-content-center" style="width: 8rem">
-                            @Html.LabelFor(model => model.CompetencyDesc, new { @class = "form-label text-center mb-0" })
-                        </span>
-                        @Html.TextAreaFor(model => model.CompetencyDesc, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.CompetencyDesc)
-                    </div>
-                    <div class="input-group mt-3" style="width: 600px; margin-left: 11rem">
-                        <span class="input-group-text d-flex justify-content-center" style="width: 8rem">
-                            @Html.LabelFor(model => model.Pl1, new { @class = "form-label text-center mb-0" })
-                        </span>
-                        @Html.TextAreaFor(model => model.Pl1, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Pl1)
-                    </div>
-                    <div class="input-group mt-3" style="width: 600px; margin-left: 11rem">
-                        <span class="input-group-text d-flex justify-content-center" style="width: 8rem">
-                            @Html.LabelFor(model => model.Pl2, new { @class = "form-label text-center mb-0" })
-                        </span>
-                        @Html.TextAreaFor(model => model.Pl2, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Pl2)
-                    </div>
-                    <div class="input-group mt-3" style="width: 600px; margin-left: 11rem">
-                        <span class="input-group-text d-flex justify-content-center" style="width: 8rem">
-                            @Html.LabelFor(model => model.Pl3, new { @class = "form-label text-center mb-0" })
-                        </span>
-                        @Html.TextAreaFor(model => model.Pl3, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Pl3)
-                    </div>
-                    <div class="input-group mt-3" style="width: 600px; margin-left: 11rem">
-                        <span class="input-group-text d-flex justify-content-center" style="width: 8rem">
-                            @Html.LabelFor(model => model.Pl4, new { @class = "form-label text-center mb-0" })
-                        </span>
-                        @Html.TextAreaFor(model => model.Pl4, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Pl4)
-                    </div>
-                    <div class="input-group mt-3" style="width: 600px; margin-left: 11rem">
-                        <span class="input-group-text d-flex justify-content-center" style="width: 8rem">
-                            @Html.LabelFor(model => model.Pl5, new { @class = "form-label text-center mb-0" })
-                        </span>
-                        @Html.TextAreaFor(model => model.Pl5, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Pl5)
-                    </div>
-
-                    <hr />
-
-                    <div class="mt-3 list-group" style="width: 300px; margin-left: 14rem">
-
-                        <div class="input-group-text">
-                            <div><strong>มีการใช้ Competency นี้หรือไม่?</strong></div>
+                            
+                        
+                        <hr />
+                        <div class="input-group mt-3" style="width: auto">
+                            <span class="input-group-text d-flex justify-content-center" style="width: 10rem">
+                                <i class="fa fa-book mt-2" aria-hidden="true">
+                                    @Html.LabelFor(model => model.CompetencyNameTH, new { @class = "form-label" })
+                                </i>
+                            </span>
+                            @Html.TextBoxFor(model => model.CompetencyNameTH, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.CompetencyNameTH)
                         </div>
 
-                        <div class="input-group mt-2">
-                            <div class="input-group-text">
-                                <input class="form-check-input mt-0" type="radio" value="true" name="Active" aria-label="Radio button for following text input" checked>
+                        <div class="input-group mt-3" style="width: auto">
+                            <span class="input-group-text d-flex justify-content-center" style="width: 10rem">
+                                <i class="fa fa-book mt-2" aria-hidden="true">
+                                    @Html.LabelFor(model => model.CompetencyNameEN, new { @class = "form-label" })
+                                </i>
+                            </span>
+                            @Html.TextBoxFor(model => model.CompetencyNameEN, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.CompetencyNameEN)
+                        </div>
+                        <hr />
+                        <div class="mt-3 list-group">
+
+                            <div class="input-group-text" style="background-color: #f8d7da; border-color: #ae6070; color: #b34045 ">
+                                <div><strong>มีการใช้ Competency นี้หรือไม่?</strong></div>
                             </div>
-                            <div class="form-control">ใช้</div>
-                        </div>
-                        <div class="input-group mt-2">
-                            <div class="input-group-text">
-                                <input class="form-check-input mt-0" type="radio" value="false" name="Active" aria-label="Radio button for following text input">
+
+                            <div class="input-group mt-2">
+                                <div class="input-group-text">
+                                    <input class="form-check-input mt-0" type="radio" value="true" name="Active" aria-label="Radio button for following text input" checked>
+                                </div>
+                                <div class="form-control">ใช้</div>
                             </div>
-                            <div class="form-control">ไม่ใช้</div>
+                            <div class="input-group mt-2">
+                                <div class="input-group-text">
+                                    <input class="form-check-input mt-0" type="radio" value="false" name="Active" aria-label="Radio button for following text input">
+                                </div>
+                                <div class="form-control">ไม่ใช้</div>
+                            </div>
+                            @Html.ValidationMessageFor(model => model.Active)
                         </div>
-                        @Html.ValidationMessageFor(model => model.Active)
+                        <hr />
+                        <div class="row text-center">
+                            <div class="col-md">
+                                <a href="@Url.Action("Index")" class="btn btn-danger "><i class="fa fa-ban" aria-hidden="true"></i> <strong>ยกเลิก</strong></a>
+                            </div>
+                            <div class="col-md">
+                                <a href="@Url.Action("Upload")" class="btn btn-success "><i class="fa fa-upload" aria-hidden="true"></i> <strong>อัปโหลด</strong></a>
+                            </div>
+                            <div class="col-md">
+                                <button type="submit" class="btn btn-primary "><i class="fa fa-floppy-o" aria-hidden="true"></i> <strong>บันทึก</strong></button>
+                            </div>
+                        </div>
                     </div>
+                    <div class="col-md-5">
+                        <div class="input-group mt-3" style="width: auto;">
+                            <span class="input-group-text d-flex justify-content-center" style="background-color: #d1ecf1; border-color: #99e9eb; color: #05487f ">
+                                <strong>@Html.LabelFor(model => model.CompetencyDesc, new { @class = "form-label text-center mb-0" })</strong>
+                            </span>
+                            @Html.TextAreaFor(model => model.CompetencyDesc, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.CompetencyDesc)
+                        </div>
+                        <div class="input-group mt-3" style="width: auto">
+                            <span class="input-group-text d-flex justify-content-center" style="background-color: #fff3cd; border-color: #dcb456; color: #dcb456 ">
+                                <strong>@Html.LabelFor(model => model.Pl1, new { @class = "form-label text-center mb-0" })</strong>
+                            </span>
+                            @Html.TextAreaFor(model => model.Pl1, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Pl1)
+                        </div>
+                        <div class="input-group mt-3" style="width: auto">
+                            <span class="input-group-text d-flex justify-content-center" style="background-color: #fff3cd; border-color: #dcb456; color: #dcb456 ">
+                                <strong>@Html.LabelFor(model => model.Pl2, new { @class = "form-label text-center mb-0" })</strong>
+                            </span>
+                            @Html.TextAreaFor(model => model.Pl2, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Pl2)
+                        </div>
+                        <div class="input-group mt-3" style="width: auto;">
+                            <span class="input-group-text d-flex justify-content-center" style="background-color: #fff3cd; border-color: #dcb456; color: #dcb456 ">
 
-
+                                <strong>@Html.LabelFor(model => model.Pl3, new { @class = "form-label text-center mb-0" })</strong>
+                            </span>
+                            @Html.TextAreaFor(model => model.Pl3, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Pl3)
+                        </div>
+                        <div class="input-group mt-3" style="width: auto;">
+                            <span class="input-group-text d-flex justify-content-center" style="background-color: #fff3cd; border-color: #dcb456; color: #dcb456 ">
+                                <strong>@Html.LabelFor(model => model.Pl4, new { @class = "form-label text-center mb-0" })</strong>
+                            </span>
+                            @Html.TextAreaFor(model => model.Pl4, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Pl4)
+                        </div>
+                        <div class="input-group mt-3" style="width: auto; ">
+                            <span class="input-group-text d-flex justify-content-center" style="background-color: #fff3cd; border-color: #dcb456; color: #dcb456 ">
+                                <strong>@Html.LabelFor(model => model.Pl5, new { @class = "form-label text-center mb-0" })</strong>
+                            </span>
+                            @Html.TextAreaFor(model => model.Pl5, new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Pl5)
+                        </div>
+                    </div>
 
                 </div>
-                <div class="card-footer d-flex justify-content-between">
-                    <a href="@Url.Action("Index")" class="btn btn-danger"><i class="fa fa-arrow-left" aria-hidden="true"></i> <strong>กลับ</strong></a>
-                    <a href="@Url.Action("Upload")" class="btn btn-success"><i class="fa fa-upload" aria-hidden="true"></i> <strong>อัปโหลด</strong></a>
-                    <button type="reset" class="btn btn-warning"><i class="fa fa-refresh" aria-hidden="true"></i> <strong>รีเซ็ต</strong></button>
-                    <button type="submit" class="btn btn-primary"><i class="fa fa-floppy-o" aria-hidden="true"></i> <strong>บันทึก</strong></button>
-                </div>
+        </div>
+            
 
-            </div>
         }
     </div>
 </main>

@@ -7,16 +7,21 @@ using System.Web;
 
 namespace myApp.Models
 {
-    public class CompetencyForm
+    public class IDPGroup
     {
         [Key]
         [DisplayName("รหัสหลักสูตร")]
-        public string CompetencyFormId { get; set;}
+        public string IDPGroupId { get; set;}
         [DisplayName("ชื่อหลักสูตร")]
-        public string CompetencyFormName { get; set;}
+        public string IDPGroupName { get; set;}
         [DisplayName("ปี")]
         public string Year { get; set;}
+        [DisplayName("จำนวนคน")]
+        public int EmployeeEnrollmentCount { get; set; }
 
+        public virtual CompetencyItem CompetencyItem { get; set;}
+        public virtual Enrollment Enrollment { get; set;}
+        public virtual Competency Competency { get; set; }
         public virtual User User { get; set;}
     }
 }

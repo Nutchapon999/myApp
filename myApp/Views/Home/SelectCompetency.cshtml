@@ -3,30 +3,40 @@
     ViewBag.Title = "SelectCompetency";
 }
 
-<main class="mb-3" style="margin-top: 50px">
-    @using (Html.BeginForm("SelectedCompetency", "Home", new { competencyFormId = ViewBag.CompetencyFormId }, FormMethod.Post))
+<main>
+    @using (Html.BeginForm("SelectedCompetency", "Home", new { idpGroupId = ViewBag.IDPGroupId }, FormMethod.Post))
     {
-        <div class="card shadow">
-            <div class="card-header bg-primary">
-                <h2 class="text-center" style="color:white"><i class="fa fa-list-alt" aria-hidden="true"></i> <strong>Competency</strong></h2>
+        <div class="card shadow border-0 m-3">
+            <div class="card-header text-center border-0 py-3" style="background-color: #fff3cd;">
+                <i class="fa fa-list-alt text-warning" style="font-size: 60px;"></i>
+                <h1><strong>เลือก Competency</strong></h1>
             </div>
             <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-auto me-auto">
+                        <button type="submit" class="btn btn-primary btn-lg" style="width: auto; border-radius: 2rem"> <strong>ยืนยัน</strong></button>
+                    </div>
+                    <div class="col-auto">
+                        <a href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })" class="btn btn-danger btn-lg" style="width: auto; border-radius: 2rem"> <strong>ยกเลิก</strong></a>
+                    </div>
+                </div>
                 <table class="table table-hover table-responsive" id="myTable">
                     <thead class="table-primary">
                         <tr>
-                            <th width="40"></th>
-                            <th width="50">ชนิด</th>
-                            <th width="50">รหัส</th>
-                            <th width="150">ชื่อภาษาไทย</th>
-                            <th width="150">ชื่อภาษาอังกฤษ</th>
-                            <th width="230">Definition</th>
-                            <th width="200">pl1</th>
-                            <th width="200">pl2</th>
-                            <th width="200">pl3</th>
-                            <th width="200">pl4</th>
-                            <th width="200">pl5</th>
-                            <th width="50">เลือก PL</th>
-                            <th width="50">ความสำคัญ</th>
+                            <th width="5%"></th>
+                            <th width="5%">เลือก PL</th>
+                            <th width="5%">ชนิด</th>
+                            <th width="5%">รหัส</th>
+                            <th width="10%">ชื่อภาษาไทย</th>
+                            <th width="10%">ชื่อภาษาอังกฤษ</th>
+                            <th width="10%">Definition</th>
+                            <th width="10%">pl1</th>
+                            <th width="10%">pl2</th>
+                            <th width="10%">pl3</th>
+                            <th width="10%">pl4</th>
+                            <th width="10%">pl5</th>
+
+                            <!--<th width="50">ความสำคัญ</th>-->
                         </tr>
                     </thead>
                     <tbody>
@@ -38,17 +48,6 @@
                                         <input class="form-check-input" type="checkbox" name="competencyIds" value="@cmpty.CompetencyId" />
                                     </div>
                                 </td>
-
-                                <td>@cmpty.Type</td>
-                                <td>@cmpty.CompetencyId</td>
-                                <td>@cmpty.CompetencyNameTH</td>
-                                <td>@cmpty.CompetencyNameEN</td>
-                                <td style="font-size: 14px">@cmpty.CompetencyDesc</td>
-                                <td style="font-size: 14px">@cmpty.Pl1</td>
-                                <td style="font-size: 14px">@cmpty.Pl2</td>
-                                <td style="font-size: 14px">@cmpty.Pl3</td>
-                                <td style="font-size: 14px">@cmpty.Pl4</td>
-                                <td style="font-size: 14px">@cmpty.Pl5</td>
                                 <td>
                                     <select class="form-select" name="plValues[@cmpty.CompetencyId]">
                                         <option value="1">1</option>
@@ -56,20 +55,38 @@
                                         <option value="3">3</option>
                                     </select>
                                 </td>
-                                <td>
-                                    <select class="form-select" name="priorityValues[@cmpty.CompetencyId]">
-                                        <option value=""></option>
-                                        <option value="A">A</option>
-                                        <option value="B">B</option>
-                                        <option value="C">C</option>
-                                    </select>
-                                </td>
+                                <th scope="row">@cmpty.Type</th>
+                                <th scope="row">@cmpty.CompetencyId</th>
+                                <td style="font-size: 14px">@cmpty.CompetencyNameTH</td>
+                                <td style="font-size: 14px">@cmpty.CompetencyNameEN</td>
+                                <td style="font-size: 14px">@cmpty.CompetencyDesc</td>
+                                <td style="font-size: 14px">@cmpty.Pl1</td>
+                                <td style="font-size: 14px">@cmpty.Pl2</td>
+                                <td style="font-size: 14px">@cmpty.Pl3</td>
+                                <td style="font-size: 14px">@cmpty.Pl4</td>
+                                <td style="font-size: 14px">@cmpty.Pl5</td>
+
+                                <!--<td>
+                        <select class="form-select" name="priorityValues[@cmpty.CompetencyId]">
+                            <option value=""></option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                        </select>
+                    </td>-->
                             </tr>
                         }
                     </tbody>
                 </table>
-                <button type="submit" class="btn btn-primary">ยืนยัน</button>
-                <a href="@Url.Action("AddCompetency", new { id = ViewBag.CompetencyFormId })" class="btn btn-danger">ยกเลิก</a>
+                <div class="row mt-2">
+                    <div class="col-auto me-auto">
+                        <button type="submit" class="btn btn-primary btn-lg" style="width: auto; border-radius: 2rem"> <strong>ยืนยัน</strong></button>
+                    </div>
+                    <div class="col-auto">
+                        <a href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })" class="btn btn-danger btn-lg" style="width: auto; border-radius: 2rem"> <strong>ยกเลิก</strong></a>
+                    </div>
+                </div>
+
             </div>
         </div>
     }
@@ -87,7 +104,7 @@
             language: {
                 search: "ค้นหา:", // Change the search label here
             },
-            scrollY: 500,
+            scrollY: 800,
             
         });
     });

@@ -3,13 +3,14 @@
     ViewBag.Title = "AddCompetency";
 }
 
-<main class="mb-3" style="margin-top: 50px">
-    <div class="card shadow">
-        <div class="card-header bg-primary">
-            <h2 class="text-center" style="color:white"><i class="fa fa-book aria-hidden="true"></i> <strong>Competency ของ "@ViewBag.CompetencyFormId"</strong></h2>
+<main>
+    <div class="card shadow border-0 m-3">
+        <div class="card-header text-center border-0 py-3" style="background-color: #fff3cd;">
+            <i class="fa fa-list-alt text-warning" style="font-size: 60px;"></i>
+            <h1><strong>เพิ่ม Competency</strong></h1>
         </div>
-        <div class="card-body">
-            <a href="@Url.Action("SelectCompetency", new { id = ViewBag.CompetencyFormId })" class="btn btn-success mb-3" style="width: 6rem; border-radius: 1rem"><i class="fa fa-plus" aria-hidden="true"><strong> เพิ่ม</strong></i></a>
+        <div class="card-body border-0">
+            <a href="@Url.Action("SelectCompetency", new { id = ViewBag.IDPGroupId })" class="btn btn-success mb-3 btn-lg" style="width: auto; border-radius: 2rem"><i class="fa fa-plus" aria-hidden="true"><strong> เพิ่ม</strong></i></a>
             <table class="table table-hover table-responsive" id="myTable">
                 <thead class="table-primary">
                     <tr>
@@ -35,7 +36,7 @@
                     }
                 </tbody>
             </table>
-            <a href="@Url.Action("CompetencyForm")" class="btn btn-danger">ออก</a>
+            <a href="@Url.Action("IDPGroup")" class="btn btn-danger btn-lg" style="width: auto; border-radius: 2rem">ออก</a>
         </div>
     </div>
 </main>
@@ -53,7 +54,7 @@
             language: {
                 search: "ค้นหา:", // Change the search label here
             },
-            scrollY: 500,
+           
 
         });
     });

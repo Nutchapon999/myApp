@@ -34,7 +34,7 @@ namespace myApp.DAL
                     Competency competency = new Competency();
 
                     competency.CompetencyId = (string)reader["COMPETENCY_ID"];
-                    competency.CompetencyNameTH = (string)reader["COMPETENCY_NAME_TH"];
+                    competency.CompetencyNameTH = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_NAME_TH")) ? null : (string)reader["COMPETENCY_NAME_TH"];
                     competency.CompetencyNameEN = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_NAME_EN")) ? null : (string)reader["COMPETENCY_NAME_EN"];
                     competency.CompetencyDesc = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_DESC")) ? null : (string)reader["COMPETENCY_DESC"];
                     competency.Pl1 = reader.IsDBNull(reader.GetOrdinal("PL1")) ? null : (string)reader["PL1"];
@@ -43,7 +43,7 @@ namespace myApp.DAL
                     competency.Pl4 = reader.IsDBNull(reader.GetOrdinal("PL4")) ? null : (string)reader["PL4"];
                     competency.Pl5 = reader.IsDBNull(reader.GetOrdinal("PL5")) ? null : (string)reader["PL5"];
                     competency.Active = (bool)reader["Active"];
-                    competency.Type = (string)reader["TYPE"];
+                    competency.Type = reader.IsDBNull(reader.GetOrdinal("TYPE")) ? null : (string)reader["TYPE"];
                     competencies.Add(competency);
                 }
                 reader.Close();
@@ -142,29 +142,38 @@ namespace myApp.DAL
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "UPDATE COMPTY SET TYPE = @Type, COMPETENCY_NAME_TH = @TH, COMPETENCY_NAME_EN = @EN, COMPETENCY_DESC = @Desc, PL1 = @Pl1, " +
-                    "PL2 = @Pl2, PL3 = @Pl3, PL4 = @Pl4, PL5 = @Pl5, ACTIVE = @Active " +
-                    "WHERE COMPETENCY_ID = @Id";
+                string query = @"UPDATE COMPTY 
+                         SET TYPE = @Type, 
+                             COMPETENCY_NAME_TH = @TH, 
+                             COMPETENCY_NAME_EN = @EN, 
+                             COMPETENCY_DESC = @Desc, 
+                             PL1 = @Pl1, 
+                             PL2 = @Pl2, 
+                             PL3 = @Pl3, 
+                             PL4 = @Pl4, 
+                             PL5 = @Pl5, 
+                             ACTIVE = @Active 
+                         WHERE COMPETENCY_ID = @Id";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@Id", (object)competency.CompetencyId);
+                    // Assign values to parameters
+                    command.Parameters.AddWithValue("@Id", (object)competency.CompetencyId ?? DBNull.Value);
                     command.Parameters.AddWithValue("@Type", (object)competency.Type ?? DBNull.Value);
                     command.Parameters.AddWithValue("@TH", (object)competency.CompetencyNameTH ?? DBNull.Value);
                     command.Parameters.AddWithValue("@EN", (object)competency.CompetencyNameEN ?? DBNull.Value);
                     command.Parameters.AddWithValue("@Desc", (object)competency.CompetencyDesc ?? DBNull.Value);
-
                     command.Parameters.AddWithValue("@Pl1", (object)competency.Pl1 ?? DBNull.Value);
                     command.Parameters.AddWithValue("@Pl2", (object)competency.Pl2 ?? DBNull.Value);
                     command.Parameters.AddWithValue("@Pl3", (object)competency.Pl3 ?? DBNull.Value);
                     command.Parameters.AddWithValue("@Pl4", (object)competency.Pl4 ?? DBNull.Value);
                     command.Parameters.AddWithValue("@Pl5", (object)competency.Pl5 ?? DBNull.Value);
-
                     command.Parameters.AddWithValue("@Active", (object)competency.Active ?? DBNull.Value);
 
                     connection.Open();
                     command.ExecuteNonQuery();
                 }
+
             }
         }
         public void DeleteCompetency(string competencyId)
@@ -249,14 +258,13 @@ namespace myApp.DAL
         }
 
 
-
-        public List<CompetencyForm> GetCompetencyForms()
+        public List<IDPGroup> GetIDPGroups()
         {
-            List<CompetencyForm> competencyForms = new List<CompetencyForm>();
+            List<IDPGroup> iDPGroups = new List<IDPGroup>();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "SELECT * FROM COMPTY_FORM";
+                string query = "SELECT * FROM IDP_GROUP";
 
                 SqlCommand command = new SqlCommand(query, connection);
 
@@ -266,36 +274,36 @@ namespace myApp.DAL
 
                 while (reader.Read())
                 {
-                    CompetencyForm competencyForm = new CompetencyForm();
+                    IDPGroup iDPGroup = new IDPGroup();
 
-                    competencyForm.CompetencyFormId = (string)reader["COMPETENCY_FORM_ID"];
-                    competencyForm.CompetencyFormName = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_FORM_NAME")) ? null : (string)reader["COMPETENCY_FORM_NAME"];
-                    competencyForm.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
+                    iDPGroup.IDPGroupId = (string)reader["IDP_GROUP_ID"];
+                    iDPGroup.IDPGroupName = reader.IsDBNull(reader.GetOrdinal("IDP_GROUP_NAME")) ? null : (string)reader["IDP_GROUP_NAME"];
+                    iDPGroup.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
 
-                    competencyForms.Add(competencyForm);
+                    iDPGroups.Add(iDPGroup);
                 }
                 reader.Close();
             }
 
-            return competencyForms;
+            return iDPGroups;
         }
-        public void CreateCompetencyForm(CompetencyForm competencyForm)
+        public void CreateIDPGroup(IDPGroup idpGroupId)
         {
-            if (IsDuplicateCompetencyFormId(competencyForm.CompetencyFormId))
+            if (IsDuplicateIDPGroupId(idpGroupId.IDPGroupId))
             {
                 throw new Exception(" รหัสหลักสูตรนี้มีการใช้แล้ว กรุณากรอกใหม่");
             }
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "INSERT INTO COMPTY_FORM (COMPETENCY_FORM_ID, COMPETENCY_FORM_NAME, YEAR) " +
+                string query = "INSERT INTO IDP_GROUP (IDP_GROUP_ID, IDP_GROUP_NAME, YEAR) " +
                                 "VALUES (@Id, @Name, @Year)";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@Id", competencyForm.CompetencyFormId);
-                    command.Parameters.AddWithValue("@Name", (object)competencyForm.CompetencyFormName ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@Year", (object)competencyForm.Year ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@Id", idpGroupId.IDPGroupId);
+                    command.Parameters.AddWithValue("@Name", (object)idpGroupId.IDPGroupName ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@Year", (object)idpGroupId.Year ?? DBNull.Value);
 
                     connection.Open();
 
@@ -303,15 +311,15 @@ namespace myApp.DAL
                 }
             }
         }
-        public CompetencyForm EditCompetencyForm(string competencyFormId)
+        public IDPGroup EditIDPGroup(string idpGroupId)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "SELECT * FROM COMPTY_FORM WHERE COMPETENCY_FORM_ID = @CompetencFormId";
+                string query = "SELECT * FROM IDP_GROUP WHERE IDP_GROUP_ID = @IDPGroupId";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@CompetencFormId", competencyFormId);
+                    command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
 
                     connection.Open();
 
@@ -319,94 +327,93 @@ namespace myApp.DAL
                     {
                         if (reader.Read())
                         {
-                            CompetencyForm competencyForm = new CompetencyForm();
-                            competencyForm.CompetencyFormId = (string)reader["COMPETENCY_FORM_ID"];
-                            competencyForm.CompetencyFormName = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_FORM_NAME")) ? null : (string)reader["COMPETENCY_FORM_NAME"];
-                            competencyForm.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
+                            IDPGroup iDPGroup = new IDPGroup();
+                            iDPGroup.IDPGroupId = (string)reader["IDP_GROUP_ID"];
+                            iDPGroup.IDPGroupName = reader.IsDBNull(reader.GetOrdinal("IDP_GROUP_NAME")) ? null : (string)reader["IDP_GROUP_NAME"];
+                            iDPGroup.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
 
-                            return competencyForm;
+                            return iDPGroup;
                         }
                     }
                 }
             }
             return null;
         }
-        public void UpdateCompetencyForm(CompetencyForm competencyForm)
+        public void UpdateIDPGroup(IDPGroup idpGroup)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "UPDATE COMPTY_FORM SET COMPETENCY_FORM_ID = @Id, COMPETENCY_FORM_NAME = @Name, YEAR = @Year " +
-                    "WHERE COMPETENCY_FORM_ID = @Id";
+                string query = "UPDATE IDP_GROUP SET IDP_GROUP_NAME = @Name, YEAR = @Year WHERE IDP_GROUP_ID = @Id";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@Id", (object)competencyForm.CompetencyFormId);
-                    command.Parameters.AddWithValue("@Name", (object)competencyForm.CompetencyFormName ?? DBNull.Value);
-                    command.Parameters.AddWithValue("@Year", (object)competencyForm.Year ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@Id", idpGroup.IDPGroupId);
+                    command.Parameters.AddWithValue("@Name", string.IsNullOrEmpty(idpGroup.IDPGroupName) ? DBNull.Value : (object)idpGroup.IDPGroupName);
+                    command.Parameters.AddWithValue("@Year", string.IsNullOrEmpty(idpGroup.Year) ? DBNull.Value : (object)idpGroup.Year);
 
                     connection.Open();
                     command.ExecuteNonQuery();
                 }
             }
         }
-        public void DeleteCompetencyForm(string competencyFormId)
+        public void DeleteIDPGroup(string idpGroupId)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
 
-                DeleteCompetencyItemBycompetencyFormId(competencyFormId);
-                DeleteEnrollByCompetencyFormId(competencyFormId);
+                DeleteCompetencyItemByIDPGroupId(idpGroupId);
+                DeleteEnrollByIDPGroupId(idpGroupId);
 
-                string query = "DELETE FROM COMPTY_FORM WHERE COMPETENCY_FORM_ID = @CompetencyFormId";
+                string query = "DELETE FROM IDP_GROUP WHERE IDP_GROUP_ID = @IDPGroupId";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@CompetencyFormId", competencyFormId);
+                    command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
 
                     connection.Open();
                     command.ExecuteNonQuery();
                 }
             }
         }
-        private void DeleteCompetencyItemBycompetencyFormId(string competencyFormId)
+        private void DeleteCompetencyItemByIDPGroupId(string idpGroupId)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "DELETE FROM COMPTY_ITEM WHERE COMPETENCY_FORM_ID = @CompetencyFormId";
+                string query = "DELETE FROM COMPTY_ITEM WHERE IDP_GROUP_ID = @IDPGroupId";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@CompetencyFormId", competencyFormId);
+                    command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
 
                     connection.Open();
                     command.ExecuteNonQuery();
                 }
             }
         }
-        private void DeleteEnrollByCompetencyFormId(string competencyFormId)
+        private void DeleteEnrollByIDPGroupId(string idpGroupId)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "DELETE FROM USER_ENROLL WHERE COMPETENCY_FORM_ID = @CompetencyFormId";
+                string query = "DELETE FROM USER_ENROLL WHERE IDP_GROUP_ID = @IDPGroupId";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@CompetencyFormId", competencyFormId);
+                    command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
 
                     connection.Open();
                     command.ExecuteNonQuery();
                 }
             }
         }
-        private bool IsDuplicateCompetencyFormId(string competencyFormId)
+        private bool IsDuplicateIDPGroupId(string idpGroupId)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "SELECT COUNT(*) FROM COMPTY_FORM WHERE COMPETENCY_FORM_ID = @Id";
+                string query = "SELECT COUNT(*) FROM IDP_GROUP WHERE IDP_GROUP_ID = @IDPGroupId";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@Id", competencyFormId);
+                    command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
 
                     connection.Open();
 
@@ -416,16 +423,16 @@ namespace myApp.DAL
                 }
             }
         }
-        public string GetCompetencyFormNameById(string competencyFormId)
+        public string GetIDPGroupNameById(string idpGroupId)
         {
-            string competencyFormName = string.Empty;
+            string idpGroupName = string.Empty;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             using (SqlCommand command = new SqlCommand())
             {
                 command.Connection = connection;
-                command.CommandText = "SELECT COMPETENCY_FORM_NAME FROM COMPTY_FORM WHERE COMPETENCY_FORM_ID = @CompetencyFormId";
-                command.Parameters.AddWithValue("@CompetencyFormId", competencyFormId);
+                command.CommandText = "SELECT IDP_GROUP_NAME FROM IDP_GROUP WHERE IDP_GROUP_ID = @IDPGroupId";
+                command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
 
                 connection.Open();
 
@@ -433,38 +440,118 @@ namespace myApp.DAL
                 object result = command.ExecuteScalar();
                 if (result != null)
                 {
-                    competencyFormName = result.ToString();
+                    idpGroupName = result.ToString();
                 }
             }
 
-            return competencyFormName;
+            return idpGroupName;
         }
-        public string GetYearById(string competencyFormId)
+        public string GetYearById(string idpGroupId)
         {
-            string competencyFormName = string.Empty;
+            string year = string.Empty;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             using (SqlCommand command = new SqlCommand())
             {
                 command.Connection = connection;
-                command.CommandText = "SELECT YEAR FROM COMPTY_FORM WHERE COMPETENCY_FORM_ID = @CompetencyFormId";
-                command.Parameters.AddWithValue("@CompetencyFormId", competencyFormId);
+                command.CommandText = "SELECT YEAR FROM IDP_GROUP WHERE IDP_GROUP_ID = @IDPGroupId";
+                command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
 
                 connection.Open();
 
-                // Assuming course_name is stored as a string column in the "Courses" table
                 object result = command.ExecuteScalar();
                 if (result != null)
                 {
-                    competencyFormName = result.ToString();
+                    year = result.ToString();
                 }
             }
 
-            return competencyFormName;
+            return year;
+        }
+        public List<IDPGroup> GetDetails(string idpGroupId)
+        {
+            List<IDPGroup> iDPGroups = new List<IDPGroup>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT G.IDP_GROUP_ID, G.IDP_GROUP_NAME, G.YEAR, I.COMPETENCY_ID, C.COMPETENCY_NAME_TH ,I.PL, I.PRIORITY , EN.ID, HR.PREFIX, HR.FIRSTNAME_TH, HR.LASTNAME_TH, HR.JOBLEVEL, HR.POSITION, HR.DEPARTMENT_NAME, HR.COMPANY " +
+                    "FROM IDP_GROUP G " +
+                    "JOIN COMPTY_ITEM I ON G.IDP_GROUP_ID = I.IDP_GROUP_ID " +
+                    "JOIN COMPTY C ON C.COMPETENCY_ID = I.COMPETENCY_ID " +
+                    "JOIN USER_ENROLL EN ON EN.IDP_GROUP_ID = G.IDP_GROUP_ID " +
+                    "JOIN MAS_USER_HR HR ON EN.ID = HR.ID " +
+                    "WHERE G.IDP_GROUP_ID = @IDPGroupId";
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
+
+                connection.Open();
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    IDPGroup iDPGroup = new IDPGroup();
+
+                    iDPGroup.IDPGroupId = (string)reader["IDP_GROUP_ID"];
+                    iDPGroup.IDPGroupName = reader.IsDBNull(reader.GetOrdinal("IDP_GROUP_NAME")) ? null : (string)reader["IDP_GROUP_NAME"];
+                    iDPGroup.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
+
+                    CompetencyItem competencyItem = new CompetencyItem();
+                    competencyItem.CompetencyId = (string)reader["COMPETENCY_ID"];
+                    competencyItem.Pl = (string)reader["PL"];
+                    competencyItem.Priority = reader["PRIORITY"] != DBNull.Value ? (string)reader["PRIORITY"] : null;
+
+                    Competency competency = new Competency();
+                    competency.CompetencyNameTH = (string)reader["COMPETENCY_NAME_TH"];
+
+                    Enrollment enrollment = new Enrollment();
+                    enrollment.Id = (string)reader["ID"];
+
+                    User user = new User();
+                    user.Prefix = reader.IsDBNull(reader.GetOrdinal("PREFIX")) ? null : (string)reader["PREFIX"];
+                    user.FirstNameTH = reader.IsDBNull(reader.GetOrdinal("FIRSTNAME_TH")) ? null : (string)reader["FIRSTNAME_TH"];
+                    user.LastNameTH = reader.IsDBNull(reader.GetOrdinal("LASTNAME_TH")) ? null : (string)reader["LASTNAME_TH"];
+                    user.Company = reader.IsDBNull(reader.GetOrdinal("COMPANY")) ? null : (string)reader["COMPANY"];
+                    user.Position = reader.IsDBNull(reader.GetOrdinal("POSITION")) ? null : (string)reader["POSITION"];
+                    user.JobLevel = reader.IsDBNull(reader.GetOrdinal("JOBLEVEL")) ? null : (string)reader["JOBLEVEL"];
+                    user.DepartmentName = reader.IsDBNull(reader.GetOrdinal("DEPARTMENT_NAME")) ? null : (string)reader["DEPARTMENT_NAME"];
+
+
+                    iDPGroup.Competency = competency;
+                    iDPGroup.CompetencyItem = competencyItem;
+                    iDPGroup.User = user;
+                    iDPGroup.Enrollment = enrollment;
+
+                    iDPGroups.Add(iDPGroup);
+                }
+                reader.Close();
+            }
+
+            return iDPGroups;
+        }
+        public int GetCountCompetency(string idpGroupId)
+        {
+            int count = 0;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT COUNT(*) FROM COMPTY_ITEM WHERE IDP_GROUP_ID = @IDPGroupId";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
+
+                connection.Open();
+
+                count = (int)command.ExecuteScalar();
+            }
+
+            return count;
         }
 
 
-        public List<CompetencyItem> GetCompetencyItems(string competencyFormId)
+        public List<CompetencyItem> GetCompetencyItems(string idpGroupId)
         {
             List<CompetencyItem> competencyItems = new List<CompetencyItem>();
 
@@ -472,10 +559,10 @@ namespace myApp.DAL
             using (SqlCommand command = new SqlCommand())
             {
                 command.Connection = connection;
-                command.CommandText = "SELECT CIT.COMPETENCY_ITEM_ID, CIT.COMPETENCY_FORM_ID, CIT.COMPETENCY_ID, C.COMPETENCY_NAME_TH, PL, PRIORITY " +
+                command.CommandText = "SELECT CIT.COMPETENCY_ITEM_ID, CIT.IDP_GROUP_ID, CIT.COMPETENCY_ID, C.COMPETENCY_NAME_TH, PL, PRIORITY, C.ACTIVE " +
                                         "FROM COMPTY_ITEM AS CIT JOIN COMPTY AS C ON CIT.COMPETENCY_ID = C.COMPETENCY_ID " +
-                                        "WHERE CIT.COMPETENCY_FORM_ID = @CompetencyFormId";
-                command.Parameters.AddWithValue("@CompetencyFormId", competencyFormId);
+                                        "WHERE CIT.IDP_GROUP_ID = @IDPGroupId";
+                command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
 
                 connection.Open();
 
@@ -485,13 +572,14 @@ namespace myApp.DAL
                     {
                         CompetencyItem competencyItem = new CompetencyItem();
                         competencyItem.CompetencyItemId = (int)reader["COMPETENCY_ITEM_ID"];
-                        competencyItem.CompetencyFormId = (string)reader["COMPETENCY_FORM_ID"];
+                        competencyItem.IDPGroupId = (string)reader["IDP_GROUP_ID"];
                         competencyItem.CompetencyId = (string)reader["COMPETENCY_ID"];
                         competencyItem.Pl = (string)reader["PL"];
                         competencyItem.Priority = reader["PRIORITY"] != DBNull.Value ? (string)reader["PRIORITY"] : null;
 
                         Competency competency = new Competency();
                         competency.CompetencyNameTH = (string)reader["COMPETENCY_NAME_TH"];
+                        competency.Active = (bool)reader["Active"];
 
                         competencyItem.Competency = competency;
 
@@ -538,7 +626,7 @@ namespace myApp.DAL
 
             return competencies;
         }
-        public List<string> GetCheckedCompetencyId(string competencyFormId)
+        public List<string> GetCheckedCompetencyId(string idpGroupId)
         {
             List<string> CheckedCompetencyIds = new List<string>();
 
@@ -546,11 +634,11 @@ namespace myApp.DAL
             {
                 connection.Open();
 
-                string query = "SELECT COMPETENCY_ID FROM COMPTY_ITEM WHERE COMPETENCY_FORM_ID = @CompetencyFormId";
+                string query = "SELECT COMPETENCY_ID FROM COMPTY_ITEM WHERE IDP_GROUP_ID = @IDPGroupId";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@CompetencyFormId", competencyFormId);
+                    command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -565,7 +653,7 @@ namespace myApp.DAL
 
             return CheckedCompetencyIds;
         }
-        public void InsertCompetency(List<Competency> selectedCompetencies, string competencyFormId)
+        public void InsertCompetency(List<Competency> selectedCompetencies, string idpGroupId)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -573,12 +661,12 @@ namespace myApp.DAL
 
                 foreach (Competency competency in selectedCompetencies)
                 {
-                    string query = "INSERT INTO COMPTY_ITEM (COMPETENCY_ID, COMPETENCY_FORM_ID, PL, PRIORITY) VALUES (@CompetencyId, @CompetencyFormId, @Pl, @Pri)";
+                    string query = "INSERT INTO COMPTY_ITEM (COMPETENCY_ID, IDP_GROUP_ID, PL, PRIORITY) VALUES (@CompetencyId, @IDPGroupId, @Pl, @Pri)";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@CompetencyId", competency.CompetencyId);
-                        command.Parameters.AddWithValue("@CompetencyFormId", competencyFormId);
+                        command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
                         command.Parameters.AddWithValue("@Pl", competency.CompetencyItem.Pl);
 
                         if (string.IsNullOrEmpty(competency.CompetencyItem.Priority))
@@ -595,12 +683,12 @@ namespace myApp.DAL
                 }
             }
         }
-        public string GetCompetencyFormIdByCompetencyItem(int competencyItemId)
+        public string GetIDPGroupIdByCompetencyItem(int competencyItemId)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             using (SqlCommand command = connection.CreateCommand())
             {
-                command.CommandText = "SELECT COMPETENCY_FORM_ID FROM COMPTY_ITEM WHERE COMPETENCY_ITEM_ID = @Id";
+                command.CommandText = "SELECT IDP_GROUP_ID FROM COMPTY_ITEM WHERE COMPETENCY_ITEM_ID = @Id";
                 command.Parameters.AddWithValue("@Id", competencyItemId);
 
                 connection.Open();
@@ -624,6 +712,7 @@ namespace myApp.DAL
                 }
             }
         }
+
 
         public List<User> GetUsers()
         {
@@ -666,7 +755,7 @@ namespace myApp.DAL
                     user.HRPositionCode = reader.IsDBNull(reader.GetOrdinal("HRPositionCode")) ? null : (string)reader["HRPositionCode"];
                     user.JobRole = reader.IsDBNull(reader.GetOrdinal("JobRole")) ? null : (string)reader["JobRole"];
                     user.WorkAge = reader["WorkAge"].ToString();
-                    user.StateWorkDate = reader.IsDBNull(reader.GetOrdinal("StartWorkDate")) ? null : (string)reader["StartWorkDate"];
+                    user.StartWorkDate = reader.IsDBNull(reader.GetOrdinal("StartWorkDate")) ? null : (string)reader["StartWorkDate"];
 
                     users.Add(user);
                 }
@@ -708,8 +797,7 @@ namespace myApp.DAL
                 }
             }
         }
-
-        public List<Enrollment> GetEnrollments(string competencyFormId)
+        public List<Enrollment> GetIDPGroupByEmployee(string id)
         {
             List<Enrollment> enrollments = new List<Enrollment>();
 
@@ -717,10 +805,125 @@ namespace myApp.DAL
             using (SqlCommand command = new SqlCommand())
             {
                 command.Connection = connection;
-                command.CommandText = "SELECT en.ENROLL_ID, en.ID, en.COMPETENCY_FORM_ID, hr.PREFIX, hr.FIRSTNAME_TH, hr.LASTNAME_TH, hr.POSITION, hr.DEPARTMENT_NAME, hr.JOBLEVEL, hr.COMPANY " +
+                command.CommandText = "SELECT EN.ENROLL_ID, EN.IDP_GROUP_ID, G.IDP_GROUP_NAME, G.YEAR " +
+                                        "FROM USER_ENROLL AS EN JOIN IDP_GROUP AS G ON EN.IDP_GROUP_ID = G.IDP_GROUP_ID " +
+                                        "WHERE EN.ID = @Id";
+                command.Parameters.AddWithValue("@Id", id);
+
+                connection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Enrollment enrollment = new Enrollment();
+                        enrollment.EnrollId = (int)reader["ENROLL_ID"];
+                        enrollment.IDPGroupId = (string)reader["IDP_GROUP_ID"];
+
+                        IDPGroup iDPGroup = new IDPGroup();
+                        iDPGroup.IDPGroupName = (string)reader["IDP_GROUP_NAME"];
+                        iDPGroup.Year = (string)reader["YEAR"];
+
+                        enrollment.IDPGroup = iDPGroup;
+
+                        enrollments.Add(enrollment);
+                    }
+                }
+            }
+
+            return enrollments;
+        }
+        public List<string> GetCheckedIDPGroup(string id)
+        {
+            List<string> CheckedIDPGroupIds = new List<string>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT IDP_GROUP_ID FROM USER_ENROLL WHERE ID = @Id";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", id);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            string idpGroupId = reader.GetString(reader.GetOrdinal("IDP_GROUP_ID"));
+                            CheckedIDPGroupIds.Add(idpGroupId);
+                        }
+                    }
+                }
+            }
+
+            return CheckedIDPGroupIds;
+        }
+        public void InsertIDPGroup(List<IDPGroup> selectedIDPGroups, string id)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                foreach (IDPGroup iDPGroup in selectedIDPGroups)
+                {
+                    string query = "INSERT INTO USER_ENROLL (IDP_GROUP_ID, ID) VALUES (@IDPGroupId, @Id)";
+
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+
+                        command.Parameters.AddWithValue("@IDPGroupId", iDPGroup.IDPGroupId);
+                        command.Parameters.AddWithValue("@Id", id);
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
+        public string GetIdByEnrollment(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = connection.CreateCommand())
+            {
+                command.CommandText = "SELECT ID FROM USER_ENROLL WHERE ENROLL_ID = @Id";
+                command.Parameters.AddWithValue("@Id", id);
+
+                connection.Open();
+
+                return (string)command.ExecuteScalar();
+            }
+        }
+        public void DeleteIDPGroupByEmployee(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+
+                string query = "DELETE FROM USER_ENROLL WHERE ENROLL_ID = @Id";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", id);
+
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+
+        public List<Enrollment> GetEnrollments(string idpGroupId)
+        {
+            List<Enrollment> enrollments = new List<Enrollment>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.Connection = connection;
+                command.CommandText = "SELECT en.ENROLL_ID, en.ID, en.IDP_GROUP_ID, hr.PREFIX, hr.FIRSTNAME_TH, hr.LASTNAME_TH, hr.POSITION, hr.DEPARTMENT_NAME, hr.JOBLEVEL, hr.COMPANY " +
                                       "FROM USER_ENROLL AS en JOIN MAS_USER_HR AS hr ON en.ID = hr.ID " +
-                                      "WHERE en.COMPETENCY_FORM_ID = @CompetencyFormId";
-                command.Parameters.AddWithValue("@CompetencyFormId", competencyFormId);
+                                      "WHERE en.IDP_GROUP_ID = @IDPGroupId";
+                command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
 
                 connection.Open();
 
@@ -731,7 +934,7 @@ namespace myApp.DAL
                         Enrollment enrollment = new Enrollment();
                         enrollment.EnrollId = (int)reader["ENROLL_ID"];
                         enrollment.Id = (string)reader["ID"];
-                        enrollment.CompetencyFormId = (string)reader["COMPETENCY_FORM_ID"];
+                        enrollment.IDPGroupId = (string)reader["IDP_GROUP_ID"];
 
                         User user = new User();
                         user.Prefix = reader["PREFIX"] != DBNull.Value ? (string)reader["PREFIX"] : null;
@@ -792,7 +995,7 @@ namespace myApp.DAL
                     user.HRPositionCode = reader.IsDBNull(reader.GetOrdinal("HRPositionCode")) ? null : (string)reader["HRPositionCode"];
                     user.JobRole = reader.IsDBNull(reader.GetOrdinal("JobRole")) ? null : (string)reader["JobRole"];
                     user.WorkAge = reader["WorkAge"].ToString();
-                    user.StateWorkDate = reader.IsDBNull(reader.GetOrdinal("StartWorkDate")) ? null : (string)reader["StartWorkDate"];
+                    user.StartWorkDate = reader.IsDBNull(reader.GetOrdinal("StartWorkDate")) ? null : (string)reader["StartWorkDate"];
 
                     users.Add(user);
                 }
@@ -801,7 +1004,7 @@ namespace myApp.DAL
 
             return users;
         }
-        public List<string> GetCheckedId(string competencyFormId)
+        public List<string> GetCheckedId(string idpGroupId)
         {
             List<string> CheckedIds = new List<string>();
 
@@ -809,11 +1012,11 @@ namespace myApp.DAL
             {
                 connection.Open();
 
-                string query = "SELECT ID FROM USER_ENROLL WHERE COMPETENCY_FORM_ID = @CompetencyFormId";
+                string query = "SELECT ID FROM USER_ENROLL WHERE IDP_GROUP_ID = @IDPGroupId";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@CompetencyFormId", competencyFormId);
+                    command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -828,7 +1031,7 @@ namespace myApp.DAL
 
             return CheckedIds;
         }
-        public void InsertEmployee(List<User> selectedUsers, string competencyFormId)
+        public void InsertEmployee(List<User> selectedUsers, string idpGroupId)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -836,12 +1039,12 @@ namespace myApp.DAL
 
                 foreach (User user in selectedUsers)
                 {
-                    string query = "INSERT INTO USER_ENROLL (COMPETENCY_FORM_ID, ID) VALUES (@CompetencyFormId, @Id)";
+                    string query = "INSERT INTO USER_ENROLL (IDP_GROUP_ID, ID) VALUES (@IDPGroupId, @Id)";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
 
-                        command.Parameters.AddWithValue("@CompetencyFormId", competencyFormId);
+                        command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
                         command.Parameters.AddWithValue("@Id", user.Id);
 
                         command.ExecuteNonQuery();
@@ -849,17 +1052,65 @@ namespace myApp.DAL
                 }
             }
         }
-
-
-
-        public List<CompetencyForm> SelectIDPGroup()
+        public int GetCountEmployee(string idpGroupId)
         {
-            List<CompetencyForm> competencyForms = new List<CompetencyForm>();
+            int count = 0;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "SELECT F.COMPETENCY_FORM_ID, F.COMPETENCY_FORM_NAME, F.YEAR, HR.PREFIX, HR.FIRSTNAME_TH, HR.LASTNAME_TH, HR.JOBLEVEL, HR.EMAIL " +
-                                "FROM COMPTY_FORM F, MAS_USER_HR HR";
+                string query = "SELECT COUNT(*) FROM USER_ENROLL WHERE IDP_GROUP_ID = @IDPGroupId";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
+
+                connection.Open();
+
+                count = (int)command.ExecuteScalar();
+            }
+
+            return count;
+        }
+        public string GetIDPGroupIdByEnrollment(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = connection.CreateCommand())
+            {
+                command.CommandText = "SELECT IDP_GROUP_ID FROM USER_ENROLL WHERE ENROLL_ID = @Id";
+                command.Parameters.AddWithValue("@Id", id);
+
+                connection.Open();
+
+                return (string)command.ExecuteScalar();
+            }
+        }
+        public void DeleteEmployeeByIDPGroup(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+
+                string query = "DELETE FROM USER_ENROLL WHERE ENROLL_ID = @Id";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", id);
+
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+
+
+
+        public List<IDPGroup> SelectIDPGroup()
+        {
+            List<IDPGroup> iDPGroups = new List<IDPGroup>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT F.IDP_GROUP_ID, F.IDP_GROUP_NAME, F.YEAR, HR.PREFIX, HR.FIRSTNAME_TH, HR.LASTNAME_TH, HR.JOBLEVEL, HR.EMAIL " +
+                                "FROM IDP_GROUP F, MAS_USER_HR HR";
 
                 SqlCommand command = new SqlCommand(query, connection);
 
@@ -869,11 +1120,11 @@ namespace myApp.DAL
 
                 while (reader.Read())
                 {
-                    CompetencyForm competencyForm = new CompetencyForm();
+                    IDPGroup iDPGroup = new IDPGroup();
 
-                    competencyForm.CompetencyFormId = (string)reader["COMPETENCY_FORM_ID"];
-                    competencyForm.CompetencyFormName = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_FORM_NAME")) ? null : (string)reader["COMPETENCY_FORM_NAME"];
-                    competencyForm.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
+                    iDPGroup.IDPGroupId = (string)reader["IDP_GROUP_ID"];
+                    iDPGroup.IDPGroupName = reader.IsDBNull(reader.GetOrdinal("IDP_GROUP_NAME")) ? null : (string)reader["IDP_GROUP_NAME"];
+                    iDPGroup.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
 
                     User user = new User();
                     user.Prefix = reader.IsDBNull(reader.GetOrdinal("PREFIX")) ? null : (string)reader["PREFIX"];
@@ -883,14 +1134,14 @@ namespace myApp.DAL
                     user.Email = reader.IsDBNull(reader.GetOrdinal("EMAIL")) ? null : (string)reader["EMAIL"];
 
 
-                    competencyForm.User = user;
+                    iDPGroup.User = user;
 
-                    competencyForms.Add(competencyForm);
+                    iDPGroups.Add(iDPGroup);
                 }
                 reader.Close();
             }
 
-            return competencyForms;
+            return iDPGroups;
         }
 
 
