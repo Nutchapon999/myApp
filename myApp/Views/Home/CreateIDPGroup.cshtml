@@ -31,59 +31,50 @@
         </div>
         <hr />
         <div class="container">
-            <div class="row">
-                <div class="col-md">
-                    <div class="input-group mt-3 d-flex justify-content-center">
-                        <span class="input-group-text" style="background-color: #f8d7da; border-color: #ae6070; color: #b34045">
-                            <i class="fa fa-key mt-2" aria-hidden="true">
-                                <strong>@Html.LabelFor(model => model.IDPGroupId, new { @class = "form-label" })</strong>
-                            </i>
-                        </span>
-                        @Html.TextBoxFor(model => model.IDPGroupId, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.IDPGroupId)
-                    </div>
-                    <div class="input-group mt-3 d-flex justify-content-center">
-                        <span class="input-group-text">
-                            <i class="fa fa-tag mt-2" aria-hidden="true">
-                                @Html.LabelFor(model => model.IDPGroupName, new { @class = "form-label" })
-                            </i>
-                        </span>
-                        @Html.TextBoxFor(model => model.IDPGroupName, new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.IDPGroupName)
-                    </div>
-                </div>
-                <div class="col-md">
-                    <div class="input-group mt-3 d-flex justify-content-center">
-                        <span class="input-group-text" style="width: 5rem;background-color: #d1ecf1; border-color: #99e9eb; color: #05487f ">
-                            <i class="fa fa-calendar mt-2" aria-hidden="true">
-                                <strong>@Html.LabelFor(model => model.Year, new { @class = "form-label" })</strong>
-                            </i>
-                        </span>
-                        <select class="form-select" id="Year" name="Year">
-                            @for (int year = 2560; year <= 2568; year++)
-                            {
-                                <option value="@year">@year</option>
-                            }
-                        </select>
-                        @Html.ValidationMessageFor(model => model.Year)
-                    </div>
-                </div>
+            <div class="input-group mt-3 d-flex justify-content-center">
+                <span class="input-group-text" style="background-color: #f8d7da; border-color: #ae6070; color: #b34045">
+                    <i class="fa fa-key mt-2" aria-hidden="true">
+                        <strong>@Html.LabelFor(model => model.IDPGroupId, new { @class = "form-label" })</strong>
+                    </i>
+                </span>
+                @Html.TextBoxFor(model => model.IDPGroupId, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.IDPGroupId)
             </div>
-        
-
-
-        <hr />
-
-        <div class="row justify-content-evenly text-center mt-5">
-            <div class="col-4">
-                <a href="@Url.Action("IDPGroup")" class="btn btn-danger btn-lg"><i class="fa fa-ban" aria-hidden="true"></i> <strong>ยกเลิก</strong></a>
+            <div class="input-group mt-3 d-flex justify-content-center">
+                <span class="input-group-text">
+                    <i class="fa fa-tag mt-2" aria-hidden="true">
+                        @Html.LabelFor(model => model.IDPGroupName, new { @class = "form-label" })
+                    </i>
+                </span>
+                @Html.TextBoxFor(model => model.IDPGroupName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.IDPGroupName)
             </div>
-            <div class="col-4">
-                <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-floppy-o" aria-hidden="true"></i> <strong>บันทึก</strong></button>
+                
+
+            <div class="input-group mt-3 d-flex justify-content-center">
+                <span class="input-group-text" style="width: 5rem;background-color: #d1ecf1; border-color: #99e9eb; color: #05487f ">
+                    <i class="fa fa-calendar mt-2" aria-hidden="true">
+                        <strong>@Html.LabelFor(model => model.Year, new { @class = "form-label" })</strong>
+                    </i>
+                </span>
+                <select class="form-select" id="Year" name="Year">
+                    @for (int year = 2560; year <= 2568; year++)
+                    {
+                        <option value="@year">@year</option>
+                    }
+                </select>
+                @Html.ValidationMessageFor(model => model.Year)
+            </div>
+            <hr />
+            <div class="row justify-content-evenly text-center mt-5">
+                <div class="col-4">
+                    <a href="@Url.Action("IDPGroup")" class="btn btn-danger btn-lg"><i class="fa fa-ban" aria-hidden="true"></i> <strong>ยกเลิก</strong></a>
+                </div>
+                <div class="col-4">
+                    <button type="submit" class="btn btn-primary btn-lg"><i class="fa fa-floppy-o" aria-hidden="true"></i> <strong>บันทึก</strong></button>
+                </div>
             </div>
         </div>
-        </div>
-
     }
 </main>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.3/dist/umd/popper.min.js"></script>

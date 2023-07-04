@@ -1,0 +1,267 @@
+﻿@model IEnumerable<myApp.Models.Enrollment>
+@{
+    ViewBag.Title = "Forms";
+}
+<div class="container">
+    @using (Html.BeginForm("SaveResultDetails", "Home", new { enrollId = ViewBag.EnrollmentId }, FormMethod.Post))
+    {
+        <table>
+            <thead>
+                <tr>
+                    <th rowspan="2">Critical</th>
+                    <th rowspan="2">Competency ID</th>
+                    <th rowspan="2">Competency Name</th>
+                    <th rowspan="2">R</th>
+                    <th rowspan="2">A</th>
+                    <th colspan="2">GAP</th>
+                    <th rowspan="2">Priority</th>
+                    <th rowspan="2">Plan</th>
+                    <th rowspan="2">Plan Description</th>
+                    <th colspan="4">Quarter</th>
+                    <th rowspan="2">Result Plan</th>
+                </tr>
+                <tr>
+                    <th>-</th>
+                    <th>+</th>
+                    <th>Q1</th>
+                    <th>Q2</th>
+                    <th>Q3</th>
+                    <th>Q4</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count(); i++)
+                {
+                    var enroll = Model.ElementAt(i);
+                    var gap = enroll.Form.Actual - enroll.Form.Requirement;
+                    <tr>
+                        <td>
+                            @if (enroll.CompetencyItem.Critical == false)
+                            {
+                                <text></text>
+                            }
+                            else
+                            {
+                                <text>O</text>
+                            }
+                        </td>
+                        <td>@enroll.CompetencyItem.CompetencyId</td>
+                        <td>@enroll.Competency.CompetencyNameTH</td>
+                        <td>
+                            @enroll.CompetencyItem.Pl
+                            <input type="hidden" name="forms[@i].Requirement" value="@enroll.CompetencyItem.Pl" />
+                        </td>
+                        <td>
+                            <select name="forms[@i].Actual" onchange="calculateGap(this)">
+                                <option value="1" @(enroll.Form.Actual == 1 ? "selected" : "")>1</option>
+                                <option value="2" @(enroll.Form.Actual == 2 ? "selected" : "")>2</option>
+                                <option value="3" @(enroll.Form.Actual == 3 ? "selected" : "")>3</option>
+                                <option value="4" @(enroll.Form.Actual == 4 ? "selected" : "")>4</option>
+                                <option value="5" @(enroll.Form.Actual == 5 ? "selected" : "")>5</option>
+                            </select>
+                            <input type="hidden" name="forms[@i].Id" value="@ViewBag.Id" />
+                            <input type="hidden" name="forms[@i].CompetencyId" value="@enroll.CompetencyItem.CompetencyId" />
+                            <input type="hidden" name="forms[@i].IDPGroupId" value="@enroll.IDPGroupId" />
+                            <input type="hidden" name="forms[@i].Actual" value="@enroll.Form.Actual" />
+                        </td>
+                        <td>
+                            <span id="negative-gap-@i">
+                                @if (gap < 0)
+                                {
+                                    @gap
+                                }
+                                else
+                                {
+
+                                }
+                            </span>
+                        </td>
+                        <td>
+                            <span id="positive-gap-@i">
+                                @if (gap >= 0)
+                                {
+                                    @gap
+                                }
+                                else
+                                {
+
+                                }
+                            </span>
+                        </td>
+                        <td>
+                            <span id="priority-@i">
+                                @if (enroll.Form.Priority != null)
+                                {
+                                    <select name="forms[@i].Priority">
+                                        <option value="A" @(enroll.Form.Priority == "A" ? "selected" : "")>A</option>
+                                        <option value="B" @(enroll.Form.Priority == "B" ? "selected" : "")>B</option>
+                                        <option value="C" @(enroll.Form.Priority == "C" ? "selected" : "")>C</option>
+                                    </select>
+                                }
+                            </span>
+                        </td>
+                        <td>
+                            <span id="plan-@i">
+                                @if (enroll.Form.Plan != null)
+                                {
+                                    <select name="forms[@i].Plan">
+                                        <option value="Co" @(enroll.Form.Plan == "Co" ? "selected" : "")>ผู้บังคับบัญชา (Coaching)</option>
+                                        <option value="INT" @(enroll.Form.Plan == "INT" ? "selected" : "")>อบรมภายใน (Inhous Training)</option>
+                                        <option value="JA" @(enroll.Form.Plan == "JA" ? "selected" : "")> การมอบหมายงาน (Job Assignment)</option>
+                                        <option value="EXT" @(enroll.Form.Plan == "EXT" ? "selected" : "")>อบรมภายนอก (External Training)</option>
+                                        <option value="PJ" @(enroll.Form.Plan == "PJ" ? "selected" : "")>การมอบหมายโครงการ (Project Assignment)</option>
+                                        <option value="SS" @(enroll.Form.Plan == "SS" ? "selected" : "")>การให้ศึกษาเอง (Self- Study)</option>
+                                        <option value="OJT" @(enroll.Form.Plan == "OJT" ? "selected" : "")>การสอนงานหน้างาน (On The Job Training)</option>
+                                    </select>
+                                }
+                            </span>
+                        </td>
+                        <td>
+                            <span id="planDesc-@i">
+                                @if (enroll.Form.PlanDesc != null)
+                                {
+                                    <input type="text" name="forms[@i].PlanDesc" value="@enroll.Form.PlanDesc" />
+                                }
+                            </span>
+                        </td>
+                        <td>
+                            <span id="quarter-@i">
+                                @if (enroll.Form.Quarter != null)
+                                {
+                                    <input type="radio" name="forms[@i].Quarter" value="Q1" @(enroll.Form.Quarter == "Q1" ? "checked" : "") />
+                                }
+                            </span>
+                        </td>
+                        <td>
+                            <span id="quarter-@i">
+                                @if (enroll.Form.Quarter != null)
+                                {
+                                    <input type="radio" name="forms[@i].Quarter" value="Q2" @(enroll.Form.Quarter == "Q2" ? "checked" : "") />
+                                }
+                            </span>
+                        </td>
+                        <td>
+                            <span id="quarter-@i">
+                                @if (enroll.Form.Quarter != null)
+                                {
+                                    <input type="radio" name="forms[@i].Quarter" value="Q3" @(enroll.Form.Quarter == "Q3" ? "checked" : "") />
+                                }
+                            </span>
+                        </td>
+                        <td>
+                            <span id="quarter-@i">
+                                @if (enroll.Form.Quarter != null)
+                                {
+                                    <input type="radio" name="forms[@i].Quarter" value="Q4" @(enroll.Form.Quarter == "Q4" ? "checked" : "") />
+                                }
+                            </span>
+                        </td>
+                        <td>
+                            <span id="rstPlan-@i">
+                                @if (enroll.Form.Quarter != null)
+                                {
+                                    <input type="text" name="forms[@i].RstPlan" value="@enroll.Form.RstPlan" />
+                                }
+                            </span>
+                        </td>
+                    </tr>
+
+                }
+            </tbody>
+        </table>
+        <button type="submit">Save</button>
+    }
+</div>
+<script>
+    function calculateGap(select) {
+        var row = select.parentNode.parentNode;
+        var negativeGapCell = row.querySelector("td:nth-child(6) span");
+        var positiveGapCell = row.querySelector("td:nth-child(7) span");
+        var priorityCell = row.querySelector("td:nth-child(8) span");
+        var planCell = row.querySelector("td:nth-child(9) span");
+        var planDescCell = row.querySelector("td:nth-child(10) span");
+        var Q1Cell = row.querySelector("td:nth-child(11) span");
+        var Q2Cell = row.querySelector("td:nth-child(12) span");
+        var Q3Cell = row.querySelector("td:nth-child(13) span");
+        var Q4Cell = row.querySelector("td:nth-child(14) span");
+        var rstPlanCell = row.querySelector("td:nth-child(15) span");
+        var requirement = parseFloat(row.querySelector("td:nth-child(4) input").value);
+        var actual = parseFloat(select.value);
+        var gap = actual - requirement;
+
+        negativeGapCell.textContent = (gap < 0) ? gap : '';
+        positiveGapCell.textContent = (gap > 0) ? gap : (gap === 0) ? '0' : '';
+
+        if (gap < 0) {
+            priorityCell.innerHTML = '<select name="' + select.name.replace('Actual', 'Priority') + '">' +
+                '<option value="A">A</option>' +
+                '<option value="B">B</option>' +
+                '<option value="C">C</option>' +
+                '</select>';
+
+            planCell.innerHTML = '<select name="' + select.name.replace('Actual', 'Plan') + '">' +
+                '<option value="Co">ผู้บังคับบัญชา (Coaching)</option>' +
+                '<option value="INT">อบรมภายใน (Inhous Training)</option>' +
+                '<option value="JA">การมอบหมายงาน (Job Assignment)</option>' +
+                '<option value="EXT">อบรมภายนอก (External Training)</option>' +
+                '<option value="PJ">การมอบหมายโครงการ (Project Assignment)</option>' +
+                '<option value="SS">การให้ศึกษาเอง (Self- Study)</option>' +
+                '<option value="OJT">การสอนงานหน้างาน (On The Job Training)</option>' +
+                '</select>';
+            planDescCell.innerHTML = '<input type="text" name="' + select.name.replace('Actual', 'PlanDesc') + '">';
+
+            Q1Cell.innerHTML = ' <input type="radio" name="' + select.name.replace('Actual', 'Quarter') + '" value="Q1">';
+            Q2Cell.innerHTML = ' <input type="radio" name="' + select.name.replace('Actual', 'Quarter') + '" value="Q2">';
+            Q3Cell.innerHTML = ' <input type="radio" name="' + select.name.replace('Actual', 'Quarter') + '" value="Q3">';
+            Q4Cell.innerHTML = ' <input type="radio" name="' + select.name.replace('Actual', 'Quarter') + '" value="Q4">';
+
+            rstPlanCell.innerHTML = '<input type="text" name="' + select.name.replace('Actual', 'RstPlan') + '">'
+        } else {
+            priorityCell.textContent = '';
+            planCell.textContent = '';
+            planDescCell.textContent = '';
+            Q1Cell.textContent = '';
+            Q2Cell.textContent = '';
+            Q3Cell.textContent = '';
+            Q4Cell.textContent = '';
+            rstPlanCell.textContent = '';
+        }
+
+        var gapInput = document.getElementById("gap-" + select.name.match(/\d+/)[0]);
+        if (gapInput) {
+            gapInput.value = gap;
+        }
+
+        var requirementInput = document.getElementsByName(select.name.replace('Actual', 'Requirement'))[0];
+        if (requirementInput) {
+            requirementInput.value = requirement;
+        }
+
+        updateOtherTableValues(select.name.match(/\d+/)[0], gap);
+    }
+
+
+    //เข้ามา Update
+    function updateOtherTableValues(rowIndex, gap) {
+        var otherRows = document.querySelectorAll("tr.other-table-row");
+        otherRows.forEach(function (otherRow) {
+            var negativeGapCell = otherRow.querySelector("td:nth-child(7) span");
+            var positiveGapCell = otherRow.querySelector("td:nth-child(8) span");
+            negativeGapCell.textContent = (gap < 0) ? gap : '';
+            positiveGapCell.textContent = (gap > 0) ? gap : (gap === 0) ? '0' : '';
+        });
+    }
+</script>
+
+
+
+<style>
+    table, th, td {
+        border: 1px solid white;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        background-color: #96D4D4;
+    }
+</style>

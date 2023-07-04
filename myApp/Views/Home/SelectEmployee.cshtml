@@ -3,13 +3,31 @@
 @{
     ViewBag.Title = "SelectEmployee";
 }
-
-<main class="mb-2" style="margin-top: 50px">
+<div class="m-3 rounded-3" style="background-color: #cce5ff">
+    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("IDPGroup")">
+                    <i class="fa fa-book" style="color: #4083be"></i> <strong style="color: #4083be">IDP Group</strong>
+                    <span class="visually-hidden">Home</span>
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" style="color: #4083be" href="@Url.Action("AddEmployee", new { id = ViewBag.IDPGroupId })"><strong>แก้ไขพนักงาน</strong></a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" style="color: #4083be" href="@Url.Action("SelectEmployee", new { id = ViewBag.IDPGroupId })"><strong>เพิ่มพนักงาน</strong></a>
+            </li>
+        </ol>
+    </nav>
+</div>
+<main>
     @using (Html.BeginForm("SelectedEmployee", "Home", new { idpGroupId = ViewBag.IDPGroupId }, FormMethod.Post))
     {
-        <div class="card shadow">
-            <div class="card-header bg-primary">
-                <h2 class="text-center" style="color:white"><i class="fa fa-user" aria-hidden="true"></i> <strong>เลือกพนักงาน</strong></h2>
+        <div class="card shadow border-0 m-3">
+            <div class="card-header text-center border-0 py-3" style="background-color: #fff3cd;">
+                <i class="fa fa-users" style="font-size: 60px;color: #dcb456"></i>
+                <h1 style="color: #dcb456 "><strong>เพิ่มพนักงาน</strong></h1>
             </div>
             <div class="card-body">
                 <table class="table table-hover table-responsive" id="myTable">
@@ -72,7 +90,24 @@
         </div>
      }
 </main>
-
+<div class="m-3 rounded-3" style="background-color: #cce5ff">
+    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("IDPGroup")">
+                    <i class="fa fa-book" style="color: #4083be"></i> <strong style="color: #4083be">IDP Group</strong>
+                    <span class="visually-hidden">Home</span>
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" style="color: #4083be" href="@Url.Action("AddEmployee", new { id = ViewBag.IDPGroupId })"><strong>แก้ไขพนักงาน</strong></a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" style="color: #4083be" href="@Url.Action("SelectEmployee", new { id = ViewBag.IDPGroupId })"><strong>เพิ่มพนักงาน</strong></a>
+            </li>
+        </ol>
+    </nav>
+</div>
 
 <script src="~/Scripts/jquery-3.4.1.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />

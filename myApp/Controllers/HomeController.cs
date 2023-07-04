@@ -56,10 +56,19 @@ namespace myApp.Controllers
         }
         public ActionResult CreateCompetency()
         {
+            HttpCookie usernameCookie = Request.Cookies["username"];
+            if (usernameCookie != null)
+            {
+                string username = usernameCookie.Value;
+                ViewBag.Username = username;
 
-            ViewBag.Username = Request.Cookies["username"].Value;
-
-            return View();
+                return View();
+            }
+            else
+            {
+      
+                return RedirectToAction("Index", "Home");
+            }
         }
         [HttpPost]
         public ActionResult CreateCompetency(Competency competency)
@@ -212,9 +221,18 @@ namespace myApp.Controllers
         //HR User
         public ActionResult Employee()
         {
-            ViewBag.Username = Request.Cookies["username"].Value;
-            List<User> users = app.GetUsers();
-            return View(users);
+            HttpCookie usernameCookie = Request.Cookies["username"];
+            if (usernameCookie != null)
+            {
+                ViewBag.Username = Request.Cookies["username"].Value;
+                List<User> users = app.GetUsers();
+                return View(users);
+            }
+            else
+            {
+
+                return RedirectToAction("Index", "Home");
+            }
         }
         public ActionResult DeleteEmployee(string id)
         {
@@ -295,6 +313,13 @@ namespace myApp.Controllers
             ViewBag.IDPGroupName = idpGroupName;
             return View(competencyItems);
         }
+        [HttpPost]
+        public ActionResult AddCompetency(string idpGroupId, Dictionary<string, CompetencyItem> competencyItems)
+        {
+            app.UpdateCompetencyItems(competencyItems);
+
+            return RedirectToAction("AddCompetency", new { id = idpGroupId });
+        }
         public ActionResult SelectCompetency(string id)
         {
             List<Competency> competencies = app.GetCompetencyAtActive();
@@ -332,7 +357,7 @@ namespace myApp.Controllers
 
                     competency.CompetencyItem = new CompetencyItem(); // Initialize CompetencyItem if null
                     competency.CompetencyItem.Pl = selectedPl;
-                    competency.CompetencyItem.Priority = selectedPriority;
+                    competency.CompetencyItem.Critical = false;
 
                     selectedCompetencies.Add(competency);
                 }
@@ -416,7 +441,6 @@ namespace myApp.Controllers
 
             return RedirectToAction("AddEmployee", new { id = idpGroupId });
         }
-
 
 
         //Upload Competency
@@ -737,10 +761,64 @@ namespace myApp.Controllers
         }
 
 
-        public ActionResult FormEmail(string id)
+        //Form
+        public ActionResult SelectForm(string id)
         {
-            return View();
+            List<Enrollment> enrollments = app.GetAllEnrollById(id);
+            ViewBag.Id = id;
+
+            return View(enrollments);
         }
+
+        public ActionResult Form(string id, int enrollmentId)
+        {
+            string prefix = app.GetPrefixById(id);
+            string firstName = app.GetFirstNameById(id);
+            string lastName = app.GetLastNameById(id);
+            string company = app.GetCompanyById(id);
+            string joblevel = app.GetJoblevelById(id);
+            string department = app.GetDepartmentById(id);
+            string position = app.GetPositionById(id);
+
+            ViewBag.EnrollmentId = enrollmentId;
+            ViewBag.Id = id;
+            ViewBag.Prefix = prefix;
+            ViewBag.FirstName = firstName;
+            ViewBag.LastName = lastName;
+            ViewBag.Company = company;
+            ViewBag.Joblevel = joblevel;
+            ViewBag.Department = department;
+            ViewBag.Position = position;
+            List<Enrollment> enrollments = app.GetFormsById(enrollmentId);
+            return View(enrollments);
+        }
+
+        [HttpPost]
+        public ActionResult SaveResultDetails(int enrollId, Dictionary<string, Form> forms)
+        {
+            string IDPGroup = app.GetIDPGroupIdByEnrollment(enrollId);
+            string Id = app.GetIdByEnrollment(enrollId);
+            bool isFormSubmitted = app.IsFormSubmitted(Id, IDPGroup);
+
+            if (isFormSubmitted)
+            {
+                app.UpdateResultDetails(forms.Values);
+            }
+            else
+            {
+                app.InsertResultDetails(forms.Values);
+            }
+
+            int competencyAll = app.GetCompetencyAllByEnrollId(Id);
+            int competencyPass = app.GetCompetencyPassByEnrollId(Id);
+            double competencyPer = (competencyPass / (double)competencyAll) * 100;
+            app.UpdateEnrollFinish(competencyAll, competencyPass, (int)competencyPer, enrollId);
+
+            return RedirectToAction("SelectForm", new { id = Id });
+        }
+
+
+
 
     }
 }

@@ -2,28 +2,55 @@
 @{
     ViewBag.Title = "SelectCompetency";
 }
-
+<div class="m-3 rounded-3" style="background-color: #cce5ff">
+    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("IDPGroup")">
+                    <i class="fa fa-book" style="color: #4083be"></i> <strong style="color: #4083be">IDP Group</strong>
+                    <span class="visually-hidden">Home</span>
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" style="color: #4083be" href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })"><strong>แก้ไข Competency</strong></a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" style="color: #4083be" href="@Url.Action("SelectCompetency", new { id = ViewBag.IDPGroupId })"><strong>เพิ่ม Competency</strong></a>
+            </li>
+        </ol>
+    </nav>
+</div>
 <main>
     @using (Html.BeginForm("SelectedCompetency", "Home", new { idpGroupId = ViewBag.IDPGroupId }, FormMethod.Post))
     {
         <div class="card shadow border-0 m-3">
             <div class="card-header text-center border-0 py-3" style="background-color: #fff3cd;">
-                <i class="fa fa-list-alt text-warning" style="font-size: 60px;"></i>
-                <h1><strong>เลือก Competency</strong></h1>
+                <i class="fa fa-stack-overflow" style="font-size: 60px;color: #dcb456"></i>
+                <h1 style="color: #dcb456 "><strong>เพิ่ม Competency</strong></h1>
             </div>
             <div class="card-body">
                 <div class="row mb-3">
                     <div class="col-auto me-auto">
-                        <button type="submit" class="btn btn-primary btn-lg" style="width: auto; border-radius: 2rem"> <strong>ยืนยัน</strong></button>
+                        <button type="submit" class="btn btn-lg active-link-submit shadow-sm" style="width: auto; background-color: #cce5ff">
+                            <i class="fa fa-save" style="color: #4083be" aria-hidden="true"><strong style="color: #4083be"> บักทึก</strong></i>
+                        </button>
                     </div>
                     <div class="col-auto">
-                        <a href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })" class="btn btn-danger btn-lg" style="width: auto; border-radius: 2rem"> <strong>ยกเลิก</strong></a>
+                        <a href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })" class="btn btn-lg active-link-back shadow-sm" style="width: auto; background-color: #f8d7da">
+                            <i class="fa fa-arrow-left" style="color: #dc3545" aria-hidden="true">  <strong style="color: #dc3545"> กลับ</strong></i>
+                        </a>
                     </div>
                 </div>
                 <table class="table table-hover table-responsive" id="myTable">
                     <thead class="table-primary">
                         <tr>
-                            <th width="5%"></th>
+                            <th width="5%">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="checkAll" />
+                                    <label class="form-check-label" for="checkAll">
+                                    </label>
+                                </div>  
+                            </th>
                             <th width="5%">เลือก PL</th>
                             <th width="5%">ชนิด</th>
                             <th width="5%">รหัส</th>
@@ -78,12 +105,16 @@
                         }
                     </tbody>
                 </table>
-                <div class="row mt-2">
+                <div class="row mt-3">
                     <div class="col-auto me-auto">
-                        <button type="submit" class="btn btn-primary btn-lg" style="width: auto; border-radius: 2rem"> <strong>ยืนยัน</strong></button>
+                        <button type="submit" class="btn btn-lg active-link-submit shadow-sm" style="width: auto; background-color: #cce5ff">
+                            <i class="fa fa-save" style="color: #4083be" aria-hidden="true"><strong style="color: #4083be"> บักทึก</strong></i>
+                        </button>
                     </div>
                     <div class="col-auto">
-                        <a href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })" class="btn btn-danger btn-lg" style="width: auto; border-radius: 2rem"> <strong>ยกเลิก</strong></a>
+                        <a href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })" class="btn btn-lg active-link-back shadow-sm" style="width: auto; background-color: #f8d7da">
+                            <i class="fa fa-arrow-left" style="color: #dc3545" aria-hidden="true">  <strong style="color: #dc3545"> กลับ</strong></i>
+                        </a>
                     </div>
                 </div>
 
@@ -91,6 +122,24 @@
         </div>
     }
 </main>
+<div class="m-3 rounded-3" style="background-color: #cce5ff">
+    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("IDPGroup")">
+                    <i class="fa fa-book" style="color: #4083be"></i> <strong style="color: #4083be">IDP Group</strong>
+                    <span class="visually-hidden">Home</span>
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" style="color: #4083be" href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })"><strong>แก้ไข Competency</strong></a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" style="color: #4083be" href="@Url.Action("SelectCompetency", new { id = ViewBag.IDPGroupId })"><strong>เพิ่ม Competency</strong></a>
+            </li>
+        </ol>
+    </nav>
+</div>
 <script src="~/Scripts/jquery-3.4.1.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
@@ -114,4 +163,36 @@
         width: 25px;
         height: 25px;
     }
+    .active-link-submit:hover {
+        transform: scale(1.05);
+        border-color: #4083be;
+    }
+
+    .active-link-submit:active {
+        transform: scale(.95);
+    }
+
+    .active-link-back:hover {
+        transform: scale(1.05);
+        border-color: #dc3545;
+    }
+
+    .active-link-back:active {
+        transform: scale(.95);
+    }
 </style>
+<script>
+    // Get the "checkAll" checkbox element
+    const checkAllCheckbox = document.getElementById('checkAll');
+
+    // Get all checkboxes in the table body
+    const checkboxes = document.querySelectorAll('tbody input[name="competencyIds"]');
+
+    // Add an event listener to the "checkAll" checkbox
+    checkAllCheckbox.addEventListener('change', function () {
+        // Iterate over all checkboxes in the table body and set their checked property
+        checkboxes.forEach(function (checkbox) {
+            checkbox.checked = checkAllCheckbox.checked;
+        });
+    });
+</script>

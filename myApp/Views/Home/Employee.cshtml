@@ -2,22 +2,37 @@
 @{
     ViewBag.Title = "Employee";
 }
-
-<main class="container">
+<link rel="stylesheet" href="/CSS/Style.css">
+<div class="rounded-3 m-3" style="background-color: #cce5ff">
+    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("Employee")">
+                    <i class="fa fa-user" style="color: #4083be"></i> <strong style="color: #4083be">พนักงาน</strong>
+                    <span class="visually-hidden">Home</span>
+                </a>
+            </li>
+        </ol>
+    </nav>
+</div>
+<main>
     <div class="card shadow border-0 m-3">
         <div class="card-header text-center border-0 py-3" style="background-color: #d4edda;">
             <i class="fa fa-user text-success" style="font-size: 60px;"></i>
-            <h1><strong>พนักงาน</strong></h1>
+            <h1 class="text-success"><strong>พนักงาน</strong></h1>
         </div>
         <div class="card-body border-0">
-            <a href="@Url.Action("UploadEmployee")" class="btn btn-primary btn-lg mb-3 position-relative" style="width: auto; border-radius: 2rem">
-                <i class="fa fa-upload" aria-hidden="true"><strong> อัปโหลด</strong></i>
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning">
-                    <i class="fa fa-file-excel-o" style="font-size: medium" aria-hidden="true"></i>
-                    <span class="visually-hidden">unread messages</span>
-                </span>
-            </a>
-            <table class="table table-hover table-responsive" id="myTable">
+            <div class="row mb-2">
+                <div class="col-auto me-auto">
+
+                </div>
+                <div class="col-auto">
+                    <a href="@Url.Action("UploadEmployee")" class="btn shadow-sm btn-lg active-link-upload" style="background-color: #cce5ff; width: auto">
+                        <i class="fa fa-upload" style="color: #4083be" aria-hidden="true"><strong style="color: #4083be"> อัปโหลด</strong></i>
+                    </a>
+                </div>
+            </div>
+            <table class="table table-hover table-responsive table-striped"  id="myTable">
                 <thead class="table-primary" style="font-size: 16px">
                     <tr>
                         <th width="5%">รหัส</th>
@@ -61,9 +76,14 @@
                             <td>@emp.Company</td>
                             <td>
                                 <div class="btn-group me-2" role="group" aria-label="Second group">
-                                    <a id="link" href="@Url.Action("AddIDPGroup", new { id = emp.Id })" class="btn btn-success" title="เพิ่ม IDP Group"><i class="fa fa-book" aria-hidden="true"></i></a>
-                                    <button type="button" class="btn btn-danger" style="width: auto; height: auto" data-bs-toggle="modal" data-bs-target="#deleteModal-@emp.Id" title="ลบ">
-                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                    <a id="link" href="@Url.Action("AddIDPGroup", new { id = emp.Id })" class="btn active-link-detail" style="background-color: #d4edda" title="เพิ่ม IDP Group">
+                                        <i class="fa fa-book" style="color: #198754 " aria-hidden="true"></i>
+                                    </a>
+                                    <a id="link" href="@Url.Action("SelectForm", new { id = emp.Id })" class="btn active-link-form" style="background-color: #fff3cd" title="แบบประเมิน">
+                                        <i class="fa fa-file-text" style="color: #ffc107 " aria-hidden="true"></i>
+                                    </a>
+                                    <button id="link" type="button" class="btn  active-link-delete" data-bs-toggle="modal" style="background-color: #f8d7da" data-bs-target="#deleteModal-@emp.Id" title="ลบ">
+                                        <i class="fa fa-trash" style="color: #dc3545 " aria-hidden="true"></i>
                                     </button>
                                 </div>
                                 <div class="modal fade" id="deleteModal-@emp.Id" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -93,8 +113,20 @@
     </div>
 </main>
 
-
-<script src="~/Scripts/jquery-3.4.1.js"></script>
+<div class="rounded-3 m-3" style="background-color: #cce5ff">
+    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("Employee")">
+                    <i class="fa fa-user" style="color: #4083be"></i> <strong style="color: #4083be">พนักงาน</strong>
+                    <span class="visually-hidden">Home</span>
+                </a>
+            </li>
+        </ol>
+    </nav>
+</div>
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+<script src="~/Scripts/jquery-3.7.0.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
@@ -105,9 +137,19 @@
     js(document).ready(function () {
         js('#myTable').DataTable({
             language: {
-                search: "ค้นหา:", 
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
+                paginate: {
+                    next: 'ถัดไป <i class="fa fa-angle-double-right"></i>',
+                    previous: '<i class="fa fa-angle-double-left"></i> ก่อนหน้า'
+                },
+                info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
             },
 
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
         });
     });
 </script>

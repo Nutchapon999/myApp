@@ -1,0 +1,40 @@
+﻿@model IEnumerable<myApp.Models.Enrollment>
+@{
+    ViewBag.Title = "SelectForm";
+    bool formSubmitted = TempData["FormSubmitted"] as bool? ?? false;
+    ViewBag.FormSubmitted = formSubmitted;
+}
+
+<h2>SelectForm</h2>
+
+<div class="container" style="width: 500px">
+    <div class="list-group">
+        @foreach (var enroll in Model)
+        {
+            
+            <a href="@Url.Action("Form", new { id = ViewBag.Id, enrollmentId = enroll.EnrollId })" class="list-group-item list-group-item-action">@enroll.IDPGroupId | @enroll.IDPGroup.IDPGroupName</a>
+        }
+    </div>
+</div>
+
+<style>
+    .list-group-item-action:hover {
+        background-color: #007bff; /* Replace with your desired background color */
+        color: #fff; /* Replace with your desired text color */
+    }
+
+    .list-group-item.disabled {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+</style>
+
+@functions {
+    public bool IsDisabled(string id, int enrollmentId)
+    {
+        bool formSubmitted = ViewBag.FormSubmitted ?? false;
+        // Add your condition here to determine if the anchor tag should be disabled
+        bool shouldDisable = formSubmitted;
+        return shouldDisable;
+    }
+}

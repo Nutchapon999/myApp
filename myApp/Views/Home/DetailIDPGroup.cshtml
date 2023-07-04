@@ -2,133 +2,147 @@
 @{
     ViewBag.Title = "DetailCompetency";
 }
-<div class="container">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary rounded-3">
+<div class="container rounded-3" style="background-color: #cce5ff">
+    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
             <li class="breadcrumb-item">
-                <a class="link-body-emphasis" href="@Url.Action("IDPGroup")" style="text-decoration: none;">
-                    <i class="fa fa-book"></i> <strong>IDP Group</strong>
+                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("IDPGroup")">
+                    <i class="fa fa-book" style="color: #4083be"></i> <strong style="color: #4083be">IDP Group</strong>
                     <span class="visually-hidden">Home</span>
                 </a>
             </li>
             <li class="breadcrumb-item">
-                <a class="link-body-emphasis fw-semibold text-decoration-none" href="@Url.Action("DetailIDPGroup", new { id = ViewBag.IDPGroupId })">รายละเอียด</a>
+                <a class="link-body-emphasis fw-semibold text-decoration-none" style="color: #4083be" href="@Url.Action("DetailIDPGroup", new { id = ViewBag.IDPGroupId })">รายละเอียด</a>
             </li>
         </ol>
     </nav>
 </div>
 
-
-<main>
+<link rel="stylesheet" href="/CSS/Style.css">
+<main class="container">
     <div class="py-3 text-center bg- p-3 rounded container mb-3" style="background-color: #eeeeee60">
-        <i class="fa fa-file-text text-danger" style="font-size:70px;"></i>
-        <h1><strong>รายละเอียด</strong></h1>
-        <h4><i class="fa fa-key"></i> รหัส IDP Group: <code>@ViewBag.IDPGroupId</code></h4>
-        <h4><i class="fa fa-tag"></i> ชื่อ IDP Group: <code>@ViewBag.IDPGroupName</code></h4>
-        <h4><i class="fa fa-calendar"></i>  ปี: <code>@ViewBag.Year</code></h4>
-        <h4><i class="fa fa-users" style="color: #DC3545"></i>  จำนวนคน: <code>@ViewBag.Member</code> | <i class="fa fa-stack-overflow" style="color: #DC3545"></i> จำนวน Competency: <code>@ViewBag.Competency</code></h4>
+
+        <h3><i class="fa fa-file-text text-danger" style="font-size: xx-large;"></i> <strong>รายละเอียด</strong></h3>
+        <h5><i class="fa fa-key"></i> รหัส IDP Group: <code>@ViewBag.IDPGroupId</code> | <i class="fa fa-tag"></i> ชื่อ IDP Group: <code>@ViewBag.IDPGroupName</code> | <i class="fa fa-calendar"></i>  ปี: <code>@ViewBag.Year</code></h5>
+        <h5><i class="fa fa-users" style="color: #DC3545"></i>  จำนวนคน: <code>@ViewBag.Member</code> | <i class="fa fa-stack-overflow" style="color: #DC3545"></i> จำนวน Competency: <code>@ViewBag.Competency</code></h5>
     </div>
-        
-
-    <div id="carouselExampleDark" class="carousel carousel-dark slide">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <div class="card border-0 shadow-sm">
+        <div class="card-header text-center border-0" style="background-color: #cce5ff">
+            <i class="fa fa-list-alt mt-2 " style="color: #4083be; font-size: 40px;" aria-hidden="true"></i>
+            <h2 style="color: #4083be"><strong>Competency</strong></h2>
+            <ul class="nav nav-underline">
+                <li class="nav-item">
+                    <button type="button" class="btn btn-lg shadow-sm active-link-excel" onclick="exportTableToExcel('competencyTB')" style="background-color: #d4edda"><i class="fa fa-file-excel-o text-success" style="font-size: larger"></i> <strong>Excel</strong></button>
+                </li>
+                <li class="nav-item ms-2">
+                    <button class="btn btn-lg shadow-sm active-link-pdf" onclick="printTable('competencyTB')" style="background-color: #f8d7da"><i class="fa fa-file-pdf-o text-danger" style="font-size: larger"></i> <strong>PDF</strong></button>
+                </li>
+            </ul>
         </div>
-        <div class="carousel-inner">
-            <div class="carousel-item active" data-bs-interval="10000">
-                <div class="container card border-0">
-                    <div class="card-header text-center border-0" style="background-color: #cce5ff">
-                        <i class="fa fa-list-alt mt-2" style="color: #4083be; font-size: 40px;" aria-hidden="true"></i>
-                        <h2 style="color: #4083be"><strong>Competency</strong></h2>
-                    </div>
-                    <div class="card-body border-0" mt-3">
-                        <table class="table table-hover table-striped" id="competencyTB">
-                            <thead>
-                                <tr>
-                                    <th>รหัส Competency</th>
-                                    <th>ชื่อ Competency</th>
-                                    <th>Pl</th>
-                                    <th>ความสำคัญ</th>
+        <div class="card-body border-0" mt-3">
+            <table class="table table-hover table-striped" id="competencyTB">
+                <thead class="table-primary">
+                    <tr>
+                        <th>รหัส Competency</th>
+                        <th>ชื่อ Competency</th>
+                        <th>Pl</th>
+                        <th>ความสำคัญ</th>
 
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @{
-                                    var distinctCompetencies = Model.Select(c => new { c.CompetencyItem.CompetencyId, c.Competency.CompetencyNameTH, c.CompetencyItem.Pl, c.CompetencyItem.Priority }).Distinct().ToList();
-                                    foreach (var cmptyForm in distinctCompetencies)
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var distinctCompetencies = Model.Select(c => new { c.CompetencyItem.CompetencyId, c.Competency.CompetencyNameTH, c.CompetencyItem.Pl, c.CompetencyItem.Critical }).Distinct().ToList();
+                        foreach (var cmptyForm in distinctCompetencies)
+                        {
+                            <tr style="@(cmptyForm.Critical ? "background-color: #d4edda;" : "background-color: none;")">
+                                <th scope="row">@cmptyForm.CompetencyId</th>
+                                <td>@cmptyForm.CompetencyNameTH</td>
+                                <td>@cmptyForm.Pl</td>
+                                <td>
+                                    @if (cmptyForm.Critical == false)
                                     {
-                                        <tr>
-                                            <th scope="row">@cmptyForm.CompetencyId</th>
-                                            <td>@cmptyForm.CompetencyNameTH</td>
-                                            <td>@cmptyForm.Pl</td>
-                                            <td>@cmptyForm.Priority</td>
-                                        </tr>
-                                    }
-                                }
 
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="carousel-item" data-bs-interval="2000">
-                <div class="container card border-0">
-                    <div class="card-header text-center border-0" style="background-color: #fff3cd">
-                        <i class="fa fa-user mt-2" style="color: #dcb456; font-size: 40px;" aria-hidden="true"></i>
-                        <h2 style="color: #dcb456"><strong>พนักงาน</strong></h2>
-                    </div>
-                    <div class="card-body border-0">
-                        <table class="table table-hover table-striped" id="employeeTB" style="width: 100%">
-                            <thead>
-                                <tr>
-                                    <th width="10%">รหัส</th>
-                                    <th width="30%">ชื่อพนักงาน</th>
-                                    <th width="20%">ตำแหน่ง</th>
-                                    <th width="10%">ชื่อแผนก</th>
-                                    <th width="20%">ตำแหน่งขั้น</th>
-                                    <th width="10%">บริษัท</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @{
-                                    var distinctEmployees = Model.Select(e => new { e.Enrollment.Id, e.User.Prefix, e.User.FirstNameTH, e.User.LastNameTH, e.User.JobLevel, e.User.DepartmentName, e.User.Position, e.User.Company }).Distinct().ToList();
-                                    foreach (var enroll in distinctEmployees)
+                                        <text></text>
+                                    }
+                                    else
                                     {
-                                        <tr>
-                                            <th scope="row">@enroll.Id</th>
-                                            <td>@enroll.Prefix @enroll.FirstNameTH @enroll.LastNameTH</td>
-                                            <td>@enroll.Position</td>
-                                            <td>@enroll.JobLevel</td>
-                                            <td>@enroll.DepartmentName</td>
-                                            <td>@enroll.Company</td>
-                                        </tr>
+
+                                        <text>O</text>
                                     }
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
 
-                </div>
-
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
+                </tbody>
+            </table>
         </div>
     </div>
-    <div class="text-center">
-        <a href="@Url.Action("IDPGroup")" class="btn btn-danger btn-lg" style="border-radius: 2rem"><i class="fa fa-arrow-left" aria-hidden="true"> <strong>ออก</strong></i> </a>
+
+    <div class="card border-0 shadow-sm mt-3">
+        <div class="card-header text-center border-0" style="background-color: #fff3cd">
+            <i class="fa fa-user mt-2" style="color: #dcb456; font-size: 40px;" aria-hidden="true"></i>
+            <h2 style="color: #dcb456"><strong>พนักงาน</strong></h2>
+        </div>
+        <div class="card-body border-0">
+            <table class="table table-hover table-striped" id="employeeTB" style="width: 100%">
+                <thead class="table-warning">
+                    <tr>
+                        <th width="10%">รหัส</th>
+                        <th width="30%">ชื่อพนักงาน</th>
+                        <th width="20%">ตำแหน่ง</th>
+                        <th width="10%">ชื่อแผนก</th>
+                        <th width="20%">ตำแหน่งขั้น</th>
+                        <th width="10%">บริษัท</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var distinctEmployees = Model.Select(e => new { e.Enrollment.Id, e.User.Prefix, e.User.FirstNameTH, e.User.LastNameTH, e.User.JobLevel, e.User.DepartmentName, e.User.Position, e.User.Company }).Distinct().ToList();
+                        foreach (var enroll in distinctEmployees)
+                        {
+                            <tr>
+                                <th scope="row">@enroll.Id</th>
+                                <td>@enroll.Prefix @enroll.FirstNameTH @enroll.LastNameTH</td>
+                                <td>@enroll.Position</td>
+                                <td>@enroll.JobLevel</td>
+                                <td>@enroll.DepartmentName</td>
+                                <td>@enroll.Company</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="text-center m-3">
+        <a href="@Url.Action("IDPGroup")" class="btn btn-lg active-link-pdf" style="background-color: #f8d7da">
+            <i class="fa fa-arrow-left" style="color: #DC3545" aria-hidden="true"> <strong style="color: #DC3545">กลับ</strong></i>
+        </a>
     </div>
 </main>
-<script src="~/Scripts/jquery-3.4.1.js"></script>
+
+<div class="container rounded-3" style="background-color: #cce5ff">
+    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("IDPGroup")">
+                    <i class="fa fa-book" style="color: #4083be"></i> <strong style="color: #4083be">IDP Group</strong>
+                    <span class="visually-hidden">Home</span>
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis fw-semibold text-decoration-none" style="color: #4083be" href="@Url.Action("DetailIDPGroup", new { id = ViewBag.IDPGroupId })">รายละเอียด</a>
+            </li>
+        </ol>
+    </nav>
+</div>
+<script src="~/Scripts/jquery-3.7.0.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" />
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
 <script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
@@ -137,16 +151,139 @@
     js(document).ready(function () {
         js('#competencyTB').DataTable({
             language: {
-                search: "ค้นหา:", // Change the search label here
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
+                paginate: {
+                    next: 'ถัดไป <i class="fa fa-angle-double-right"></i>',
+                    previous: '<i class="fa fa-angle-double-left"></i> ก่อนหน้า'
+                },
+                info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
             },
-            
+
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
         });
 
         js('#employeeTB').DataTable({
             language: {
-                search: "ค้นหา:", // Change the search label here
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
+                paginate: {
+                    next: 'ถัดไป <i class="fa fa-angle-double-right"></i>',
+                    previous: '<i class="fa fa-angle-double-left"></i> ก่อนหน้า'
+                },
+                info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
             },
-            
+
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
         });
+
+
     });
 </script>
+<script src="https://unpkg.com/exceljs/dist/exceljs.min.js"></script>
+<script type="text/javascript">
+    function exportTableToExcel(tableId) {
+        // Get the table element
+        var table = document.getElementById(tableId);
+
+        // Create a new Workbook object
+        var workbook = new ExcelJS.Workbook();
+
+        // Add a new worksheet to the workbook
+        var worksheet = workbook.addWorksheet('Sheet 1');
+
+        // Iterate over the table rows
+        for (var i = 0; i < table.rows.length; i++) {
+            var row = table.rows[i];
+            var rowData = [];
+
+            // Iterate over the table cells in the current row
+            for (var j = 0; j < row.cells.length; j++) {
+                var cell = row.cells[j];
+                rowData.push(cell.innerText);
+            }
+
+            // Add the row data to the worksheet
+            worksheet.addRow(rowData);
+        }
+
+        // Create a new Blob object with the workbook data
+        workbook.xlsx.writeBuffer().then(function (buffer) {
+            var blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+            // Create a download link and click it to trigger the download
+            var link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'table_data.xlsx';
+            link.click();
+        });
+    }
+</script>
+<script type="text/javascript">
+    function printTable(tableId) {
+        var printContents = document.getElementById(tableId).outerHTML;
+        var originalContents = document.body.innerHTML;
+
+        var printWindow = window.open('', '_blank');
+        var printDocument = printWindow.document;
+
+        printDocument.write('<!DOCTYPE html>');
+        printDocument.write('<html>');
+        printDocument.write('<head>');
+        printDocument.write('<meta charset="utf-8">');
+        printDocument.write('<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">');
+        printDocument.write('<title>Print</title>');
+        printDocument.write('<meta name="filename" content="print_file.html">'); // Set the filename here
+        printDocument.write('<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">');
+        printDocument.write('</head>');
+        printDocument.write('<body>');
+        printDocument.write('<div class="container">');
+        printDocument.write('<img height="100" src="https://www.satpcl.co.th/themes/default/assets/static/images/logo.png" />'); // Replace "images/logo.png" with the relative path to your image
+        printDocument.write('<h3 class="mt-4"><strong>รายละเอียด</strong></h3>');
+        printDocument.write('<h5>รหัส IDP Group: <code>@ViewBag.IDPGroupId</code></h5>');
+        printDocument.write('<h5></i> ชื่อ IDP Group: <code>@ViewBag.IDPGroupName</code></h5>');
+        printDocument.write('<h5>ปี: <code>@ViewBag.Year</code></h5>');
+        printDocument.write('<h5>จำนวนคน: <code>@ViewBag.Member</code> | จำนวน Competency: <code>@ViewBag.Competency</code></h5>');
+        printDocument.write('<h5>วันที่พิมพ์: <code>' + new Date().toLocaleDateString() + '</code></h5>');
+        printDocument.write('<table class="table">');
+        printDocument.write(printContents);
+        printDocument.write('</table>');
+        printDocument.write('</div>');
+        printDocument.write('</body>');
+        printDocument.write('</html>');
+        printDocument.close();
+
+        setTimeout(function() {
+            printWindow.print();
+            printWindow.close();
+            document.body.innerHTML = originalContents;
+        }, 500);
+    }
+        
+</script>
+
+<style>
+    .active-link-excel:hover {
+        transform: scale(1.05);
+        border: 3px solid #198754;
+    }
+
+    .active-link-excel:active {
+        transform: scale(.95);
+    }
+
+    .active-link-pdf:hover {
+        transform: scale(1.05);
+        border: 3px solid #DC3545;
+    }
+
+    .active-link-pdf:active {
+        transform: scale(.95);
+    }
+</style>

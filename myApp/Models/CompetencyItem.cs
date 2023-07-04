@@ -11,7 +11,7 @@ namespace myApp.Models
         public string CompetencyId { get; set; }
         public string IDPGroupId { get; set; }
         public string Pl { get; set; }
-        public string Priority { get; set; }
+        public bool Critical { get; set; }
 
         public virtual Competency Competency { get; set; }
     }

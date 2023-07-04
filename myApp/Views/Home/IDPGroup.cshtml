@@ -2,16 +2,38 @@
 @{
     ViewBag.Title = "CompetencyForm";
 }
-
+<link rel="stylesheet" href="/CSS/Style.css">
+<div class="m-3 rounded-3" style="background-color: #cfe2ff">
+    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("IDPGroup")">
+                    <i class="fa fa-book" style="color: #4083be"></i> <strong style="color: #4083be">IDP Group</strong>
+                    <span class="visually-hidden">Home</span>
+                </a>
+            </li>
+        </ol>
+    </nav>
+</div>
 <main>
     <div class="card shadow border-0 m-3">
         <div class="card-header text-center border-0 py-3" style="background-color: #fff3cd;">
             <i class="fa fa-book text-warning" style="font-size: 60px;"></i>
-            <h1><strong>IDP Group</strong></h1>
+            <h1 class="text-warning"><strong>IDP Group</strong></h1>
         </div>
         <div class="card-body">
-            <a href="@Url.Action("CreateIDPGroup")" class="btn btn-success mb-3 btn-lg" style="width: auto; border-radius: 2rem"><i class="fa fa-plus" aria-hidden="true"><strong> เพิ่ม</strong></i></a>
-            <table class="table table-hover table-responsive" id="myTable">
+            <div class="row">
+                <div class="col-auto me-auto">
+
+                </div>
+                <div class="col-auto">
+                    <a href="@Url.Action("CreateIDPGroup")" class="btn shadow-sm mb-3 btn-lg active-link" style="background-color: #d4edda; width: auto">
+                        <i class="fa fa-plus text-success" aria-hidden="true"><strong> เพิ่ม</strong></i>
+                    </a>
+                </div>
+            </div>
+
+            <table class="table table-hover table-responsive table-striped" id="myTable">
                 <thead class="table-primary">
                     <tr>
                         <th width="10%">รหัส IDP Group</th>
@@ -31,14 +53,20 @@
                             <td>@idp.Year</td>
                             <td>
                                 <div class="btn-group me-2" role="group" aria-label="Second group">
-                                    <a id="link" href="@Url.Action("DetailIDPGroup", new { id = idp.IDPGroupId })" class="btn btn-success" title="รายละเอียด"><i class="fa fa-file" aria-hidden="true"></i></a>
-                                    <a id="link" href="@Url.Action("AddCompetency", new { id = idp.IDPGroupId })" class="btn btn-info" title="เพิ่ม competency"><i class="fa fa-list-alt" aria-hidden="true"></i></a>
-                                    <a id="link" href="@Url.Action("AddEmployee", new { id = idp.IDPGroupId })" class="btn btn-warning" title="เพิ่มพนักงาน"><i class="fa fa-graduation-cap" aria-hidden="true"></i></a>
-                                    <button id="link" type="button" class="btn btn-primary" title="แก้ไข" data-bs-toggle="modal" data-bs-target="#editModal-@idp.IDPGroupId">
-                                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                                    <button id="link" type="button" class="btn active-link-edit" title="แก้ไข" data-bs-toggle="modal" data-bs-target="#editModal-@idp.IDPGroupId" style="background-color: #cfe2ff">
+                                        <i class="fa fa-pencil" style="color: #4083be" aria-hidden="true"></i>
                                     </button>
-                                    <button id="link" type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal-@idp.IDPGroupId" title="ลบ">
-                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                    <a id="link" href="@Url.Action("DetailIDPGroup", new { id = idp.IDPGroupId })" style="background-color: #d4edda" class="btn  active-link-detail" title="รายละเอียด">
+                                        <i class="fa fa-eye" style="color: #198754" aria-hidden="true"></i>
+                                    </a>
+                                    <a id="link" href="@Url.Action("AddCompetency", new { id = idp.IDPGroupId })" style="background-color: #cff4fc" class="btn  active-link-competency" title="เพิ่ม competency">
+                                        <i class="fa fa-stack-overflow" style="color: #0dcaf0 " aria-hidden="true"></i>
+                                    </a>
+                                    <a id="link" href="@Url.Action("AddEmployee", new { id = idp.IDPGroupId })" style="background-color: #fff3cd" class="btn  active-link-employee" title="เพิ่มพนักงาน">
+                                        <i class="fa fa-graduation-cap" style="color: #ffc107 " aria-hidden="true"></i>
+                                    </a>
+                                    <button id="link" type="button" class="btn  active-link-delete" data-bs-toggle="modal" style="background-color: #f8d7da" data-bs-target="#deleteModal-@idp.IDPGroupId" title="ลบ">
+                                        <i class="fa fa-trash" style="color: #dc3545 " aria-hidden="true"></i>
                                     </button>
                                 </div>
                                 <div class="modal fade modal-lg" id="editModal-@idp.IDPGroupId" aria-labelledby="editModalLabel" aria-hidden="true">
@@ -85,7 +113,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="modal fade" id="deleteModal-@idp.IDPGroupId" aria-labelledby="deleteModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
@@ -111,7 +138,19 @@
         </div>
     </div>
 </main>
-<script src="~/Scripts/jquery-3.4.1.js"></script>
+<div class="m-3 rounded-3" style="background-color: #cfe2ff">
+    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("IDPGroup")">
+                    <i class="fa fa-book" style="color: #4083be"></i> <strong style="color: #4083be">IDP Group</strong>
+                    <span class="visually-hidden">Home</span>
+                </a>
+            </li>
+        </ol>
+    </nav>
+</div>
+<script src="~/Scripts/jquery-3.7.0.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
@@ -122,10 +161,51 @@
     js(document).ready(function () {
         js('#myTable').DataTable({
             language: {
-                search: "ค้นหา:", // Change the search label here
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
+                paginate: {
+                    next: 'ถัดไป <i class="fa fa-angle-right"></i>',
+                    previous: '<i class="fa fa-angle-left"></i> ก่อนหน้า'
+                },
+                info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
             },
-            scrollY: 500,
 
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
         });
     });
 </script>
+
+<style>
+    .form-label-id {
+        background-color: #f8d7da;
+        border: 2px solid #dc3545;
+        color: #dc3545;
+        font-weight: bold;
+        border-radius: 6px;
+        margin-top: 10px;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+
+    .form-label-pl {
+        background-color: #fff3cd;
+        border: 2px solid #ffc107;
+        color: #ffc107;
+        font-weight: bold;
+        border-radius: 6px;
+        margin-top: 10px;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+
+    .form-label-detail {
+        background-color: #cff4fc;
+        border: 2px solid #0dcaf0;
+        color: #0dcaf0;
+        font-weight: bold;
+        border-radius: 6px;
+        margin-top: 10px;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+    </style>

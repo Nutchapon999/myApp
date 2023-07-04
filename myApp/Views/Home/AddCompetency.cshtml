@@ -2,45 +2,137 @@
 @{
     ViewBag.Title = "AddCompetency";
 }
-
+<link rel="stylesheet" href="/CSS/Style.css">
+<div class="m-3 rounded-3" style="background-color: #cce5ff">
+    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("IDPGroup")">
+                    <i class="fa fa-book" style="color: #4083be"></i> <strong style="color: #4083be">IDP Group</strong>
+                    <span class="visually-hidden">Home</span>
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" style="color: #4083be" href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })"><strong>แก้ไข Competency</strong></a>
+            </li>
+        </ol>
+    </nav>
+</div>
 <main>
     <div class="card shadow border-0 m-3">
         <div class="card-header text-center border-0 py-3" style="background-color: #fff3cd;">
-            <i class="fa fa-list-alt text-warning" style="font-size: 60px;"></i>
-            <h1><strong>เพิ่ม Competency</strong></h1>
+            <i class="fa fa-stack-overflow" style="font-size: 60px; color: #dcb456 "></i>
+            <h1 style="color: #dcb456 "><strong>แก้ไข Competency</strong></h1>
         </div>
         <div class="card-body border-0">
-            <a href="@Url.Action("SelectCompetency", new { id = ViewBag.IDPGroupId })" class="btn btn-success mb-3 btn-lg" style="width: auto; border-radius: 2rem"><i class="fa fa-plus" aria-hidden="true"><strong> เพิ่ม</strong></i></a>
-            <table class="table table-hover table-responsive" id="myTable">
-                <thead class="table-primary">
-                    <tr>
-                        <th>รหัส Competency</th>
-                        <th>ชื่อ Competency</th>
-                        <th>Pl</th>
-                        <th>ความสำคัญ</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var cmptyitm in Model)
-                    {
+            @using (Html.BeginForm("AddCompetency", "Home", new { idpGroupId = ViewBag.IDPGroupId }, FormMethod.Post))
+            {
+
+                <div class="row mb-2">
+                    <div class="col-auto me-auto">
+
+                    </div>
+                    <div class="col-auto">
+                        <a href="@Url.Action("SelectCompetency", new { id = ViewBag.IDPGroupId })" class="btn shadow-sm mb-2 me-2 btn-lg active-link" style="background-color: #d4edda; width: auto">
+                            <i class="fa fa-plus text-success" aria-hidden="true"><strong> เพิ่ม</strong></i>
+                        </a>
+                        <button type="submit" class="btn btn-lg active-link-submit shadow-sm mb-2" style="width: auto; background-color: #cce5ff">
+                            <i class="fa fa-save" style="color: #4083be" aria-hidden="true"><strong style="color: #4083be"> บักทึก</strong></i>
+                        </button>
+                    </div>
+                </div>
+
+                <table class="table table-hover table-responsive table-striped" id="myTable">
+                    <thead class="table-primary">
                         <tr>
-                            <td scope="row">@cmptyitm.CompetencyId</td>
-                            <td>@cmptyitm.Competency.CompetencyNameTH</td>
-                            <td>@cmptyitm.Pl</td>
-                            <td>@cmptyitm.Priority</td>
-                            <td>
-                                <a href="@Url.Action("DeleteCompetencyItem", new { id = cmptyitm.CompetencyItemId })" class="btn btn-danger" title="ลบ"><i class="fa fa-trash" aria-hidden="true"></i></a>
-                            </td>
+                            <th width="10%">รหัส Competency</th>
+                            <th width="60%">ชื่อ Competency</th>
+                            <th width="10%">Pl</th>
+                            <th width="10%">ความสำคัญ</th>
+                            <th width="5%"></th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-            <a href="@Url.Action("IDPGroup")" class="btn btn-danger btn-lg" style="width: auto; border-radius: 2rem">ออก</a>
+                    </thead>
+                    <tbody>
+                        @foreach (var cmptyitm in Model)
+                        {
+                            <tr style="@(cmptyitm.Critical ? "background-color: #d4edda;" : "background-color: none;")">
+                                <td scope="row">@cmptyitm.CompetencyId</td>
+                                <td>@cmptyitm.Competency.CompetencyNameTH</td>
+                                <td>
+                                    <select class="form-select" name="competencyItems[@cmptyitm.CompetencyItemId].Pl">
+                                        <option value="1" @(cmptyitm.Pl == "1" ? "selected" : "")>1</option>
+                                        <option value="2" @(cmptyitm.Pl == "2" ? "selected" : "")>2</option>
+                                        <option value="3" @(cmptyitm.Pl == "3" ? "selected" : "")>3</option>
+                                        <option value="4" @(cmptyitm.Pl == "4" ? "selected" : "")>4</option>
+                                        <option value="5" @(cmptyitm.Pl == "5" ? "selected" : "")>5</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-select" name="competencyItems[@cmptyitm.CompetencyItemId].Critical">
+                                        <option value="false" @(cmptyitm.Critical == false ? "selected" : "")></option>
+                                        <option value="true" @(cmptyitm.Critical == true ? "selected" : "")>O</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <button id="link" type="button" class="btn  active-link-delete" data-bs-toggle="modal" style="background-color: #f8d7da" data-bs-target="#deleteModal-@cmptyitm.CompetencyItemId" title="ลบ @cmptyitm.CompetencyId">
+                                        <i class="fa fa-trash" style="color: #dc3545 " aria-hidden="true"></i>
+                                    </button>
+                                    <div class="modal fade" id="deleteModal-@cmptyitm.CompetencyItemId" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-4">ต้องการที่จะลบรายวิชานี้หรือไม่?</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <h5>รหัส Competency: @cmptyitm.CompetencyItemId</h5>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                                                    <a href="@Url.Action("DeleteCompetencyItem", new { id = cmptyitm.CompetencyItemId })" class="btn btn-danger">ยืนยัน</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <div class="row mt-3">
+                    <div class="col-auto me-auto">
+                        <a href="@Url.Action("IDPGroup")" class="btn btn-lg active-link-back shadow-sm" style="width: auto; background-color: #f8d7da">
+                            <i class="fa fa-arrow-left" style="color: #dc3545" aria-hidden="true">  <strong style="color: #dc3545"> กลับ</strong></i>
+                        </a>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-lg active-link-submit shadow-sm" style="width: auto; background-color: #cce5ff">
+                            <i class="fa fa-save" style="color: #4083be" aria-hidden="true"><strong style="color: #4083be"> บักทึก</strong></i>
+                        </button>
+                    </div>
+                </div>
+
+
+            }
         </div>
     </div>
 </main>
-
+<div class="m-3 rounded-3" style="background-color: #cce5ff">
+    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("IDPGroup")">
+                    <i class="fa fa-book" style="color: #4083be"></i> <strong style="color: #4083be">IDP Group</strong>
+                    <span class="visually-hidden">Home</span>
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" style="color: #4083be" href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })"><strong>แก้ไข Competency</strong></a>
+            </li>
+        </ol>
+    </nav>
+</div>
 <script src="~/Scripts/jquery-3.4.1.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
@@ -52,10 +144,62 @@
     js(document).ready(function () {
         js('#myTable').DataTable({
             language: {
-                search: "ค้นหา:", // Change the search label here
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
             },
-           
 
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
+        });
+
+
+    });
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $('select[name^="competencyItems"]').change(function () {
+            $(this).closest('form').submit();
         });
     });
 </script>
+<style>
+    .active-link:hover {
+        transform: scale(1.05);
+        border-color: #198754;
+    }
+
+    .active-link:active {
+        transform: scale(.95);
+        border-color: #198754;
+    }
+
+    .active-link-delete:hover {
+        transform: scale(1.25);
+        border-color: #dc3545;
+    }
+
+    .active-link-delete:active {
+        transform: scale(1);
+    }
+
+    .active-link-submit:hover {
+        transform: scale(1.05);
+        border-color: #4083be;
+    }
+
+    .active-link-submit:active {
+        transform: scale(.95);
+    }
+
+    .active-link-back:hover {
+        transform: scale(1.05);
+        border-color: #dc3545;
+    }
+
+    .active-link-back:active {
+        transform: scale(.95);
+    }
+</style>
