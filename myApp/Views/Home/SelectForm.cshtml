@@ -11,11 +11,14 @@
     <div class="list-group">
         @foreach (var enroll in Model)
         {
-            
-            <a href="@Url.Action("Form", new { id = ViewBag.Id, enrollmentId = enroll.EnrollId })" class="list-group-item list-group-item-action">@enroll.IDPGroupId | @enroll.IDPGroup.IDPGroupName</a>
+            <a href="@Url.Action("Form", new { id = ViewBag.Id, enrollmentId = enroll.EnrollId })"
+               class="list-group-item list-group-item-action @(enroll.Finish ? "disabled" : "")">
+                @enroll.IDPGroupId | @enroll.IDPGroup.IDPGroupName | @enroll.Finish
+            </a>
         }
     </div>
 </div>
+
 
 <style>
     .list-group-item-action:hover {
@@ -28,13 +31,3 @@
         pointer-events: none;
     }
 </style>
-
-@functions {
-    public bool IsDisabled(string id, int enrollmentId)
-    {
-        bool formSubmitted = ViewBag.FormSubmitted ?? false;
-        // Add your condition here to determine if the anchor tag should be disabled
-        bool shouldDisable = formSubmitted;
-        return shouldDisable;
-    }
-}

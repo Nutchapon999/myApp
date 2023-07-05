@@ -769,7 +769,6 @@ namespace myApp.Controllers
 
             return View(enrollments);
         }
-
         public ActionResult Form(string id, int enrollmentId)
         {
             string prefix = app.GetPrefixById(id);
@@ -792,7 +791,6 @@ namespace myApp.Controllers
             List<Enrollment> enrollments = app.GetFormsById(enrollmentId);
             return View(enrollments);
         }
-
         [HttpPost]
         public ActionResult SaveResultDetails(int enrollId, Dictionary<string, Form> forms)
         {
@@ -817,6 +815,18 @@ namespace myApp.Controllers
             return RedirectToAction("SelectForm", new { id = Id });
         }
 
+
+        //info
+        public ActionResult Info(string id)
+        {
+            int count = app.GetCountEnrollmentById(id);
+
+            ViewBag.Count = count;
+
+            List<Enrollment> enrollments = app.GetInfoEmployee(id);
+
+            return View(enrollments);
+        }
 
 
 

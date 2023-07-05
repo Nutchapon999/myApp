@@ -76,6 +76,9 @@
                             <td>@emp.Company</td>
                             <td>
                                 <div class="btn-group me-2" role="group" aria-label="Second group">
+                                    <a id="link" href="@Url.Action("Info", new { id = emp.Id })" class="btn active-link-info" style="background-color: #cce5ff" title="เพิ่ม IDP Group">
+                                        <i class="fa fa-info" style="color: #4083be " aria-hidden="true"></i>
+                                    </a>
                                     <a id="link" href="@Url.Action("AddIDPGroup", new { id = emp.Id })" class="btn active-link-detail" style="background-color: #d4edda" title="เพิ่ม IDP Group">
                                         <i class="fa fa-book" style="color: #198754 " aria-hidden="true"></i>
                                     </a>
@@ -153,3 +156,21 @@
         });
     });
 </script>
+<style>
+    .active-link-info:hover {
+        transform: scale(1.25);
+        border: 1px solid #4083be;
+    }
+
+    .active-link-info:active {
+        transform: scale(1);
+    }
+    .active-link-upload:hover {
+        transform: scale(1.05);
+        border: 3px solid #4083be;
+    }
+
+    .active-link-upload:active {
+        transform: scale(.95);
+    }
+</style>

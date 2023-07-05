@@ -1,0 +1,273 @@
+﻿@model IEnumerable<myApp.Models.Enrollment>
+@{
+    ViewBag.Title = "Info";
+}
+
+<h2>Info</h2>
+
+@{
+    var enrollmentsGrouped = Model.GroupBy(e => e.EnrollId);
+}
+
+@foreach (var group in enrollmentsGrouped)
+{
+    <h3>Enrollment ID: @group.Key</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th rowspan="2">Critical</th>
+                <th rowspan="2">Competency ID</th>
+                <th rowspan="2">Competency Name</th>
+                <th rowspan="2">R</th>
+                <th rowspan="2">A</th>
+                <th colspan="2">GAP</th>
+                <th rowspan="2">Priority</th>
+                <th rowspan="2">Plan</th>
+                <th rowspan="2">Plan Description</th>
+                <th colspan="4">Quarter</th>
+                <th rowspan="2">Result Plan</th>
+            </tr>
+            <tr>
+                <th>-</th>
+                <th>+</th>
+                <th>Q1</th>
+                <th>Q2</th>
+                <th>Q3</th>
+                <th>Q4</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var enroll in group)
+            {
+                <tr>
+                    <td>
+                        @if (enroll.CompetencyItem.Critical == false)
+                        {
+                            <text></text>
+                        }
+                        else
+                        {
+                            <text>O</text>
+                        }
+                    </td>
+                    <td>@enroll.CompetencyItem.CompetencyId</td>
+                    <td>@enroll.Competency.CompetencyNameTH</td>
+                    <td>@enroll.CompetencyItem.Pl</td>
+                    <td>@enroll.Form.Actual</td>
+                    <td>
+                        @if (enroll.Form.Gap < 0)
+                        {
+                            @enroll.Form.Gap
+                        }
+                    </td>
+                    <td>
+                        @if (enroll.Form.Gap >= 0)
+                        {
+                            @enroll.Form.Gap
+                        }
+                    </td>
+                    <td>@enroll.Form.Priority</td>
+                    <td>@enroll.Form.Plan</td>
+                    <td>@enroll.Form.PlanDesc</td>
+                    <td>
+                        @if (enroll.Form.Quarter == "Q1")
+                        {
+                            <i class="fa fa-check" aria-hidden="true"></i>
+                        }
+                    </td>
+                    <td>
+                        @if (enroll.Form.Quarter == "Q2")
+                        {
+                            <i class="fa fa-check" aria-hidden="true"></i>
+                        }
+                    </td>
+                    <td>
+                        @if (enroll.Form.Quarter == "Q3")
+                        {
+                            <i class="fa fa-check" aria-hidden="true"></i>
+                        }
+                    </td>
+                    <td>
+                        @if (enroll.Form.Quarter == "Q4")
+                        {
+                            <i class="fa fa-check" aria-hidden="true"></i>
+                        }
+                    </td>
+                    <td>@enroll.Form.RstPlan</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="container" style="background-color: #96D4D4">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <canvas id="pieChart-@group.Key"></canvas>
+        <script>
+            var competencyData = {
+                labels: [@foreach (var enroll in group) { <text>'@enroll.Competency.CompetencyNameTH'</text>if (!ReferenceEquals(enroll, group.Last())) { <text>,</text> } }],
+                datasets: [{
+                    label: 'Actual',
+                    data: [@foreach (var enroll in group) { <text>@(enroll.Form.Actual)</text>if (!ReferenceEquals(enroll, group.Last())) { <text>,</text> } }],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.5)',
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                    ],
+                    borderWidth: 2,
+                }]
+            };
+
+            var pieChartOptions = {
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Competency Chart',
+                    },
+                    labels: {
+                        render: 'outside',
+                        arc: true,
+                        fontColor: 'black',
+                        fontStyle: 'bold',
+                        position: 'outside',
+                    },
+                },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 5,
+                        stepSize: 1,
+                        ticks: {
+                            precision: 0,
+                        },
+                    },
+                },
+            };
+
+            var pieChart = new Chart(document.getElementById('pieChart-@group.Key'), {
+                type: 'radar',
+                data: competencyData,
+                options: pieChartOptions
+            });
+
+        </script>
+    </div>
+
+}
+@{
+    var totalEnrollmentCount = enrollmentsGrouped.Sum(g => g.Count(enroll => enroll.Finish));
+    var competencyPassCount = enrollmentsGrouped.Sum(g => g.Count(enroll => enroll.Finish && enroll.Form.Actual >= Convert.ToInt32(enroll.CompetencyItem.Pl)));
+    var competencyPassPercentage = (competencyPassCount * 100.0) / totalEnrollmentCount;
+}
+
+<table>
+    <tbody>
+        <tr>
+            <th>Competency All</th>
+            <td>@totalEnrollmentCount</td>
+        </tr>
+        <tr>
+            <th>Competency Pass</th>
+            <td>@competencyPassCount</td>
+        </tr>
+        <tr>
+            <th>% Competency</th>
+            <td>@competencyPassPercentage.ToString("0.00")%</td>
+        </tr>
+        <tr>
+            <th>>100%</th>
+            <td rowspan="3">
+                @if (competencyPassPercentage >= 100)
+                {
+                    <text>M</text>
+                }
+                else if (competencyPassPercentage < 100 && competencyPassPercentage >= 70)
+                {
+                    <text>C</text>
+                }
+                else
+                {
+                    <text>L</text>
+                }
+            </td>
+        </tr>
+        <tr>
+            <th>>70%&#60;100%</th>
+        </tr>
+        <tr>
+            <th>&#60;70%</th>
+        </tr>
+    </tbody>
+</table>
+<div class="container" style="width: 800px; height:800px">
+    <canvas id="chart"></canvas>
+</div>
+
+<style>
+    table, th, td {
+        border: 1px solid white;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        background-color: #96D4D4;
+    }
+
+    .dashboard {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        background-color: #f2f2f2;
+        padding: 20px;
+    }
+
+    .dashboard-item {
+        text-align: center;
+    }
+
+    .dashboard-item-icon {
+        font-size: 48px;
+        margin-bottom: 10px;
+    }
+
+    .dashboard-item-value {
+        font-size: 24px;
+    }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    var canvas = document.getElementById("chart");
+
+    var competencyAll = @totalEnrollmentCount;
+    var competencyPass = @competencyPassCount;
+    var competencyFail = competencyAll - competencyPass;
+
+    var maxScale = competencyAll > 0 ? competencyAll : 1;
+
+    var chart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: ['Pass', 'Fail'],
+            datasets: [{
+                label: 'Competency Result',
+                data: [competencyPass, competencyFail],
+                backgroundColor: ['#4bc0c0', '#ff6384'],
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: maxScale
+                }
+            },
+            animation: {
+                duration: 1000, // Animation duration in milliseconds
+                easing: 'easeOutQuart' // Animation easing function
+            }
+        }
+    });
+</script>
+
+

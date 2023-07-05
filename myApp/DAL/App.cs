@@ -889,7 +889,8 @@ namespace myApp.DAL
 
                 foreach (IDPGroup iDPGroup in selectedIDPGroups)
                 {
-                    string query = "INSERT INTO USER_ENROLL (IDP_GROUP_ID, ID) VALUES (@IDPGroupId, @Id)";
+                    string query = "INSERT INTO USER_ENROLL (IDP_GROUP_ID, ID, COMPETENCY_ALL, COMPETENCY_PASS, COMPETENCY_PER, FINISH) VALUES " +
+                        "(@IDPGroupId, @Id, 0, 0, 0, 0)";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -981,10 +982,10 @@ namespace myApp.DAL
             using (SqlCommand command = new SqlCommand())
             {
                 command.Connection = connection;
-                command.CommandText = "SELECT EN.ENROLL_ID, EN.IDP_GROUP_ID, G.IDP_GROUP_NAME " +
-                                       "FROM USER_ENROLL EN " +
-                                       "JOIN IDP_GROUP G ON EN.IDP_GROUP_ID = G.IDP_GROUP_ID " +
-                                       "WHERE EN.ID = @id";
+                command.CommandText = "SELECT EN.ENROLL_ID, EN.IDP_GROUP_ID, G.IDP_GROUP_NAME, CAST(EN.FINISH AS BIT) AS FINISH " +
+                                      "FROM USER_ENROLL EN " +
+                                      "JOIN IDP_GROUP G ON EN.IDP_GROUP_ID = G.IDP_GROUP_ID " +
+                                      "WHERE EN.ID = @id";
                 command.Parameters.AddWithValue("@id", id);
 
                 connection.Open();
@@ -996,7 +997,7 @@ namespace myApp.DAL
                         Enrollment enrollment = new Enrollment();
                         enrollment.EnrollId = (int)reader["ENROLL_ID"];
                         enrollment.IDPGroupId = (string)reader["IDP_GROUP_ID"];
-                        //enrollment.student_id = (int)reader["student_id"];
+                        enrollment.Finish = (bool)reader["FINISH"];
 
                         IDPGroup iDPGroup = new IDPGroup();
                         iDPGroup.IDPGroupName = (string)reader["IDP_GROUP_NAME"];
@@ -1010,6 +1011,7 @@ namespace myApp.DAL
 
             return enrollments;
         }
+
         public int GetCountEnrolled(string id)
         {
             int enrolled = 0;
@@ -1069,12 +1071,12 @@ namespace myApp.DAL
                         iDPGroup.Year = (string)reader["YEAR"];
 
                         CompetencyItem competencyItem = new CompetencyItem();
-                        competencyItem.CompetencyId = (string)reader["COMPETENCY_ID"];
-                        competencyItem.Pl = (string)reader["PL"];
-                        competencyItem.Critical = (bool)reader["CRITICAL"];
+                        competencyItem.CompetencyId = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_ID")) ? null : (string)reader["COMPETENCY_ID"];
+                        competencyItem.Pl = reader.IsDBNull(reader.GetOrdinal("PL")) ? null : (string)reader["PL"];
+                        competencyItem.Critical = reader.IsDBNull(reader.GetOrdinal("CRITICAL")) ? false : (bool)reader["CRITICAL"];
 
                         Competency competency = new Competency();
-                        competency.CompetencyNameTH = (string)reader["COMPETENCY_NAME_TH"];
+                        competency.CompetencyNameTH = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_NAME_TH")) ? null : (string)reader["COMPETENCY_NAME_TH"];
 
                         Form form = new Form();
                         form.Requirement = reader.IsDBNull(reader.GetOrdinal("REQUIREMENT")) ? 0 : (int)reader["REQUIREMENT"];
@@ -1117,7 +1119,7 @@ namespace myApp.DAL
                         command.Parameters.AddWithValue("@CompetencyId", form.CompetencyId);
                         command.Parameters.AddWithValue("@Requir", form.Requirement);
                         command.Parameters.AddWithValue("@Actual", form.Actual);
-                        command.Parameters.AddWithValue("@Gap", form.Gap == 0 ? DBNull.Value : (object)(form.Actual - form.Requirement));
+                        command.Parameters.AddWithValue("@Gap", form.Actual - form.Requirement);
                         command.Parameters.AddWithValue("@Priority", form.Priority ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@Plan", form.Plan ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@PlanDesc", form.PlanDesc ?? (object)DBNull.Value);
@@ -1387,7 +1389,95 @@ namespace myApp.DAL
 
             return position;
         }
+        public List<Enrollment> GetInfoEmployee(string id)
+        {
+            List<Enrollment> enrollments = new List<Enrollment>();
 
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand())
+            {
+                command.Connection = connection;
+                command.CommandText = "SELECT EN.ENROLL_ID, EN.ID, EN.IDP_GROUP_ID, G.IDP_GROUP_NAME, G.YEAR, I.COMPETENCY_ID, C.COMPETENCY_NAME_TH, I.PL, " +
+                    "I.CRITICAL, F.FORM_ID AS ENROLL_DETAIL, F.REQUIREMENT, " +
+                    "F.ACTUAL, F.GAP, F.PRIORITY, F.[PLAN], F.PLAN_DESC, F.QUARTER, F.RST_PLAN, EN.COMPETENCY_ALL, EN.COMPETENCY_PASS, EN.COMPETENCY_PER, " +
+                    "EN.FINISH " +
+                    "FROM USER_ENROLL EN " +
+                    "LEFT JOIN MAS_USER_HR HR ON EN.ID = HR.ID " +
+                    "LEFT JOIN IDP_GROUP G ON EN.IDP_GROUP_ID = G.IDP_GROUP_ID " +
+                    "LEFT JOIN COMPTY_ITEM I ON I.IDP_GROUP_ID = G.IDP_GROUP_ID " +
+                    "LEFT JOIN COMPTY C ON I.COMPETENCY_ID = C.COMPETENCY_ID " +
+                    "LEFT JOIN FORM F ON HR.ID = F.ID AND C.COMPETENCY_ID = F.COMPETENCY_ID " +
+                    "WHERE EN.ID = @Id";
+                command.Parameters.AddWithValue("@Id", id);
+                connection.Open();
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Enrollment enrollment = new Enrollment();
+                        enrollment.EnrollId = (int)reader["ENROLL_ID"];
+                        enrollment.IDPGroupId = (string)reader["IDP_GROUP_ID"];
+                        enrollment.Id = (string)reader["ID"];
+                        enrollment.CompetencyAll = (int)reader["COMPETENCY_ALL"];
+                        enrollment.CompetencyPass = (int)reader["COMPETENCY_PASS"];
+                        enrollment.CompetencyPer = (int)reader["COMPETENCY_PER"];
+                        enrollment.Finish = (bool)reader["FINISH"];
+
+                        IDPGroup iDPGroup = new IDPGroup();
+                        iDPGroup.IDPGroupName = (string)reader["IDP_GROUP_NAME"];
+                        iDPGroup.Year = (string)reader["YEAR"];
+
+                        CompetencyItem competencyItem = new CompetencyItem();
+                        competencyItem.CompetencyId = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_ID")) ? null : (string)reader["COMPETENCY_ID"];
+                        competencyItem.Pl = reader.IsDBNull(reader.GetOrdinal("PL")) ? null : (string)reader["PL"];
+                        competencyItem.Critical = reader.IsDBNull(reader.GetOrdinal("CRITICAL")) ? false : (bool)reader["CRITICAL"];
+
+                        Competency competency = new Competency();
+                        competency.CompetencyNameTH = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_NAME_TH")) ? null : (string)reader["COMPETENCY_NAME_TH"];
+
+                        Form form = new Form();
+                        form.Requirement = reader.IsDBNull(reader.GetOrdinal("REQUIREMENT")) ? 0 : (int)reader["REQUIREMENT"];
+                        form.Actual = reader.IsDBNull(reader.GetOrdinal("ACTUAL")) ? 0 : (int)reader["ACTUAL"];
+                        form.Gap = reader.IsDBNull(reader.GetOrdinal("GAP")) ? 0 : (int)reader["GAP"];
+                        form.Priority = reader.IsDBNull(reader.GetOrdinal("PRIORITY")) ? null : (string)reader["PRIORITY"];
+                        form.Plan = reader.IsDBNull(reader.GetOrdinal("PLAN")) ? null : (string)reader["PLAN"];
+                        form.PlanDesc = reader.IsDBNull(reader.GetOrdinal("PLAN_DESC")) ? null : (string)reader["PLAN_DESC"];
+                        form.Quarter = reader.IsDBNull(reader.GetOrdinal("QUARTER")) ? null : (string)reader["QUARTER"];
+                        form.RstPlan = reader.IsDBNull(reader.GetOrdinal("RST_PLAN")) ? null : (string)reader["RST_PLAN"];
+
+                        enrollment.IDPGroup = iDPGroup;
+                        enrollment.CompetencyItem = competencyItem;
+                        enrollment.Competency = competency;
+                        enrollment.Form = form;
+
+                        enrollments.Add(enrollment);
+                    }
+                }
+            }
+
+            return enrollments;
+        }
+        public int GetCountEnrollmentById(string id)
+        {
+            int enrolled = 0;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM USER_ENROLL WHERE ID = @Id", connection))
+            {
+                command.Parameters.AddWithValue("@Id", id);
+
+                connection.Open();
+
+                object result = command.ExecuteScalar();
+                if (result != null && int.TryParse(result.ToString(), out int count))
+                {
+                    enrolled = count;
+                }
+            }
+
+            return enrolled;
+        }
 
         public List<Enrollment> GetEnrollments(string idpGroupId)
         {

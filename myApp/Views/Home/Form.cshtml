@@ -53,6 +53,7 @@
                         </td>
                         <td>
                             <select name="forms[@i].Actual" onchange="calculateGap(this)">
+                                <option value=""></option>
                                 <option value="1" @(enroll.Form.Actual == 1 ? "selected" : "")>1</option>
                                 <option value="2" @(enroll.Form.Actual == 2 ? "selected" : "")>2</option>
                                 <option value="3" @(enroll.Form.Actual == 3 ? "selected" : "")>3</option>
@@ -242,7 +243,7 @@
 
 
     //เข้ามา Update
-    function updateOtherTableValues(rowIndex, gap) {
+    /*function updateOtherTableValues(rowIndex, gap) {
         var otherRows = document.querySelectorAll("tr.other-table-row");
         otherRows.forEach(function (otherRow) {
             var negativeGapCell = otherRow.querySelector("td:nth-child(7) span");
@@ -250,7 +251,7 @@
             negativeGapCell.textContent = (gap < 0) ? gap : '';
             positiveGapCell.textContent = (gap > 0) ? gap : (gap === 0) ? '0' : '';
         });
-    }
+    }*/
 </script>
 
 

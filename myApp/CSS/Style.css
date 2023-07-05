@@ -9,7 +9,7 @@
 
 .active-link-upload:hover {
     transform: scale(1.05);
-    border: 1px solid #4083be;
+    border: 3px solid #4083be;
 }
 
 .active-link-upload:active {
@@ -40,6 +40,14 @@
 }
 
 .active-link-detail:active {
+    transform: scale(1);
+}
+.active-link-info:hover {
+    transform: scale(1.25);
+    border: 1px solid #4083be;
+}
+
+.active-link-info:active {
     transform: scale(1);
 }
 
