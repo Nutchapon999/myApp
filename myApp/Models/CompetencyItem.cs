@@ -5,9 +5,9 @@ using System.Web;
 
 namespace myApp.Models
 {
-    public class CompetencyItem
+    public class IDPGroupItem
     {
-        public int CompetencyItemId { get; set; }   
+        public int IDPGroupItemId { get; set; }   
         public string CompetencyId { get; set; }
         public string IDPGroupId { get; set; }
         public string Pl { get; set; }

@@ -1,101 +1,10 @@
-﻿.active-link:hover {
-    transform: scale(1.05);
-    border: 3px solid #198754;
+﻿
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai&display=swap');
+
+body {
+    font-family: 'Noto Serif Thai', serif;
 }
 
-.active-link:active {
-    transform: scale(.95);
-}
-
-.active-link-upload:hover {
-    transform: scale(1.05);
-    border: 3px solid #4083be;
-}
-
-.active-link-upload:active {
-    transform: scale(.95);
-}
-
-.active-link-competency:hover {
-    transform: scale(1.25);
-    border: 1px solid #0dcaf0;
-}
-
-.active-link-competency:active {
-    transform: scale(1);
-}
-
-.active-link-delete:hover {
-    transform: scale(1.25);
-    border: 1px solid #dc3545;
-}
-
-.active-link-delete:active {
-    transform: scale(1);
-}
-
-.active-link-detail:hover {
-    transform: scale(1.25);
-    border: 1px solid #198754;
-}
-
-.active-link-detail:active {
-    transform: scale(1);
-}
-.active-link-info:hover {
-    transform: scale(1.25);
-    border: 1px solid #4083be;
-}
-
-.active-link-info:active {
-    transform: scale(1);
-}
-
-.active-link-edit:hover {
-    transform: scale(1.25);
-    border: 1px solid #4083be;
-}
-
-.active-link-edit:active {
-    transform: scale(1);
-}
-
-.active-link-employee:hover,
-.active-link-form:hover{
-    transform: scale(1.25);
-    border: 1px solid #ffc107;
-}
-
-.active-link-employee:active,
-.active-link-form:active{
-    transform: scale(1);
-}
-.active-link-delete:hover {
-    transform: scale(1.25);
-    border: 1px solid #dc3545;
-}
-
-.active-link-delete:active {
-    transform: scale(1);
-}
-
-.active-link-submit:hover {
-    transform: scale(1.05);
-    border: 3px solid #4083be;
-}
-
-.active-link-submit:active {
-    transform: scale(.95);
-}
-
-.active-link-back:hover {
-    transform: scale(1.05);
-    border: 3px solid #dc3545;
-}
-
-.active-link-back:active {
-    transform: scale(.95);
-}
 .dataTables_length, .dataTables_filter {
     margin-bottom: 10px
 }
@@ -112,30 +21,31 @@
 }
 
 
-.dataTables_wrapper .dataTables_filter input[type="search"]:hover,
-.dataTables_wrapper .dataTables_filter input[type="search"]:focus {
-    width: 100%;
-}
+    .dataTables_wrapper .dataTables_filter input[type="search"]:hover,
+    .dataTables_wrapper .dataTables_filter input[type="search"]:focus {
+        width: 100%;
+    }
 
 .dataTables_wrapper .dataTables_length label {
-    color: #0dcaf0;
+    color: #2D4686;
     font-weight: bold;
     padding: 0.3rem;
     padding-left: 1rem;
     padding-right: 1rem;
     border-radius: 7px;
-    background-color: #cff4fc;
+    background-color: #C8E8FF;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
 
-.dataTables_wrapper .dataTables_length label select {
-    border: none;
-    border-radius: 5px;
-    background-color: #eeeeee60;
-}
-.dataTables_wrapper .dataTables_length label select:hover {
-    transform: scale(1.1);
-}
+    .dataTables_wrapper .dataTables_length label select {
+        border: none;
+        border-radius: 5px;
+        background-color: #eeeeee60;
+    }
+
+        .dataTables_wrapper .dataTables_length label select:hover {
+            transform: scale(1.1);
+        }
 
 .entries-label::before {
     content: '\f06e  แสดงทีละ';
@@ -150,13 +60,13 @@
     content: 'แถว';
     display: inline;
 }
+
 .dataTables_wrapper .dataTables_paginate {
     margin-top: 10px;
     background-color: #eeeeee60;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     border-radius: 7px;
     color: #198754;
-    
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button.current,
@@ -178,7 +88,6 @@
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     border-radius: 7px;
     color: #198754;
-  
     padding: 0.5rem;
     margin-top: 10px;
 }

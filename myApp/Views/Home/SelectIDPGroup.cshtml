@@ -2,22 +2,48 @@
 @{
     ViewBag.Title = "SelectIDPGroup";
 }
-
+<link rel="stylesheet" href="/CSS/Style.css">
+<div class="m-3 rounded-3" style="background-color: #84B5E9">
+    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("Employee")">
+                    <i class="fa fa-users" style="color: #2D4686"></i> <strong style="color: #2D4686">พนักงาน</strong>
+                    <span class="visually-hidden">Home</span>
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" style="color: #2D4686" href="@Url.Action("AddIDPGroup", new { id = ViewBag.Id })"><strong>เพิ่ม IDP Group</strong></a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" style="color: #2D4686" href="@Url.Action("SelectIDPGroup", new { id = ViewBag.Id })"><strong>เลือก IDP Group</strong></a>
+            </li>
+        </ol>
+    </nav>
+</div>
 <main>
     @using (Html.BeginForm("SelectedIDPGroup", "Home", new { userId = ViewBag.Id }, FormMethod.Post))
     {
         <div class="card shadow border-0 m-3">
-            <div class="card-header text-center border-0 py-3" style="background-color: #fff3cd;">
-                <i class="fa fa-book text-warning" style="font-size: 60px;"></i>
-                <h1><strong>IDP Group</strong></h1>
+            <div class="card-header text-center border-0 py-3" style="background-color: #86E49D;">
+                <i class="fa fa-book" style="font-size: 60px; color: #006B21 "></i>
+                <h1 style="color: #006B21 "><strong>เลือก IDP Group</strong></h1>
             </div>
             <div class="card-body">
-                <table class="table table-hover table-responsive" id="myTable">
-                    <thead class="table-primary">
+                <div class="mb-2">
+                    <button type="submit" class="btn btn-lg active-link-submit shadow-sm" style="width: auto; background-color: #84B5E9">
+                        <i class="fa fa-save" style="color: #2D4686" aria-hidden="true"><strong style="color: #2D4686"> บักทึก</strong></i>
+                    </button>
+                    <a href="@Url.Action("AddIDPGroup", new { id = ViewBag.Id })" class="btn btn-lg active-link-back shadow-sm" style="width: auto; background-color: #D893A3">
+                        <i class="fa fa-arrow-left" style="color: #B30021" aria-hidden="true">  <strong style="color: #B30021"> กลับ</strong></i>
+                    </a>
+                </div>
+                <table class="table table-hover table-responsive table-striped" id="myTable">
+                    <thead style="background-color: #84B5E9; color: #2D4686">
                         <tr>
-                            <th width="15%"></th>
+                            <th width="5%"></th>
                             <th width="10%">รหัส IDP Group</th>
-                            <th width="55%">ชื่อ IDP Group</th>
+                            <th width="65%">ชื่อ IDP Group</th>
                             <th width="10%">จำนวนคน</th>
                             <th width="10%">ปี</th>
                         </tr>
@@ -39,10 +65,98 @@
                         }
                     </tbody>
                 </table>
-                <button type="submit" class="btn btn-primary">ยืนยัน</button>
-                <a href="@Url.Action("AddIDPGroup", new { id = ViewBag.Id })" class="btn btn-danger">ยกเลิก</a>
+                <div class="mt-2">
+                    <button type="submit" class="btn btn-lg active-link-submit shadow-sm" style="width: auto; background-color: #84B5E9">
+                        <i class="fa fa-save" style="color: #2D4686" aria-hidden="true"><strong style="color: #2D4686"> บักทึก</strong></i>
+                    </button>
+                    <a href="@Url.Action("AddIDPGroup", new { id = ViewBag.Id })" class="btn btn-lg active-link-back shadow-sm" style="width: auto; background-color: #D893A3">
+                        <i class="fa fa-arrow-left" style="color: #B30021" aria-hidden="true">  <strong style="color: #B30021"> กลับ</strong></i>
+                    </a>
+                </div>
             </div>
         </div>
     }
 </main>
+<div class="m-3 rounded-3" style="background-color: #84B5E9">
+    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("Employee")">
+                    <i class="fa fa-users" style="color: #2D4686"></i> <strong style="color: #2D4686">พนักงาน</strong>
+                    <span class="visually-hidden">Home</span>
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" style="color: #2D4686" href="@Url.Action("AddIDPGroup", new { id = ViewBag.Id })"><strong>เพิ่ม IDP Group</strong></a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" style="color: #2D4686" href="@Url.Action("SelectIDPGroup", new { id = ViewBag.Id })"><strong>เลือก IDP Group</strong></a>
+            </li>
+        </ol>
+    </nav>
+</div>
+<script src="~/Scripts/jquery-3.7.0.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script type="text/javascript">
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+        js('#myTable').DataTable({
+            language: {
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
+            },
 
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
+        });
+
+
+    });
+</script>
+<style>
+    .form-check-input[type="checkbox"] {
+        width: 25px;
+        height: 25px;
+    }
+    .active-link:hover {
+        transform: scale(1.05);
+        border-color: #006B21;
+    }
+
+    .active-link:active {
+        transform: scale(.95);
+    }
+
+    .active-link-delete:hover {
+        transform: scale(1.25);
+        border-color: #B30021;
+    }
+
+    .active-link-delete:active {
+        transform: scale(1);
+    }
+
+    .active-link-submit:hover {
+        transform: scale(1.05);
+        border-color: #2D4686;
+    }
+
+    .active-link-submit:active {
+        transform: scale(.95);
+    }
+
+    .active-link-back:hover {
+        transform: scale(1.05);
+        border-color: #B30021;
+    }
+
+    .active-link-back:active {
+        transform: scale(.95);
+    }
+</style>

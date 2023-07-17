@@ -3,40 +3,49 @@
     ViewBag.Title = "Employee";
 }
 <link rel="stylesheet" href="/CSS/Style.css">
-<div class="rounded-3 m-3" style="background-color: #cce5ff">
-    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
-        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
-            <li class="breadcrumb-item">
-                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("Employee")">
-                    <i class="fa fa-user" style="color: #4083be"></i> <strong style="color: #4083be">พนักงาน</strong>
-                    <span class="visually-hidden">Home</span>
-                </a>
-            </li>
-        </ol>
-    </nav>
+<div class="sticky-header-breadcrumb">
+    <div class="header-breadcrumb" style="background-color: #2D4686;">
+        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+            <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+                <li class="breadcrumb-item">
+                    <a class="link-body-emphasis text-decoration-none link" href="@Url.Action("Employee")">
+                        <i class="fa fa-users" style="color: #C8E8FF; "></i> <strong style="color: #C8E8FF "> พนักงาน</strong>
+                        <span class="visually-hidden">Home</span>
+                    </a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="text-center sticky-header">
+        <div class="background-container">
+            <i class="fa fa-users topic-icon"></i>
+        </div>
+    </div>
+
 </div>
 <main>
     <div class="card shadow border-0 m-3">
-        <div class="card-header text-center border-0 py-3" style="background-color: #d4edda;">
-            <i class="fa fa-user text-success" style="font-size: 60px;"></i>
-            <h1 class="text-success"><strong>พนักงาน</strong></h1>
-        </div>
-        <div class="card-body border-0">
+        <div class="card-body border-0 mt-4">
             <div class="row mb-2">
-                <div class="col-auto me-auto">
+                <div class="col-4">
 
                 </div>
-                <div class="col-auto">
-                    <a href="@Url.Action("UploadEmployee")" class="btn shadow-sm btn-lg active-link-upload" style="background-color: #cce5ff; width: auto">
-                        <i class="fa fa-upload" style="color: #4083be" aria-hidden="true"><strong style="color: #4083be"> อัปโหลด</strong></i>
+                <div class="col-4 text-center topic-title">
+                    <h1>พนักงาน</h1>
+                </div>
+                <div class="col-4 text-end">
+                    <a href="@Url.Action("UploadEmployee")" class="btn btn-lg active-link-upload">
+                        <i class="fa fa-upload gradient-icon-upload" aria-hidden="true"></i> <strong class="gradient-icon-upload"> อัปโหลด</strong>
                     </a>
                 </div>
             </div>
-            <table class="table table-hover table-responsive table-striped"  id="myTable">
-                <thead class="table-primary" style="font-size: 16px">
+            <table class="table table-hover table-responsive table-striped" id="myTable">
+                <thead style="background-color: #2D4686; color: #C8E8FF">
                     <tr>
-                        <th width="5%">รหัส</th>
-                        <th width="30%">ชื่อพนักงาน</th>
+                        <th width="5%" class="">รหัส</th>
+                        <th width="10%">GUID</th>
+                        <th width="20%">ชื่อพนักงาน</th>
                         <th width="20%">ตำแหน่ง</th>
                         <th width="10%">ตำแหน่งขั้น</th>
                         <th width="20%">ชื่อแผนก</th>
@@ -49,19 +58,19 @@
                     {
                         <tr>
                             <td>@emp.Id</td>
+                            <td>@emp.Result.GUID</td>
                             @if (emp.Prefix == "นาง" || emp.Prefix == "นางสาว")
                             {
                                 <td>
-                                    @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
                                     <i class="fa fa-female" style="color:palevioletred; font-size:large" aria-hidden="true"></i>
+                                    @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
                                 </td>
                             }
                             else if (emp.Prefix == "นาย" || emp.Prefix == " นาย")
                             {
                                 <td>
-
-                                    @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
                                     <i class="fa fa-male" style="color:cornflowerblue; font-size:large" aria-hidden="true"></i>
+                                    @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
                                 </td>
                             }
                             else
@@ -76,17 +85,17 @@
                             <td>@emp.Company</td>
                             <td>
                                 <div class="btn-group me-2" role="group" aria-label="Second group">
-                                    <a id="link" href="@Url.Action("Info", new { id = emp.Id })" class="btn active-link-info" style="background-color: #cce5ff" title="เพิ่ม IDP Group">
-                                        <i class="fa fa-info" style="color: #4083be " aria-hidden="true"></i>
-                                    </a>
-                                    <a id="link" href="@Url.Action("AddIDPGroup", new { id = emp.Id })" class="btn active-link-detail" style="background-color: #d4edda" title="เพิ่ม IDP Group">
-                                        <i class="fa fa-book" style="color: #198754 " aria-hidden="true"></i>
-                                    </a>
-                                    <a id="link" href="@Url.Action("SelectForm", new { id = emp.Id })" class="btn active-link-form" style="background-color: #fff3cd" title="แบบประเมิน">
-                                        <i class="fa fa-file-text" style="color: #ffc107 " aria-hidden="true"></i>
-                                    </a>
-                                    <button id="link" type="button" class="btn  active-link-delete" data-bs-toggle="modal" style="background-color: #f8d7da" data-bs-target="#deleteModal-@emp.Id" title="ลบ">
-                                        <i class="fa fa-trash" style="color: #dc3545 " aria-hidden="true"></i>
+                                    @if (emp.Result.GUID != null)
+                                    {
+                                        <a id="link" href="@Url.Action("Info", new { guid = emp.Result.GUID })" class="btn active-link-info" title="เพิ่ม IDP Group">
+                                            <i class="fa fa-info gradient-text-edit" aria-hidden="true"></i>
+                                        </a>
+                                        <a id="link" href="@Url.Action("SelectForm", new { guid = emp.Result.GUID })" class="btn active-link-form" title="แบบประเมิน">
+                                            <i class="fa fa-file-text gradient-icon-form" aria-hidden="true"></i>
+                                        </a>
+                                    }
+                                    <button id="link" type="button" class="btn  active-link-delete" data-bs-toggle="modal" data-bs-target="#deleteModal-@emp.Id" title="ลบ">
+                                        <i class="fa fa-trash gradient-text-delete" aria-hidden="true"></i>
                                     </button>
                                 </div>
                                 <div class="modal fade" id="deleteModal-@emp.Id" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -115,21 +124,7 @@
         </div>
     </div>
 </main>
-
-<div class="rounded-3 m-3" style="background-color: #cce5ff">
-    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
-        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
-            <li class="breadcrumb-item">
-                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("Employee")">
-                    <i class="fa fa-user" style="color: #4083be"></i> <strong style="color: #4083be">พนักงาน</strong>
-                    <span class="visually-hidden">Home</span>
-                </a>
-            </li>
-        </ol>
-    </nav>
-</div>
-<script src="~/Scripts/jquery-3.7.0.min.js"></script>
-<script src="~/Scripts/jquery-3.7.0.js"></script>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
@@ -157,20 +152,177 @@
     });
 </script>
 <style>
-    .active-link-info:hover {
-        transform: scale(1.25);
-        border: 1px solid #4083be;
+    main {
+        margin-top: -50px;
     }
 
-    .active-link-info:active {
-        transform: scale(1);
-    }
-    .active-link-upload:hover {
-        transform: scale(1.05);
-        border: 3px solid #4083be;
+    #myTable {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     }
 
-    .active-link-upload:active {
+    .background-container {
+        background-color: white; /* Set the white background */
+        display: inline-block; /* Display the container as an inline block to wrap the icon */
+        border-radius: 50%; /* Apply a circular shape to the container */
+        padding: 1rem; /* Add padding around the icon */
+        overflow: hidden; /* Hide any overflow from the circular container */
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px; /* Add a box shadow */
+        margin-top: -50px;
+    }
+
+    .topic-icon {
+        background: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text; /* Clip the background to the text */
+        -webkit-text-fill-color: transparent; /* Make the text transparent to show the background gradient */
+        font-size: 45px;
+        /* Any other styles for the icon, if needed */
+    }
+
+    .topic-title {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: bold;
+    }
+
+        .topic-title h1 {
+            font-weight: bold;
+        }
+
+    .card {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+    .form-label-id {
+        background-color: #f8d7da;
+        border: 2px solid #dc3545;
+        color: #dc3545;
+        font-weight: bold;
+        border-radius: 6px;
+        margin-top: 10px;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+
+    .form-label-pl {
+        background-color: #fff3cd;
+        border: 2px solid #ffc107;
+        color: #ffc107;
+        font-weight: bold;
+        border-radius: 6px;
+        margin-top: 10px;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+
+    .form-label-detail {
+        background-color: #cff4fc;
+        border: 2px solid #0dcaf0;
+        color: #0dcaf0;
+        font-weight: bold;
+        border-radius: 6px;
+        margin-top: 10px;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+
+    .dataTables_scrollBody {
+        overflow-x: scroll;
+    }
+
+    .sticky-header-breadcrumb {
+        position: sticky;
+        border-radius: 0px;
+        z-index: 10;
+        top: 85px;
+    }
+
+    .sticky-header {
+        position: sticky;
+        z-index: 20;
+    }
+
+    .active-link-add,
+    .active-link-upload {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+    .active-link-add:hover {
         transform: scale(.95);
+        border: 2px solid #053a2f;
+    }
+
+    .gradient-icon-add {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-upload:hover {
+        transform: scale(.95);
+        border: 2px solid #2D4686;
+    }
+
+    .gradient-icon-upload {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-info {
+        border: none;
+        background-color: white;
+    }
+
+    .active-link-info:hover {
+        background-color: white;
+        border-bottom: 2px solid #0061ff;
+    }
+
+    .active-link-info:hover i {
+        transform: scale(1.2);
+    }
+    .active-link-form {
+        border: none;
+        background-color: white;
+    }
+
+    .active-link-form:hover {
+        background-color: white;
+        border-bottom: 2px solid #FBB040;
+    }
+
+    .active-link-form:hover i {
+        transform: scale(1.2);
+    }
+
+    .active-link-delete {
+        border: none;
+        background-color: white;
+    }
+
+    .active-link-delete:hover {
+        background-color: white;
+        border-bottom: 2px solid #9B0008;
+    }
+
+    .active-link-delete:hover i {
+        transform: scale(1.2);
+    }
+
+    .gradient-text-edit {
+        background-image: linear-gradient( 0deg, hsl(220deg 100% 47%) 0%, hsl(216deg 100% 47%) 6%, hsl(213deg 100% 48%) 14%, hsl(209deg 100% 48%) 22%, hsl(206deg 100% 48%) 32%, hsl(202deg 100% 49%) 43%, hsl(199deg 100% 49%) 56%, hsl(195deg 100% 49%) 70%, hsl(192deg 100% 50%) 85%, hsl(188deg 100% 50%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .gradient-text-delete {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(357deg 94% 33%) 11%, hsl(358deg 89% 36%) 22%, hsl(358deg 84% 39%) 33%, hsl(358deg 79% 42%) 44%, hsl(359deg 74% 46%) 56%, hsl(359deg 70% 49%) 67%, hsl(359deg 73% 53%) 78%, hsl(360deg 80% 56%) 89%, hsl(0deg 87% 60%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .gradient-icon-form {
+        background-image: linear-gradient( 0deg, hsl(36deg 96% 62%) 0%, hsl(38deg 96% 61%) 11%, hsl(40deg 96% 61%) 22%, hsl(43deg 95% 61%) 33%, hsl(45deg 95% 60%) 44%, hsl(47deg 95% 60%) 56%, hsl(50deg 95% 60%) 67%, hsl(52deg 95% 59%) 78%, hsl(54deg 94% 59%) 89%, hsl(56deg 94% 59%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 </style>

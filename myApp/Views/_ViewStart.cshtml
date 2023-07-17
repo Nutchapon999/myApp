@@ -1,3 +1,4 @@
 ﻿@{
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = ViewContext.RouteData.Values["controller"].ToString() == "Home" ? "~/Views/Shared/_Layout.cshtml" : null;
 }
+

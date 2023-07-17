@@ -33,5 +33,6 @@ namespace myApp.Models
         public string StartWorkDate { get; set; }
 
         public virtual Enrollment Enrollment { get; set; }
+        public virtual Result Result { get; set; }
     }
 }

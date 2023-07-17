@@ -18,8 +18,9 @@ namespace myApp.Models
         public string Year { get; set;}
         [DisplayName("จำนวนคน")]
         public int EmployeeEnrollmentCount { get; set; }
+        public int EmployeeCompetencyCount { get; set; }
 
-        public virtual CompetencyItem CompetencyItem { get; set;}
+        public virtual IDPGroupItem IDPGroupItem { get; set;}
         public virtual Enrollment Enrollment { get; set;}
         public virtual Competency Competency { get; set; }
         public virtual User User { get; set;}

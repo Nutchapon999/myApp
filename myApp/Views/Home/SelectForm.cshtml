@@ -1,24 +1,152 @@
 ﻿@model IEnumerable<myApp.Models.Enrollment>
 @{
     ViewBag.Title = "SelectForm";
+    string current = ViewBag.Guid_1;
     bool formSubmitted = TempData["FormSubmitted"] as bool? ?? false;
     ViewBag.FormSubmitted = formSubmitted;
+    string[] backgroundColors = new string[]
+    {
+            "linear-gradient(\r\n  45deg,\r\n  hsl(36deg 96% 62%) 0%,\r\n  hsl(38deg 96% 61%) 11%,\r\n  hsl(40deg 96% 61%) 22%,\r\n  hsl(43deg 95% 61%) 33%,\r\n  hsl(45deg 95% 60%) 44%,\r\n  hsl(47deg 95% 60%) 56%,\r\n  hsl(50deg 95% 60%) 67%,\r\n  hsl(52deg 95% 59%) 78%,\r\n  hsl(54deg 94% 59%) 89%,\r\n  hsl(56deg 94% 59%) 100%\r\n);",
+            "linear-gradient(\r\n  45deg,\r\n  hsl(335deg 85% 55%) 0%,\r\n  hsl(335deg 86% 57%) 11%,\r\n  hsl(335deg 87% 59%) 22%,\r\n  hsl(334deg 89% 61%) 33%,\r\n  hsl(334deg 90% 63%) 44%,\r\n  hsl(334deg 91% 66%) 56%,\r\n  hsl(334deg 93% 68%) 67%,\r\n  hsl(333deg 95% 70%) 78%,\r\n  hsl(333deg 97% 72%) 89%,\r\n  hsl(333deg 100% 75%) 100%\r\n);",
+            "linear-gradient(\r\n  45deg,\r\n  hsl(4deg 85% 57%) 0%,\r\n  hsl(7deg 86% 58%) 11%,\r\n  hsl(11deg 87% 58%) 22%,\r\n  hsl(14deg 89% 59%) 33%,\r\n  hsl(18deg 90% 59%) 44%,\r\n  hsl(22deg 91% 60%) 56%,\r\n  hsl(25deg 92% 60%) 67%,\r\n  hsl(29deg 93% 61%) 78%,\r\n  hsl(32deg 95% 61%) 89%,\r\n  hsl(36deg 96% 62%) 100%\r\n);",
+            "linear-gradient(\r\n  45deg,\r\n  hsl(233deg 51% 36%) 0%,\r\n  hsl(229deg 55% 38%) 11%,\r\n  hsl(225deg 60% 39%) 22%,\r\n  hsl(221deg 64% 41%) 33%,\r\n  hsl(217deg 69% 42%) 44%,\r\n  hsl(213deg 75% 44%) 56%,\r\n  hsl(209deg 80% 45%) 67%,\r\n  hsl(204deg 86% 46%) 78%,\r\n  hsl(200deg 93% 46%) 89%,\r\n  hsl(196deg 100% 47%) 100%\r\n);"
+    };
+
 }
-
-<h2>SelectForm</h2>
-
-<div class="container" style="width: 500px">
-    <div class="list-group">
-        @foreach (var enroll in Model)
-        {
-            <a href="@Url.Action("Form", new { id = ViewBag.Id, enrollmentId = enroll.EnrollId })"
-               class="list-group-item list-group-item-action @(enroll.Finish ? "disabled" : "")">
-                @enroll.IDPGroupId | @enroll.IDPGroup.IDPGroupName | @enroll.Finish
-            </a>
-        }
-    </div>
+<link href="~/CSS/Style.css"/>
+<div class="sticky-header-breadcrumb">
+    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("Employee")">
+                    <i class="fa fa-users" style="color: #C8E8FF"></i> <strong style="color: #C8E8FF">พนักงาน</strong>
+                    <span class="visually-hidden">Home</span>
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a class="link-body-emphasis fw-semibold text-decoration-none" style="color: #C8E8FF">เลือกแบบประเมิน</a>
+            </li>
+        </ol>
+    </nav>
+</div>
+<div class="container mb-3">
+    <ul class="nav nav-underline" style="width: 300px; background-color: #D5F2E3; border-radius: 3rem; border: 2px solid #006f57">
+        <li>
+            <i class="fa fa-calendar" style="font-size: 20px; color: #D5F2E3; background-color: #006f57; padding: .7rem; border-radius: 50% "></i>
+        </li>
+        <li class="nav-item ms-2">
+            <a class="nav-link year" href="@Url.Action("SelectForm", new { guid = ViewBag.Guid_1 })"><strong>@(DateTime.Now.Year + 543)</strong></a>
+        </li>
+        <li class="nav-item ms-2">
+            <a class="nav-link year" href="@Url.Action("SelectForm", new { guid = ViewBag.Guid_2 })"><strong>@(DateTime.Now.Year + 542)</strong></a>
+        </li>
+    </ul>
 </div>
 
+
+<div class="container px-4" id="custom-cards">
+    
+    @if (Model.Count() == 0)
+    {
+        <div class="alert alert-danger alert-dismissible fade show text-center" role="alert" id="alertBox">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>ไม่มี <strong>IDP Group</strong> ที่ลงทะเบียนไว้
+        </div>
+    }
+<div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5">
+
+    @if (ViewBag.Year == (DateTime.Now.Year + 543).ToString())
+    {
+
+        for (int i = 0; i < Model.Count(); i++)
+        {
+            var enroll = Model.ElementAt(i);
+            string url = Url.Action("Form", new { guid = ViewBag.Guid_1, idpGroupId = enroll.IDPGroupId });
+            string backgroundColor = backgroundColors[i % backgroundColors.Length];
+            <div class="col">
+                <a href="@url" style="">
+                    <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg border-0" style="background: @backgroundColor">
+                        <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+                            <h1 class="lh-1 fw-bold">@enroll.IDPGroupId</h1>
+                            <h3 class="lh-1 fw-bold">@enroll.IDPGroup.IDPGroupName</h3>
+                            <ul class="d-flex list-unstyled mt-5">
+                                <li class="me-auto">
+                                    @if (enroll.Status == "Draft")
+                                    {
+                                        <i class="fa-solid fa-compass-drafting" aria-hidden="true" style="font-size: xx-large; color: #9B0008;"></i>
+                                    }
+                                    else if (enroll.Status == "In Progress")
+                                    {
+                                        <i class="fa-solid fa-pen-to-square fa-beat" aria-hidden="true" style="font-size: xx-large; color: #9B0008;"></i>
+                                    }
+                                    else if (enroll.Status == "Waiting")
+                                    {
+                                        <i class="fa fa-spinner fa-spin" aria-hidden="true" style="font-size: xx-large; color: #9B0008;"></i>
+                                    }
+                                    else if (enroll.Status == "Success")
+                                    {
+                                        <i class="fa fa-checke" aria-hidden="true" style="font-size: xx-large; color: #006f57;"></i>
+                                    }
+
+                                </li>
+                                <li class="d-flex align-items-center">
+                                    <h4><i class="fa fa-layer-group"></i> @enroll.Competencies</h4>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    }
+    else if (ViewBag.Year != (DateTime.Now.Year + 542).ToString())
+    {
+        for (int i = 0; i < Model.Count(); i++)
+        {
+            var enroll = Model.ElementAt(i);
+            string url = Url.Action("Form", new { guid = ViewBag.Guid_2, idpGroupId = enroll.IDPGroupId });
+            string backgroundColor = backgroundColors[i % backgroundColors.Length];
+            <div class="col">
+                <a href="@url" style="">
+                    <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg border-0" style="background: @backgroundColor">
+                        <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+                            <h1 class="lh-1 fw-bold">@enroll.IDPGroupId</h1>
+                            <h3 class="lh-1 fw-bold">@enroll.IDPGroup.IDPGroupName</h3>
+                            <ul class="d-flex list-unstyled mt-5">
+                                <li class="me-auto">
+                                    @if (enroll.Status == "Draft")
+                                    {
+                                        <i class="fa-solid fa-compass-drafting" aria-hidden="true" style="font-size: xx-large; color: #9B0008;"></i>
+                                    }
+                                    else if (enroll.Status == "In Progress")
+                                    {
+                                        <i class="fa-solid fa-pen-to-square fa-beat" aria-hidden="true" style="font-size: xx-large; color: #9B0008;"></i>
+                                    }
+                                    else if (enroll.Status == "Waiting")
+                                    {
+                                        <i class="fa fa-spinner fa-spin" aria-hidden="true" style="font-size: xx-large; color: #9B0008;"></i>
+                                    }
+                                    else if (enroll.Status == "Success")
+                                    {
+                                        <i class="fa fa-checke" aria-hidden="true" style="font-size: xx-large; color: #006f57;"></i>
+                                    }
+
+                                </li>
+                                <li class="d-flex align-items-center">
+                                    <h4><i class="fa fa-layer-group"></i> @enroll.Competencies</h4>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    }
+
+</div>
+    <a href="@Url.Action("Employee")" class="btn btn-lg active-link-back" style="background-color: #F8D7DA">
+        <i class="fa fa-arrow-left" style="color: #9B0008" aria-hidden="true"> <strong style="color: #9B0008">กลับ</strong></i>
+    </a>
+</div>
 
 <style>
     .list-group-item-action:hover {
@@ -29,5 +157,34 @@
     .list-group-item.disabled {
         opacity: 0.6;
         pointer-events: none;
+    }
+    a{
+        text-decoration: none;
+    }
+    .card:hover{
+        transform: scale(.95);
+        border: none;
+    }
+    .active-link-back:hover {
+        transform: scale(1.05);
+        border: 3px solid #9B0008;
+    }
+
+    .active-link-back:active {
+        transform: scale(.95);
+    }
+    .year {
+        color: #053a2f;
+    }
+    .year:hover {
+        color: #053a2f;
+        text-decoration: underline;
+    }
+    .sticky-header-breadcrumb {
+        position: sticky;
+        z-index: 100;
+        border-radius: 0px;
+        top: 85px;
+        background-color: #2D4686;
     }
 </style>

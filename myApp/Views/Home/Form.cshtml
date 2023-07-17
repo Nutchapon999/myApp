@@ -1,268 +1,309 @@
 ﻿@model IEnumerable<myApp.Models.Enrollment>
 @{
     ViewBag.Title = "Forms";
+
 }
-<div class="container">
-    @using (Html.BeginForm("SaveResultDetails", "Home", new { enrollId = ViewBag.EnrollmentId }, FormMethod.Post))
-    {
-        <table>
-            <thead>
-                <tr>
-                    <th rowspan="2">Critical</th>
-                    <th rowspan="2">Competency ID</th>
-                    <th rowspan="2">Competency Name</th>
-                    <th rowspan="2">R</th>
-                    <th rowspan="2">A</th>
-                    <th colspan="2">GAP</th>
-                    <th rowspan="2">Priority</th>
-                    <th rowspan="2">Plan</th>
-                    <th rowspan="2">Plan Description</th>
-                    <th colspan="4">Quarter</th>
-                    <th rowspan="2">Result Plan</th>
-                </tr>
-                <tr>
-                    <th>-</th>
-                    <th>+</th>
-                    <th>Q1</th>
-                    <th>Q2</th>
-                    <th>Q3</th>
-                    <th>Q4</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (int i = 0; i < Model.Count(); i++)
-                {
-                    var enroll = Model.ElementAt(i);
-                    var gap = enroll.Form.Actual - enroll.Form.Requirement;
-                    <tr>
-                        <td>
-                            @if (enroll.CompetencyItem.Critical == false)
+<link rel="stylesheet" href="/CSS/Style.css">
+<main>
+    <div class="card shadow border-0 m-3">
+        <div class="card-header border-0 py-3" style="background-color: #006f57">
+            <div class="row mb-2">
+                <div class="col-3 text-center mt-2">
+                    <i class="fa fa-file-text" style="font-size: 35px; color: #053a2f; background-color: #D5F2E3; padding: .8rem; border-radius: 50% "></i>
+                    <h2 style="color: #D5F2E3 "><strong>แบบประเมิน</strong></h2>
+                </div>
+                <div class="col-9 rounded-3 p-2" style="background-color: #eeeeee60;">
+                    <h5>
+                        IDP Group: <code>@ViewBag.IDPGroupName</code>
+                    </h5>
+                    <h5>
+                        รหัส: <code>@ViewBag.Id</code>
+                        ชื่อ: <code>@ViewBag.Prefix @ViewBag.FirstName @ViewBag.LastName</code>
+                    </h5>
+                    <h5>
+                        ตำแหน่ง: <code>@ViewBag.Position</code>
+                        ตำแหน่งขั้น: <code>@ViewBag.Joblevel</code>
+                        แผนก: <code>@ViewBag.Department</code>
+                        บริษัท: <code>@ViewBag.Company</code>
+                    </h5>
+                </div>
+            </div>
+
+        </div>
+        <div class="card-body border-0">
+            @using (Html.BeginForm("SaveResultDetails", "Home", new { enrollId = ViewBag.EnrollmentId, guid = ViewBag.Guid }, FormMethod.Post, new { id = "form-" + ViewBag.EnrollmentId }))
+            {
+                <div class="table-container">
+                    <table class="table table-hover table-responsive table-striped" id="myTable">
+                        <thead style="background-color: #84B5E9; color: #2D4686">
+                            <tr>
+                                <th class="text-center" rowspan="2" data-sortable="false" width="3%">Critical</th>
+                                <th class="text-center" rowspan="2" width="5%">Competency ID</th>
+                                <th class="text-center" rowspan="2" width="12%">Competency Name</th>
+                                <th class="text-center" rowspan="2" width="3%">R</th>
+                                <th class="text-center" rowspan="2" width="3%">A</th>
+                                <th class="text-center" colspan="2" width="6%">GAP</th>
+                                <th class="text-center" rowspan="2" width="5%">Priority</th>
+                                <th class="text-center" rowspan="2" width="6%">Plan</th>
+                                <th class="text-center" rowspan="2" width="10%">Plan Description</th>
+                                <th class="text-center" colspan="4" width="12%">Quarter</th>
+                            </tr>
+                            <tr>
+                                <th class="text-center" width="3%">-</th>
+                                <th class="text-center" width="3%">+</th>
+                                <th class="text-center" width="2%">Q1</th>
+                                <th class="text-center" width="2%">Q2</th>
+                                <th class="text-center" width="2%">Q3</th>
+                                <th class="text-center" width="2%">Q4</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @for (int i = 0; i < Model.Count(); i++)
                             {
-                                <text></text>
+                                var enroll = Model.ElementAt(i);
+                                var gap = enroll.ResultItem.Actual - enroll.ResultItem.Requirement;
+                                <tr>
+                                    <td class="text-center">
+                                        @if (enroll.IDPGroupItem.Critical == false)
+                                        {
+                                            <text></text>
+                                        }
+                                        else
+                                        {
+                                            <img src="~/Images/hexagon_icon.png" width="25" height="25" />
+                                        }
+                                    </td>
+                                    <td class="text-center">@enroll.IDPGroupItem.CompetencyId</td>
+                                    <td>@enroll.Competency.CompetencyNameTH</td>
+                                    <td class="text-center">
+                                        @enroll.IDPGroupItem.Pl
+                                        <input type="hidden" name="forms[@i].Requirement" value="@enroll.IDPGroupItem.Pl" />
+                                    </td>
+                                    <td class="text-center">
+                                        @if (ViewBag.Status)
+                                        {
+                                            <button id="actualButton" onchange="calculateGap(this)" type="button" class="btn active-link-competency m-1" data-bs-toggle="modal" style="background-color: #6FCAEA; color: #147092; width: auto" data-bs-target="#DetailPl-@enroll.IDPGroupItem.CompetencyId">
+                                                @(enroll.ResultItem.Actual != 0 ? enroll.ResultItem.Actual.ToString() : "?")
+                                            </button>
+                                        }
+                                        <div class="modal fade modal-lg" id="DetailPl-@enroll.IDPGroupItem.CompetencyId" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-scrollable">
+                                                <div class="modal-content">
+                                                    <div class="modal-header text-center">
+                                                        <h5 class="modal-title fs-4">
+                                                            รหัส Competency: <code>@enroll.IDPGroupItem.CompetencyId</code>
+                                                            <br />
+                                                            ชื่อ Competency: <code>@enroll.Competency.CompetencyNameTH</code>
+                                                        </h5>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <label class="form-label">Select an option: @enroll.ResultItem.Actual</label>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio[@i]" id="modalRadioButton1-@i" value="1" @(enroll.ResultItem.Actual == 1 ? "checked" : "") />
+                                                            <label class="form-check-label" for="modalRadioButton1-@i">
+                                                                1
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio[@i]" id="modalRadioButton2-@i" value="2" @(enroll.ResultItem.Actual == 2 ? "checked" : "") />
+                                                            <label class="form-check-label" for="modalRadioButton2-@i">
+                                                                2
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio[@i]" id="modalRadioButton3-@i" value="3" @(enroll.ResultItem.Actual == 3 ? "checked" : "") />
+                                                            <label class="form-check-label" for="modalRadioButton3-@i">
+                                                                3
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio[@i]" id="modalRadioButton4-@i" value="4" @(enroll.ResultItem.Actual == 4 ? "checked" : "") />
+                                                            <label class="form-check-label" for="modalRadioButton4-@i">
+                                                                4
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio[@i]" id="modalRadioButton5-@i" value="5" @(enroll.ResultItem.Actual == 5 ? "checked" : "") />
+                                                            <label class="form-check-label" for="modalRadioButton5-@i">
+                                                                5
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer flex-nowrap p-0">
+                                                        <button type="button" class="btn btn-lg col-12 text-decoration-none py-3 rounded-0 m-0 " style="background-color: #D893A3; color: #B30021" data-bs-dismiss="modal"><strong>ปิด</strong></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <input type="hidden" name="forms[@i].Id" value="@ViewBag.Id" />
+                                        <input type="hidden" name="forms[@i].CompetencyId" value="@enroll.IDPGroupItem.CompetencyId" />
+                                        <input type="hidden" name="forms[@i].IDPGroupId" value="@enroll.IDPGroupId" />
+                                        <input type="hidden" name="forms[@i].Actual" value="@enroll.ResultItem.Actual" />
+                                        <input type="hidden" name="forms[@i].Priority" value="@enroll.ResultItem.Priority" />
+                                        <input type="hidden" name="forms[@i].Plan" value="@enroll.ResultItem.Plan" />
+                                        <input type="hidden" name="forms[@i].PlanDesc" value="@enroll.ResultItem.PlanDesc" />
+                                        <input type="hidden" name="forms[@i].Q1" value="@enroll.ResultItem.Q1" />
+                                        <input type="hidden" name="forms[@i].Q2" value="@enroll.ResultItem.Q2" />
+                                        <input type="hidden" name="forms[@i].Q3" value="@enroll.ResultItem.Q3" />
+                                        <input type="hidden" name="forms[@i].Q4" value="@enroll.ResultItem.Q4" />
+                                    </td>
+                                    <td class="text-center">
+                                        <span id="negative-gap-@i">
+                                            @if (gap < 0)
+                                            {
+                                                @gap
+                                            }
+                                            else
+                                            {
+
+                                            }
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span id="positive-gap-@i">
+                                            @if (gap >= 0)
+                                            {
+                                                @gap
+                                            }
+                                            else
+                                            {
+
+                                            }
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span id="priority-@i">
+                                            @if (enroll.ResultItem.Priority != null)
+                                            {
+                                                <select class="form-select" name="forms[@i].Priority">
+                                                    <option value="A" @(enroll.ResultItem.Priority == "A" ? "selected" : "")>A</option>
+                                                    <option value="B" @(enroll.ResultItem.Priority == "B" ? "selected" : "")>B</option>
+                                                    <option value="C" @(enroll.ResultItem.Priority == "C" ? "selected" : "")>C</option>
+                                                </select>
+                                            }
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span id="plan-@i">
+                                            @if (enroll.ResultItem.Priority != null)
+                                            {
+                                                <select class="form-select" name="forms[@i].Plan">
+                                                    <option value="Co" @(enroll.ResultItem.Plan == "Co" ? "selected" : "")>ผู้บังคับบัญชา (Coaching)</option>
+                                                    <option value="INT" @(enroll.ResultItem.Plan == "INT" ? "selected" : "")>อบรมภายใน (Inhous Training)</option>
+                                                    <option value="JA" @(enroll.ResultItem.Plan == "JA" ? "selected" : "")> การมอบหมายงาน (Job Assignment)</option>
+                                                    <option value="EXT" @(enroll.ResultItem.Plan == "EXT" ? "selected" : "")>อบรมภายนอก (External Training)</option>
+                                                    <option value="PJ" @(enroll.ResultItem.Plan == "PJ" ? "selected" : "")>การมอบหมายโครงการ (Project Assignment)</option>
+                                                    <option value="SS" @(enroll.ResultItem.Plan == "SS" ? "selected" : "")>การให้ศึกษาเอง (Self- Study)</option>
+                                                    <option value="OJT" @(enroll.ResultItem.Plan == "OJT" ? "selected" : "")>การสอนงานหน้างาน (On The Job Training)</option>
+                                                </select>
+                                            }
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span id="planDesc-@i">
+                                            @if (enroll.ResultItem.Priority != null)
+                                            {
+                                                <textarea class="form-control" name="forms[@i].PlanDesc">@enroll.ResultItem.PlanDesc</textarea>
+                                            }
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span id="q1-@i">
+                                            @if (enroll.ResultItem.Priority != null)
+                                            {
+                                                <input class="form-check-input" type="checkbox" name="forms[@i].Q1" value="1" @(enroll.ResultItem.Q1 == "1" ? "checked" : "") />
+                                            }
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span id="q2-@i">
+                                            @if (enroll.ResultItem.Priority != null)
+                                            {
+                                                <input class="form-check-input" type="checkbox" name="forms[@i].Q2" value="1" @(enroll.ResultItem.Q2 == "1" ? "checked" : "") />
+                                            }
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span id="q3-@i">
+                                            @if (enroll.ResultItem.Priority != null)
+                                            {
+                                                <input class="form-check-input" type="checkbox" name="forms[@i].Q3" value="1" @(enroll.ResultItem.Q3 == "1" ? "checked" : "") />
+                                            }
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span id="q4-@i">
+                                            @if (enroll.ResultItem.Priority != null)
+                                            {
+                                                <input class="form-check-input" type="checkbox" name="forms[@i].Q4" value="1" @(enroll.ResultItem.Q4 == "1" ? "checked" : "") />
+                                            }
+                                        </span>
+                                    </td>
+
+                                </tr>
                             }
-                            else
-                            {
-                                <text>O</text>
-                            }
-                        </td>
-                        <td>@enroll.CompetencyItem.CompetencyId</td>
-                        <td>@enroll.Competency.CompetencyNameTH</td>
-                        <td>
-                            @enroll.CompetencyItem.Pl
-                            <input type="hidden" name="forms[@i].Requirement" value="@enroll.CompetencyItem.Pl" />
-                        </td>
-                        <td>
-                            <select name="forms[@i].Actual" onchange="calculateGap(this)">
-                                <option value=""></option>
-                                <option value="1" @(enroll.Form.Actual == 1 ? "selected" : "")>1</option>
-                                <option value="2" @(enroll.Form.Actual == 2 ? "selected" : "")>2</option>
-                                <option value="3" @(enroll.Form.Actual == 3 ? "selected" : "")>3</option>
-                                <option value="4" @(enroll.Form.Actual == 4 ? "selected" : "")>4</option>
-                                <option value="5" @(enroll.Form.Actual == 5 ? "selected" : "")>5</option>
-                            </select>
-                            <input type="hidden" name="forms[@i].Id" value="@ViewBag.Id" />
-                            <input type="hidden" name="forms[@i].CompetencyId" value="@enroll.CompetencyItem.CompetencyId" />
-                            <input type="hidden" name="forms[@i].IDPGroupId" value="@enroll.IDPGroupId" />
-                            <input type="hidden" name="forms[@i].Actual" value="@enroll.Form.Actual" />
-                        </td>
-                        <td>
-                            <span id="negative-gap-@i">
-                                @if (gap < 0)
-                                {
-                                    @gap
-                                }
-                                else
-                                {
-
-                                }
-                            </span>
-                        </td>
-                        <td>
-                            <span id="positive-gap-@i">
-                                @if (gap >= 0)
-                                {
-                                    @gap
-                                }
-                                else
-                                {
-
-                                }
-                            </span>
-                        </td>
-                        <td>
-                            <span id="priority-@i">
-                                @if (enroll.Form.Priority != null)
-                                {
-                                    <select name="forms[@i].Priority">
-                                        <option value="A" @(enroll.Form.Priority == "A" ? "selected" : "")>A</option>
-                                        <option value="B" @(enroll.Form.Priority == "B" ? "selected" : "")>B</option>
-                                        <option value="C" @(enroll.Form.Priority == "C" ? "selected" : "")>C</option>
-                                    </select>
-                                }
-                            </span>
-                        </td>
-                        <td>
-                            <span id="plan-@i">
-                                @if (enroll.Form.Plan != null)
-                                {
-                                    <select name="forms[@i].Plan">
-                                        <option value="Co" @(enroll.Form.Plan == "Co" ? "selected" : "")>ผู้บังคับบัญชา (Coaching)</option>
-                                        <option value="INT" @(enroll.Form.Plan == "INT" ? "selected" : "")>อบรมภายใน (Inhous Training)</option>
-                                        <option value="JA" @(enroll.Form.Plan == "JA" ? "selected" : "")> การมอบหมายงาน (Job Assignment)</option>
-                                        <option value="EXT" @(enroll.Form.Plan == "EXT" ? "selected" : "")>อบรมภายนอก (External Training)</option>
-                                        <option value="PJ" @(enroll.Form.Plan == "PJ" ? "selected" : "")>การมอบหมายโครงการ (Project Assignment)</option>
-                                        <option value="SS" @(enroll.Form.Plan == "SS" ? "selected" : "")>การให้ศึกษาเอง (Self- Study)</option>
-                                        <option value="OJT" @(enroll.Form.Plan == "OJT" ? "selected" : "")>การสอนงานหน้างาน (On The Job Training)</option>
-                                    </select>
-                                }
-                            </span>
-                        </td>
-                        <td>
-                            <span id="planDesc-@i">
-                                @if (enroll.Form.PlanDesc != null)
-                                {
-                                    <input type="text" name="forms[@i].PlanDesc" value="@enroll.Form.PlanDesc" />
-                                }
-                            </span>
-                        </td>
-                        <td>
-                            <span id="quarter-@i">
-                                @if (enroll.Form.Quarter != null)
-                                {
-                                    <input type="radio" name="forms[@i].Quarter" value="Q1" @(enroll.Form.Quarter == "Q1" ? "checked" : "") />
-                                }
-                            </span>
-                        </td>
-                        <td>
-                            <span id="quarter-@i">
-                                @if (enroll.Form.Quarter != null)
-                                {
-                                    <input type="radio" name="forms[@i].Quarter" value="Q2" @(enroll.Form.Quarter == "Q2" ? "checked" : "") />
-                                }
-                            </span>
-                        </td>
-                        <td>
-                            <span id="quarter-@i">
-                                @if (enroll.Form.Quarter != null)
-                                {
-                                    <input type="radio" name="forms[@i].Quarter" value="Q3" @(enroll.Form.Quarter == "Q3" ? "checked" : "") />
-                                }
-                            </span>
-                        </td>
-                        <td>
-                            <span id="quarter-@i">
-                                @if (enroll.Form.Quarter != null)
-                                {
-                                    <input type="radio" name="forms[@i].Quarter" value="Q4" @(enroll.Form.Quarter == "Q4" ? "checked" : "") />
-                                }
-                            </span>
-                        </td>
-                        <td>
-                            <span id="rstPlan-@i">
-                                @if (enroll.Form.Quarter != null)
-                                {
-                                    <input type="text" name="forms[@i].RstPlan" value="@enroll.Form.RstPlan" />
-                                }
-                            </span>
-                        </td>
-                    </tr>
-
-                }
-            </tbody>
-        </table>
-        <button type="submit">Save</button>
-    }
-</div>
-<script>
-    function calculateGap(select) {
-        var row = select.parentNode.parentNode;
-        var negativeGapCell = row.querySelector("td:nth-child(6) span");
-        var positiveGapCell = row.querySelector("td:nth-child(7) span");
-        var priorityCell = row.querySelector("td:nth-child(8) span");
-        var planCell = row.querySelector("td:nth-child(9) span");
-        var planDescCell = row.querySelector("td:nth-child(10) span");
-        var Q1Cell = row.querySelector("td:nth-child(11) span");
-        var Q2Cell = row.querySelector("td:nth-child(12) span");
-        var Q3Cell = row.querySelector("td:nth-child(13) span");
-        var Q4Cell = row.querySelector("td:nth-child(14) span");
-        var rstPlanCell = row.querySelector("td:nth-child(15) span");
-        var requirement = parseFloat(row.querySelector("td:nth-child(4) input").value);
-        var actual = parseFloat(select.value);
-        var gap = actual - requirement;
-
-        negativeGapCell.textContent = (gap < 0) ? gap : '';
-        positiveGapCell.textContent = (gap > 0) ? gap : (gap === 0) ? '0' : '';
-
-        if (gap < 0) {
-            priorityCell.innerHTML = '<select name="' + select.name.replace('Actual', 'Priority') + '">' +
-                '<option value="A">A</option>' +
-                '<option value="B">B</option>' +
-                '<option value="C">C</option>' +
-                '</select>';
-
-            planCell.innerHTML = '<select name="' + select.name.replace('Actual', 'Plan') + '">' +
-                '<option value="Co">ผู้บังคับบัญชา (Coaching)</option>' +
-                '<option value="INT">อบรมภายใน (Inhous Training)</option>' +
-                '<option value="JA">การมอบหมายงาน (Job Assignment)</option>' +
-                '<option value="EXT">อบรมภายนอก (External Training)</option>' +
-                '<option value="PJ">การมอบหมายโครงการ (Project Assignment)</option>' +
-                '<option value="SS">การให้ศึกษาเอง (Self- Study)</option>' +
-                '<option value="OJT">การสอนงานหน้างาน (On The Job Training)</option>' +
-                '</select>';
-            planDescCell.innerHTML = '<input type="text" name="' + select.name.replace('Actual', 'PlanDesc') + '">';
-
-            Q1Cell.innerHTML = ' <input type="radio" name="' + select.name.replace('Actual', 'Quarter') + '" value="Q1">';
-            Q2Cell.innerHTML = ' <input type="radio" name="' + select.name.replace('Actual', 'Quarter') + '" value="Q2">';
-            Q3Cell.innerHTML = ' <input type="radio" name="' + select.name.replace('Actual', 'Quarter') + '" value="Q3">';
-            Q4Cell.innerHTML = ' <input type="radio" name="' + select.name.replace('Actual', 'Quarter') + '" value="Q4">';
-
-            rstPlanCell.innerHTML = '<input type="text" name="' + select.name.replace('Actual', 'RstPlan') + '">'
-        } else {
-            priorityCell.textContent = '';
-            planCell.textContent = '';
-            planDescCell.textContent = '';
-            Q1Cell.textContent = '';
-            Q2Cell.textContent = '';
-            Q3Cell.textContent = '';
-            Q4Cell.textContent = '';
-            rstPlanCell.textContent = '';
-        }
-
-        var gapInput = document.getElementById("gap-" + select.name.match(/\d+/)[0]);
-        if (gapInput) {
-            gapInput.value = gap;
-        }
-
-        var requirementInput = document.getElementsByName(select.name.replace('Actual', 'Requirement'))[0];
-        if (requirementInput) {
-            requirementInput.value = requirement;
-        }
-
-        updateOtherTableValues(select.name.match(/\d+/)[0], gap);
-    }
+                        </tbody>
+                    </table>
+                    <div class="row mt-3">
+                        <div class="col-auto me-auto">
+                            <a href="@Url.Action("SelectForm", new { guid = ViewBag.Guid })" class="btn btn-lg active-link-back shadow-sm" style="width: auto; background-color: #D893A3">
+                                <i class="fa fa-arrow-left" style="color: #B30021" aria-hidden="true">  <strong style="color: #B30021"> ออก</strong></i>
+                            </a>
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-lg active-link-submit shadow-sm" style="width: auto; background-color: #84B5E9">
+                                <i class="fa fa-save" style="color: #2D4686" aria-hidden="true"><strong style="color: #2D4686"> บักทึก</strong></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</main>
+<script src="~/JS/Form.js"></script>
 
 
-    //เข้ามา Update
-    /*function updateOtherTableValues(rowIndex, gap) {
-        var otherRows = document.querySelectorAll("tr.other-table-row");
-        otherRows.forEach(function (otherRow) {
-            var negativeGapCell = otherRow.querySelector("td:nth-child(7) span");
-            var positiveGapCell = otherRow.querySelector("td:nth-child(8) span");
-            negativeGapCell.textContent = (gap < 0) ? gap : '';
-            positiveGapCell.textContent = (gap > 0) ? gap : (gap === 0) ? '0' : '';
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script type="text/javascript">
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+        js('#myTable').DataTable({
+            scrollX: true,
+            paging: false,
+            searching: false,
+            ordering: false,
+            language: {
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
+                paginate: {
+                    next: 'ถัดไป <i class="fa fa-angle-right"></i>',
+                    previous: '<i class="fa fa-angle-left"></i> ก่อนหน้า'
+                },
+                info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
+            },
+
+
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
         });
-    }*/
+    });
 </script>
-
-
-
 <style>
-    table, th, td {
-        border: 1px solid white;
-        border-collapse: collapse;
-    }
-
-    th, td {
-        background-color: #96D4D4;
+    #myTable {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     }
 </style>
+
+
+

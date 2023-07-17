@@ -2,54 +2,82 @@
 @{
     ViewBag.Title = "SelectCompetency";
 }
-<div class="m-3 rounded-3" style="background-color: #cce5ff">
-    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
-        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
-            <li class="breadcrumb-item">
-                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("IDPGroup")">
-                    <i class="fa fa-book" style="color: #4083be"></i> <strong style="color: #4083be">IDP Group</strong>
-                    <span class="visually-hidden">Home</span>
-                </a>
-            </li>
-            <li class="breadcrumb-item">
-                <a class="link-body-emphasis text-decoration-none" style="color: #4083be" href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })"><strong>แก้ไข Competency</strong></a>
-            </li>
-            <li class="breadcrumb-item">
-                <a class="link-body-emphasis text-decoration-none" style="color: #4083be" href="@Url.Action("SelectCompetency", new { id = ViewBag.IDPGroupId })"><strong>เพิ่ม Competency</strong></a>
-            </li>
-        </ol>
-    </nav>
+<link rel="stylesheet" href="/CSS/Style.css">
+<div class="sticky-header-breadcrumb">
+    <div class="header-breadcrumb" style="background-color: #2D4686;">
+        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+            <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+                <li class="breadcrumb-item">
+                    <a class="link-body-emphasis text-decoration-none" href="@Url.Action("IDPGroup")">
+                        <i class="fa fa-book" style="color: #C8E8FF"></i> <strong style="color: #C8E8FF">IDP Group</strong>
+                        <span class="visually-hidden">Home</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF" href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })"><strong>แก้ไข Competency (@ViewBag.IDPGroupId)</strong></a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF" href="@Url.Action("SelectCompetency", new { id = ViewBag.IDPGroupId })"><strong>เพิ่ม Competency (@ViewBag.IDPGroupId)</strong></a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="text-center sticky-header">
+        <div class="background-container">
+            <i class="fa fa-layer-group topic-icon"></i>
+        </div>
+    </div>
+
 </div>
 <main>
     @using (Html.BeginForm("SelectedCompetency", "Home", new { idpGroupId = ViewBag.IDPGroupId }, FormMethod.Post))
     {
-        <div class="card shadow border-0 m-3">
-            <div class="card-header text-center border-0 py-3" style="background-color: #fff3cd;">
-                <i class="fa fa-stack-overflow" style="font-size: 60px;color: #dcb456"></i>
-                <h1 style="color: #dcb456 "><strong>เพิ่ม Competency</strong></h1>
-            </div>
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-auto me-auto">
-                        <button type="submit" class="btn btn-lg active-link-submit shadow-sm" style="width: auto; background-color: #cce5ff">
-                            <i class="fa fa-save" style="color: #4083be" aria-hidden="true"><strong style="color: #4083be"> บักทึก</strong></i>
+        <div class="card border-0 m-3">
+            <div class="card-body border-0 mt-4">
+                <div class="row">
+                    <div class="col-3">
+
+                    </div>
+                    <div class="col-6 text-center topic-title">
+                        <h2 class="mt-2 ">เพิ่ม Competency</h2>
+                    </div>
+                    <div class="col-3 text-end">
+
+                    </div>
+                </div>
+                <div class="row justify-content-center mb-2">
+                    <div class="col-4">
+                        <a href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })" class="btn btn-lg active-link-back shadow-sm">
+                            <i class="fa fa-arrow-left gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back"> กลับ</strong>
+                        </a>
+                        <button type="submit" class="btn btn-lg active-link-submit shadow-sm">
+                            <i class="fa fa-save gradient-icon-submit" aria-hidden="true"></i> <strong class="gradient-icon-submit"> บันทึก</strong>
                         </button>
                     </div>
-                    <div class="col-auto">
-                        <a href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })" class="btn btn-lg active-link-back shadow-sm" style="width: auto; background-color: #f8d7da">
-                            <i class="fa fa-arrow-left" style="color: #dc3545" aria-hidden="true">  <strong style="color: #dc3545"> กลับ</strong></i>
-                        </a>
+                    <div class="col-4 text-center">
+                        <h5 class="me-3">
+                            <span class="icon-item"><i class="fa fa-key fs-4" title="รหัส IDP Group"></i></span> รหัส<strong>: @ViewBag.IDPGroupId</strong>
+
+                            <span class="icon-item"><i class="fa fa-book fa-book-bg fs-4" title="ชื่อ IDP Group"></i></span> ชื่อ<strong>: @ViewBag.IDPGroupName</strong>
+
+                            <span class="icon-item"><i class="fa fa-regular fa-calendar-days fs-4" title="ปี"></i></span> ปี<strong>: @ViewBag.Year</strong>
+                        </h5>
+                    </div>
+
+                    <div class="col-4 text-end">
+                        
                     </div>
                 </div>
                 <table class="table table-hover table-responsive" id="myTable">
-                    <thead class="table-primary">
+                    <thead style="background-color: #2D4686; color: #C8E8FF">
                         <tr>
                             <th width="5%">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" id="checkAll" />
                                     <label class="form-check-label" for="checkAll">
                                     </label>
-                                </div>  
+                                </div>
                             </th>
                             <th width="5%">เลือก PL</th>
                             <th width="5%">ชนิด</th>
@@ -62,8 +90,6 @@
                             <th width="10%">pl3</th>
                             <th width="10%">pl4</th>
                             <th width="10%">pl5</th>
-
-                            <!--<th width="50">ความสำคัญ</th>-->
                         </tr>
                     </thead>
                     <tbody>
@@ -80,6 +106,8 @@
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
                                     </select>
                                 </td>
                                 <th scope="row">@cmpty.Type</th>
@@ -93,53 +121,28 @@
                                 <td style="font-size: 14px">@cmpty.Pl4</td>
                                 <td style="font-size: 14px">@cmpty.Pl5</td>
 
-                                <!--<td>
-                        <select class="form-select" name="priorityValues[@cmpty.CompetencyId]">
-                            <option value=""></option>
-                            <option value="A">A</option>
-                            <option value="B">B</option>
-                            <option value="C">C</option>
-                        </select>
-                    </td>-->
+
                             </tr>
                         }
                     </tbody>
                 </table>
                 <div class="row mt-3">
                     <div class="col-auto me-auto">
-                        <button type="submit" class="btn btn-lg active-link-submit shadow-sm" style="width: auto; background-color: #cce5ff">
-                            <i class="fa fa-save" style="color: #4083be" aria-hidden="true"><strong style="color: #4083be"> บักทึก</strong></i>
+                        <a href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })" class="btn btn-lg active-link-back shadow-sm">
+                            <i class="fa fa-arrow-left gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back"> กลับ</strong>
+                        </a>
+                        <button type="submit" class="btn btn-lg active-link-submit shadow-sm">
+                            <i class="fa fa-save gradient-icon-submit" aria-hidden="true"></i> <strong class="gradient-icon-submit"> บันทึก</strong>
                         </button>
                     </div>
                     <div class="col-auto">
-                        <a href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })" class="btn btn-lg active-link-back shadow-sm" style="width: auto; background-color: #f8d7da">
-                            <i class="fa fa-arrow-left" style="color: #dc3545" aria-hidden="true">  <strong style="color: #dc3545"> กลับ</strong></i>
-                        </a>
+
                     </div>
                 </div>
-
             </div>
         </div>
     }
 </main>
-<div class="m-3 rounded-3" style="background-color: #cce5ff">
-    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
-        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
-            <li class="breadcrumb-item">
-                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("IDPGroup")">
-                    <i class="fa fa-book" style="color: #4083be"></i> <strong style="color: #4083be">IDP Group</strong>
-                    <span class="visually-hidden">Home</span>
-                </a>
-            </li>
-            <li class="breadcrumb-item">
-                <a class="link-body-emphasis text-decoration-none" style="color: #4083be" href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })"><strong>แก้ไข Competency</strong></a>
-            </li>
-            <li class="breadcrumb-item">
-                <a class="link-body-emphasis text-decoration-none" style="color: #4083be" href="@Url.Action("SelectCompetency", new { id = ViewBag.IDPGroupId })"><strong>เพิ่ม Competency</strong></a>
-            </li>
-        </ol>
-    </nav>
-</div>
 <script src="~/Scripts/jquery-3.4.1.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
@@ -151,10 +154,20 @@
     js(document).ready(function () {
         js('#myTable').DataTable({
             language: {
-                search: "ค้นหา:", // Change the search label here
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
+                paginate: {
+                    next: 'ถัดไป <i class="fa fa-angle-right"></i>',
+                    previous: '<i class="fa fa-angle-left"></i> ก่อนหน้า'
+                },
+                info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
             },
-            scrollY: 800,
-            
+
+
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
         });
     });
 </script>
@@ -163,22 +176,138 @@
         width: 25px;
         height: 25px;
     }
-    .active-link-submit:hover {
-        transform: scale(1.05);
-        border-color: #4083be;
+    main {
+        margin-top: -50px;
     }
 
-    .active-link-submit:active {
+    .background-container {
+        background-color: white; /* Set the white background */
+        display: inline-block; /* Display the container as an inline block to wrap the icon */
+        border-radius: 50%; /* Apply a circular shape to the container */
+        padding: 1rem; /* Add padding around the icon */
+        overflow: hidden; /* Hide any overflow from the circular container */
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px; /* Add a box shadow */
+        margin-top: -50px;
+    }
+
+    .topic-icon {
+        background: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text; /* Clip the background to the text */
+        -webkit-text-fill-color: transparent; /* Make the text transparent to show the background gradient */
+        font-size: 45px;
+        /* Any other styles for the icon, if needed */
+    }
+
+    .topic-title {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+        .topic-title h2 {
+            font-weight: bold;
+        }
+
+    .sticky-header-breadcrumb {
+        position: sticky;
+        border-radius: 0px;
+        z-index: 10;
+        top: 85px;
+    }
+
+    .sticky-header {
+        position: sticky;
+        z-index: 20;
+    }
+
+    .card {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+    .fa-key {
+        background-image: linear-gradient( 0deg, hsl(36deg 96% 62%) 0%, hsl(38deg 96% 61%) 11%, hsl(40deg 96% 61%) 22%, hsl(43deg 95% 61%) 33%, hsl(45deg 95% 60%) 44%, hsl(47deg 95% 60%) 56%, hsl(50deg 95% 60%) 67%, hsl(52deg 95% 59%) 78%, hsl(54deg 94% 59%) 89%, hsl(56deg 94% 59%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-book-bg {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-calendar-days {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-delete {
+        border: none;
+        background-color: white;
+    }
+
+    .active-link-delete:hover {
+        background-color: white;
+        border-bottom: 2px solid #9B0008;
+    }
+
+    .active-link-delete:hover i {
+        transform: scale(1.2);
+    }
+
+    .gradient-text-delete {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(357deg 94% 33%) 11%, hsl(358deg 89% 36%) 22%, hsl(358deg 84% 39%) 33%, hsl(358deg 79% 42%) 44%, hsl(359deg 74% 46%) 56%, hsl(359deg 70% 49%) 67%, hsl(359deg 73% 53%) 78%, hsl(360deg 80% 56%) 89%, hsl(0deg 87% 60%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-add,
+    .active-link-submit {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+        .active-link-add:hover {
+            transform: scale(.95);
+            border: 2px solid #053a2f;
+        }
+
+    .gradient-icon-add {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-submit:hover {
         transform: scale(.95);
+        border: 2px solid #2D4686;
+    }
+
+    .gradient-icon-submit {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .icon-item {
+        margin-left: 20px;
+    }
+
+    #myTable {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     }
 
     .active-link-back:hover {
-        transform: scale(1.05);
-        border-color: #dc3545;
+        transform: scale(.95);
+        border: 2px solid #9B0008;
     }
 
-    .active-link-back:active {
-        transform: scale(.95);
+    .gradient-icon-back {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 </style>
 <script>

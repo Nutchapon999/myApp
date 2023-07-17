@@ -9,16 +9,15 @@ namespace myApp.Controllers
 {
     public class FormController : Controller
     {
-        private App app;
+        public App app;
 
         public FormController()
         {
             app = new App();
         }
 
-        public ActionResult Form_1()
+        public ActionResult Index()
         {
-
             return View();
         }
     }

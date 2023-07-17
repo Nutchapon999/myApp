@@ -34,6 +34,6 @@ namespace myApp.Models
   
         [DisplayName("ใช้งานอยู่")]
         public bool Active { get; set; }
-        public virtual CompetencyItem CompetencyItem { get; set; }
+        public virtual IDPGroupItem IDPGroupItem { get; set; }
     }
 }
