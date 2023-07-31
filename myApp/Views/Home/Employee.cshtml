@@ -29,7 +29,7 @@
         <div class="card-body border-0 mt-4">
             <div class="row mb-2">
                 <div class="col-4">
-
+                   
                 </div>
                 <div class="col-4 text-center topic-title">
                     <h1>พนักงาน</h1>
@@ -40,36 +40,35 @@
                     </a>
                 </div>
             </div>
-            <table class="table table-hover table-responsive table-striped" id="myTable">
+            <table class="table table-hover table-responsive table-striped" id="myTable" width="100%">
                 <thead style="background-color: #2D4686; color: #C8E8FF">
                     <tr>
-                        <th width="5%" class="">รหัส</th>
-                        <th width="10%">GUID</th>
-                        <th width="20%">ชื่อพนักงาน</th>
-                        <th width="20%">ตำแหน่ง</th>
-                        <th width="10%">ตำแหน่งขั้น</th>
-                        <th width="20%">ชื่อแผนก</th>
-                        <th width="10%">บริษัท</th>
-                        <th width="5%"></th>
+                        <th width="5%" class="text-center">รหัส</th>
+                        <th width="20%" class="text-center">ชื่อพนักงาน</th>
+                        <th width="5%" class="text-center">สถานะ</th>
+                        <th width="20%" class="text-center">ตำแหน่ง</th>
+                        <th width="10%" class="text-center">ตำแหน่งขั้น</th>
+                        <th width="20%" class="text-center">ชื่อแผนก</th>
+                        <th width="5%" class="text-center">บริษัท</th>
+                        <th width="5%" class="text-center"></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var emp in Model)
                     {
                         <tr>
-                            <td>@emp.Id</td>
-                            <td>@emp.Result.GUID</td>
+                            <th scope="row">@emp.Id</th>
                             @if (emp.Prefix == "นาง" || emp.Prefix == "นางสาว")
                             {
                                 <td>
-                                    <i class="fa fa-female" style="color:palevioletred; font-size:large" aria-hidden="true"></i>
+                                    <i class="fa-solid fa-person-dress" style="color:palevioletred; font-size:large" aria-hidden="true"></i>
                                     @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
                                 </td>
                             }
                             else if (emp.Prefix == "นาย" || emp.Prefix == " นาย")
                             {
                                 <td>
-                                    <i class="fa fa-male" style="color:cornflowerblue; font-size:large" aria-hidden="true"></i>
+                                    <i class="fa-solid fa-person" style="color:cornflowerblue; font-size:large" aria-hidden="true"></i>
                                     @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
                                 </td>
                             }
@@ -79,21 +78,35 @@
                                     @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
                                 </td>
                             }
+                            <td class="text-center fw-bold">
+                                @if (emp.Status == "ทำงาน")
+                                {
+                                    <p style="padding: 3px; border-radius: 3rem; background-color: #D5F8EF; color: #14B789; width: auto ">
+                                        @emp.Status
+                                    </p>
+                                }
+                                else
+                                {
+                                    <p style="padding: 3px; border-radius: 3rem; background-color: #FFE5F4; color: #E50087; width: auto">
+                                        @emp.Status
+                                    </p>
+                                }
+                            </td> 
+                            
                             <td>@emp.Position</td>
                             <td>@emp.JobLevel</td>
                             <td>@emp.DepartmentName</td>
                             <td>@emp.Company</td>
                             <td>
                                 <div class="btn-group me-2" role="group" aria-label="Second group">
-                                    @if (emp.Result.GUID != null)
-                                    {
-                                        <a id="link" href="@Url.Action("Info", new { guid = emp.Result.GUID })" class="btn active-link-info" title="เพิ่ม IDP Group">
-                                            <i class="fa fa-info gradient-text-edit" aria-hidden="true"></i>
-                                        </a>
-                                        <a id="link" href="@Url.Action("SelectForm", new { guid = emp.Result.GUID })" class="btn active-link-form" title="แบบประเมิน">
-                                            <i class="fa fa-file-text gradient-icon-form" aria-hidden="true"></i>
-                                        </a>
-                                    }
+
+                                    <a id="link" href="@Url.Action("Info", new { user = emp.UserLogin, year = (DateTime.Now.Year + 543).ToString() })" class="btn active-link-info" title="เพิ่ม IDP Group">
+                                        <i class="fa fa-info gradient-text-edit" aria-hidden="true"></i>
+                                    </a>
+                                    <a id="link" href="@Url.Action("SelectForm", new { user = emp.UserLogin, year = (DateTime.Now.Year + 543).ToString() })" class="btn active-link-form" title="แบบประเมิน">
+                                        <i class="fa fa-file-text gradient-icon-form" aria-hidden="true"></i>
+                                    </a>
+
                                     <button id="link" type="button" class="btn  active-link-delete" data-bs-toggle="modal" data-bs-target="#deleteModal-@emp.Id" title="ลบ">
                                         <i class="fa fa-trash gradient-text-delete" aria-hidden="true"></i>
                                     </button>
@@ -152,6 +165,9 @@
     });
 </script>
 <style>
+    p{
+        margin-bottom: 0;
+    }
     main {
         margin-top: -50px;
     }
@@ -187,9 +203,9 @@
         font-weight: bold;
     }
 
-        .topic-title h1 {
-            font-weight: bold;
-        }
+    .topic-title h1 {
+        font-weight: bold;
+    }
 
     .card {
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
@@ -244,6 +260,7 @@
     .active-link-add,
     .active-link-upload {
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+
     }
 
     .active-link-add:hover {
@@ -308,7 +325,7 @@
     .active-link-delete:hover i {
         transform: scale(1.2);
     }
-
+    .fa-person,
     .gradient-text-edit {
         background-image: linear-gradient( 0deg, hsl(220deg 100% 47%) 0%, hsl(216deg 100% 47%) 6%, hsl(213deg 100% 48%) 14%, hsl(209deg 100% 48%) 22%, hsl(206deg 100% 48%) 32%, hsl(202deg 100% 49%) 43%, hsl(199deg 100% 49%) 56%, hsl(195deg 100% 49%) 70%, hsl(192deg 100% 50%) 85%, hsl(188deg 100% 50%) 100% );
         -webkit-background-clip: text;
@@ -325,4 +342,10 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
+    .fa-person-dress {
+        background-image: linear-gradient( 0deg, hsl(335deg 85% 55%) 0%, hsl(336deg 86% 58%) 11%, hsl(336deg 88% 60%) 22%, hsl(336deg 89% 63%) 33%, hsl(335deg 91% 65%) 44%, hsl(335deg 92% 67%) 56%, hsl(335deg 94% 69%) 67%, hsl(334deg 96% 71%) 78%, hsl(333deg 98% 73%) 89%, hsl(333deg 100% 75%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    
 </style>

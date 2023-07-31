@@ -7,7 +7,7 @@
     <div class="card shadow border-0">
         <div class="card-header text-center border-0 py-3" style="background-color: #d4edda;">
             <i class="fa fa-upload text-success" style="font-size: 60px;"></i>
-            <h1><strong>อัปโหลด Competency</strong></h1>
+            <h1><strong>อัปโหลด IDP Group</strong></h1>
         </div>
         <div class="card-body text-center justify-content-center">
             @if (TempData["UploadError"] != null)
@@ -17,14 +17,14 @@
                     <strong>@TempData["UploadError"]</strong>
                 </div>
 
-                <script>
+                <!--<script>
                     window.setTimeout(function () {
                         $(".alert-danger").fadeTo(500, 0).slideUp(500, function () {
                             $(this).remove();
 
                         });
                     }, 5000);
-                </script>
+                </script>-->
             }
             else if (TempData["UploadSuccess"] != null && (bool)TempData["UploadSuccess"])
             {
@@ -146,14 +146,14 @@
         transition: background .2s ease-in-out, border .2s ease-in-out;
     }
 
-    .drop-container:hover {
-        background: #eee;
-        border-color: #111;
-    }
+        .drop-container:hover {
+            background: #eee;
+            border-color: #111;
+        }
 
-    .drop-container:hover .drop-title {
-        color: #222;
-    }
+            .drop-container:hover .drop-title {
+                color: #222;
+            }
 
     .drop-title {
         color: #444;

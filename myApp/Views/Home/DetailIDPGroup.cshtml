@@ -53,10 +53,10 @@
                 </div>
                 <div class="col-4 text-end">
                     <button type="button" class="btn btn-lg active-link-excel mb-2" onclick="exportTableToExcel('competencyTB')">
-                        <i class="fa fa-file-excel-o gradient-icon-excel fs-3"></i> <strong class="gradient-icon-excel">Excel</strong>
+                        <i class="fa fa-solid fa-file-excel gradient-icon-excel fs-3"></i> <strong class="gradient-icon-excel">Excel</strong>
                     </button>
                     <button class="btn btn-lg active-link-pdf ms-2 mb-2" onclick="printTable('competencyTB')">
-                        <i class="fa fa-file-pdf-o gradient-icon-pdf fs-3"></i> <strong class="gradient-icon-pdf">PDF</strong>
+                        <i class="fa fa-solid fa-file-pdf gradient-icon-pdf fs-3"></i> <strong class="gradient-icon-pdf">PDF</strong>
                     </button>
                 </div>
             </div>
@@ -241,12 +241,12 @@
         printDocument.write('<meta charset="utf-8">');
         printDocument.write('<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">');
         printDocument.write('<title>Print</title>');
-        printDocument.write('<meta name="filename" content="print_file.html">'); // Set the filename here
+        printDocument.write('<meta name="filename" content="print_file.html">'); 
         printDocument.write('<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">');
         printDocument.write('</head>');
         printDocument.write('<body>');
         printDocument.write('<div class="container">');
-        printDocument.write('<img height="100" src="https://www.satpcl.co.th/themes/default/assets/static/images/logo.png" />'); // Replace "images/logo.png" with the relative path to your image
+        printDocument.write('<img height="100" src="" />'); 
         printDocument.write('<h3 class="mt-4"><strong>รายละเอียด</strong></h3>');
         printDocument.write('<h5>รหัส IDP Group: <code>@ViewBag.IDPGroupId</code></h5>');
         printDocument.write('<h5></i> ชื่อ IDP Group: <code>@ViewBag.IDPGroupName</code></h5>');

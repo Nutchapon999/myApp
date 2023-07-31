@@ -8,38 +8,17 @@
     @Scripts.Render("~/bundles/modernizr")
     <!--<link href="~/Content/font-awesome.min.css" rel="stylesheet" />-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    
+
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark fixed-top " style="background-color: #C8E8FF ">
         <div class="container-fluid ms-2">
-            <a href="@Url.Action("Index","Form")" class="navbar-brand"><img height="60" src="~/images/logo.png" /></a>
+            <a href="@Url.Action("")" class="navbar-brand"><img height="60" src="~/images/logo.png" /></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <ul class="navbar-nav me-auto mb-2 mb-md-0 flex-grow-0">
-                    @if (ViewBag.isAdmin == true)
-                    {
-                        <li class="nav-item">
-                            @Html.ActionLink("Competency", "Competency", "Home", new { area = "" }, new { @class = "nav-link", style = "width: auto; font-weight:bold; color: #2D4686" })
-                        </li>
-                        <li class="nav-item">
-                            @Html.ActionLink("IDP Group", "IDPGroup", "Home", new { area = "" }, new { @class = "nav-link", style = "width: auto; font-weight:bold; color: #2D4686" })
-                        </li>
-                        <li class="nav-item">
-                            @Html.ActionLink("พนักงาน", "Employee", "Home", new { area = "" }, new { @class = "nav-link", style = "width: auto; font-weight:bold; color: #2D4686" })
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false" style="color: #2D4686"><strong>อัปโหลด</strong></a>
-                            <ul class="dropdown-menu">
-                                <li>@Html.ActionLink("Competency", "UploadCompetency", "Home", new { area = "" }, new { @class = "dropdown-item" })</li>
-                                <li>@Html.ActionLink("IDP Group", "UploadIDPGroup", "Home", new { area = "" }, new { @class = "dropdown-item" })</li>
-                                <li>@Html.ActionLink("พนักงาน", "UploadEmployee", "Home", new { area = "" }, new { @class = "dropdown-item" })</li>
-                            </ul>
-                        </li>
-                       
-                    }
                 </ul>
                 <ul class="nav navbar-nav">
                     <li style="color: #2D4686" class="fw-bold"><span class="fa fa-user" style="font-size: large; color: #2D4686"></span> : @ViewBag.Username</li>

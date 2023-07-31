@@ -260,13 +260,17 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Goodness.cs" />
     <Compile Include="Models\Competency.cs" />
     <Compile Include="Models\IDPGroup.cs" />
     <Compile Include="Models\CompetencyItem.cs" />
     <Compile Include="Models\Enrollment.cs" />
+    <Compile Include="Models\Log.cs" />
+    <Compile Include="Models\Remark.cs" />
     <Compile Include="Models\ResultItem.cs" />
     <Compile Include="Models\Result.cs" />
     <Compile Include="Models\User.cs" />
+    <Compile Include="Models\UserFormAuth.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -666,11 +670,10 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\Home\Competency.cshtml" />
     <Content Include="Views\Home\UploadCompetency.cshtml" />
     <Content Include="Views\Home\CreateCompetency.cshtml" />
     <Content Include="Views\Home\IDPGroup.cshtml" />
-    <Content Include="Views\Home\CreateIDPGroup.cshtml" />
     <Content Include="Views\Home\Employee.cshtml" />
     <Content Include="Views\Home\AddCompetency.cshtml" />
     <Content Include="Views\Home\SelectCompetency.cshtml" />
@@ -696,6 +699,13 @@
     <Content Include="Views\Home\SelectForm.cshtml" />
     <Content Include="Views\Home\Info.cshtml" />
     <Content Include="Views\Form\Index.cshtml" />
+    <Content Include="Views\Shared\_UserLayout.cshtml" />
+    <Content Include="Views\Form\Form.cshtml" />
+    <Content Include="Views\Form\Info.cshtml" />
+    <Content Include="Views\Form\Check.cshtml" />
+    <Content Include="Views\Form\FormCheck.cshtml" />
+    <Content Include="Views\Home\CreateIDPGroup.cshtml" />
+    <Content Include="Views\Home\UploadIDPGroup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

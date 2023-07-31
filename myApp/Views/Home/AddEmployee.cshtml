@@ -104,20 +104,32 @@
                                     </td>
                                 }
 
-                                <td>
-                                    @if (enroll.Status == "Draft")
-                                    {
-                                        <p style="color: #680484; background-color: #FFE6FE; padding: 3px; border-radius: 3rem; width: auto;" class="text-center fw-bold">@enroll.Status</p>
-                                    }
-                                    else if (enroll.Status == "In Progress")
-                                    {
-                                        <p style="color: #9B0008; background-color: #F8D7DA; padding: 3px; border-radius: 3rem; width: auto;" class="text-center fw-bold">@enroll.Status</p>
-                                    }
-                                    else if (enroll.Status == "Submitted")
-                                    {
-                                        <p style="color: #664D03; background-color: #FFF3CD; padding: 3px; border-radius: 3rem; width: auto;" class="text-center fw-bold">@enroll.Status</p>
-                                    }
-                                </td>
+                            <td>
+                                @if (enroll.Status == "Draft")
+                                {
+                                    <p style="color: #802FDE; background-color: #E8E2F7; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                }
+                                else if (enroll.Status == "Self")
+                                {
+                                    <p style="color: #E50087; background-color: #FFE5F4; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                }
+                                else if (enroll.Status == "1st Evaluating")
+                                {
+                                    <p style="color: #DAAB00; background-color: #FDF3CE; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                }
+                                else if (enroll.Status == "Developing")
+                                {
+                                    <p style="color: #00AEE5; background-color: #D8F6FF; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                }
+                                else if (enroll.Status == "2nd Evaluating")
+                                {
+                                    <p style="color: #DAAB00; background-color: #FDF3CE; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                }
+                                else if (enroll.Status == "Success")
+                                {
+                                    <p style="color: #14B789; background-color: #D5F8EF; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                }
+                            </td>
                                 <td scope="row">@enroll.Id</td>
                                 @if (enroll.User.Prefix == "นาง" || enroll.User.Prefix == "นางสาว")
                                 {

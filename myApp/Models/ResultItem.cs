@@ -12,23 +12,33 @@ namespace myApp.Models
         public string IDPGroupId { get; set; }
         public string CompetencyId { get; set; }
         public int Requirement { get; set;}
-        public int Actual { get; set;}
-        public int Gap { get; set;}
+        public int Actual1 { get; set;}
+        public int Gap1 { get; set;}
         public string Priority { get; set;}
-        public string Plan { get; set;}
-        public string PlanDesc { get; set;}
+        public string Type { get; set;}
+        public string DevPlan { get; set;}
         public string Q1 { get; set;}
         public string Q2 { get; set; }
         public string Q3 { get; set; }
         public string Q4 { get; set; }
-        public string RstPlan { get; set;}
+        public string DevRst { get; set;}
+        public int Actual2 { get; set; }
+        public int Gap2 { get; set; }
 
-        public virtual User User { get; set; }
-        public virtual Enrollment Enrollment { get; set; }
-        public virtual Result Result { get; set; }
-        public virtual IDPGroup IDPGroup { get; set; }
-        public virtual IDPGroupItem IDPGroupItem { get; set; }
-        public virtual Competency Competency { get; set; }
+        // คุณสมบัติที่เก็บค่าเริ่มต้นของแต่ละคอลัมน์
+        public int OriginalActual1 { get; set; }
+        public int OriginalGap1 { get; set; }
+        public string OriginalPriority { get; set; }
+        public string OriginalType { get; set; }
+        public string OriginalDevPlan { get; set; }
+        public string OriginalQ1 { get; set; }
+        public string OriginalQ2 { get; set; }
+        public string OriginalQ3 { get; set; }
+        public string OriginalQ4 { get; set; }
+        public string OriginalDevRst { get; set; }
+        public int OriginalActual2 { get; set; }
+        public int OriginalGap2 { get; set; }
+
        
     }
 }

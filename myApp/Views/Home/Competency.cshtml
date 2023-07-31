@@ -10,7 +10,7 @@
         <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
             <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
                 <li class="breadcrumb-item">
-                    <a class="link-body-emphasis text-decoration-none link" href="@Url.Action("Index")">
+                    <a class="link-body-emphasis text-decoration-none link" href="@Url.Action("Competency", "Home")">
                         <i class="fa fa-layer-group" style="color: #C8E8FF; "></i> <strong style="color: #C8E8FF "> Competency</strong>
                         <span class="visually-hidden">Home</span>
                     </a>
@@ -30,16 +30,20 @@
     <div class="card border-0 m-3">
         <div class="card-body mt-4">
             <div class="row mb-2">
-                <div class="col-4">
-
+                <div class="col-4 text-start">
+                    <label for="selectType" class="form-label">ชนิด:</label>
+                    <select class="form-select" id="selectType">
+                        <option value="">ทั้งหมด</option>
+                        <option value="CC">CC</option>
+                        <option value="FC">FC</option>
+                        <option value="MC">MC</option>
+                        <option value="TC">TC</option>
+                    </select>
                 </div>
                 <div class="col-4 text-center topic-title">
                     <h1>Competency</h1>
                 </div>
                 <div class="col-4 text-end">
-                    <a href="@Url.Action("CreateCompetency")" class="btn btn-lg me-2 active-link-add">
-                        <i class="fa-solid fa-file-circle-plus gradient-icon-add fs-4" aria-hidden="true"></i> <strong class="gradient-icon-add"> เพิ่ม</strong>
-                    </a>
                     <a href="@Url.Action("UploadCompetency")" class="btn btn-lg active-link-upload">
                         <i class="fa fa-upload gradient-icon-upload" aria-hidden="true"></i> <strong class="gradient-icon-upload"> อัปโหลด</strong>
                     </a>
@@ -206,8 +210,9 @@
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css"/>
 <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
-<script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
 <script type="text/javascript">
     var js = jQuery.noConflict(true);
@@ -231,6 +236,33 @@
         });
     });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterSelect = document.getElementById('selectType');
+        const tableRows = document.querySelectorAll('#myTable tbody tr');
+
+        function filterTableByType() {
+            const selectedType = filterSelect.value;
+
+            tableRows.forEach((row) => {
+                const rowType = row.cells[0].textContent.trim();
+
+                if (selectedType === '' || rowType === selectedType) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        filterSelect.addEventListener('change', filterTableByType);
+
+        filterTableByType();
+    });
+</script>
+
+
+
 <style>
     main {
         margin-top: -50px;

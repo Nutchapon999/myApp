@@ -4,61 +4,36 @@
 
 }
 <link rel="stylesheet" href="/CSS/Style.css">
-<form id="myForm" method="post" action="@Url.Action("SaveResultDetails", "Home", new { enrollId = ViewBag.EnrollmentId, isChecked = false, Guid = ViewBag.Guid })">
+<form id="myForm" method="post" action="@Url.Action("SaveResultDetails", "Form", new { enrollId = ViewBag.EnrollmentId, isChecked = false, Guid = ViewBag.Guid })">
     <div class="sticky-header-breadcrumb">
         <div class="row me-2">
             <div class="col-auto me-auto ms-3">
-                <a href="@Url.Action("SelectForm", "Home", new {user = ViewBag.UserLogin, year = ViewBag.Year})" class="btn btn-lg active-link-exit">
+                <a href="@Url.Action("Index", "Form")" class="btn btn-lg active-link-exit">
                     <i class="fa fa-arrow-left gradient-icon-back"></i><strong class="gradient-icon-back"> ออก</strong>
                 </a>
             </div>
-            <div class="col-2">
-                @if (ViewBag.Status == "Draft")
-                {
-                    <p style="color: #802FDE; background-color: #E8E2F7; padding: 7px; border-radius: 3rem; width: auto; " class="text-center fw-bold mt-1">@ViewBag.Status</p>
-                }
-                else if (ViewBag.Status == "Self")
-                {
-                    <p style="color: #E50087; background-color: #FFE5F4; padding: 7px; border-radius: 3rem; width: auto; " class="text-center fw-bold mt-1">@ViewBag.Status</p>
-                }
-                else if (ViewBag.Status == "1st Evaluating")
-                {
-                    <p style="color: #DAAB00; background-color: #FDF3CE; padding: 7px; border-radius: 3rem; width: auto; " class="text-center fw-bold mt-1">@ViewBag.Status</p>
-                }
-                else if (ViewBag.Status == "Developing")
-                {
-                    <p style="color: #00AEE5; background-color: #D8F6FF; padding: 7px; border-radius: 3rem; width: auto; " class="text-center fw-bold mt-1">@ViewBag.Status</p>
-                }
-                else if (ViewBag.Status == "2nd Evaluating")
-                {
-                    <p style="color: #DAAB00; background-color: #FDF3CE; padding: 7px; border-radius: 3rem; width: auto; " class="text-center fw-bold mt-1">@ViewBag.Status</p>
-                }
-                else if (ViewBag.Status == "Success")
-                {
-                    <p style="color: #14B789; background-color: #D5F8EF; padding: 7px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@ViewBag.Status</p>
-                }
-            </div>
             <div class="col-auto overflow-x">
-                @if (ViewBag.Status == "1st Evaluating" || ViewBag.Status == "2nd Evaluating")
+                @if ((ViewBag.Status == "1st Evaluating" || ViewBag.Status == "2nd Evaluating") && (ViewBag.Approver != ViewBag.Username))
                 {
                     <button type="button" class="btn btn-lg active-link-send" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                         <i class="fa-solid fa-stamp gradient-icon-send"></i><strong class="gradient-icon-send"> อนุมัติเอกสาร</strong>
                     </button>
+
+                }
+                @if (ViewBag.Status == "Developing" && (ViewBag.isGM == true || ViewBag.isAdmin == true))
+                {
+
                 }
                 else if (ViewBag.Status == "Self" || ViewBag.Status == "Developing")
                 {
-                    <button type="submit" class="btn btn-lg active-link-send">
-                        <i class="fa fa-send gradient-icon-send"></i><strong class="gradient-icon-send"> ส่งตรวจ</strong>
-                    </button>
-                }
-                @if(ViewBag.Status != "success")
-                {
-                    <button type="button" class="btn btn-lg active-link-submit" onclick="submitFormAjax(true)" id="liveToastBtn">
-                        <i class="fa-solid fa-save gradient-icon-submit"></i><strong class="gradient-icon-submit"> บันทึก</strong>
-                    </button>
-                }
-                
+                <button type="submit" class="btn btn-lg active-link-send">
+                    <i class="fa fa-send gradient-icon-send"></i><strong class="gradient-icon-send"> ส่งตรวจ</strong>
+                </button>
 
+                <button type="button" class="btn btn-lg active-link-submit" onclick="submitFormAjax(true)" id="liveToastBtn">
+                    <i class="fa-solid fa-save gradient-icon-submit"></i><strong class="gradient-icon-submit"> บันทึก</strong>
+                </button>
+                }
             </div>
         </div>
     </div>
@@ -149,13 +124,16 @@
                                     {
                                         @enroll.ResultItem.Actual1
                                     }
+                                    else if ((ViewBag.Status == "1st Evaluating") && (ViewBag.Approver == ViewBag.Username))
+                                    {
+                                        @enroll.ResultItem.Actual1
+                                    }
                                     else
                                     {
                                         <button id="actual1Button" onchange="calculateGap(this)" type="button" class="btn active-link-competency m-1" data-bs-toggle="modal" style="background-color: #6FCAEA; color: #147092; width: auto" data-bs-target="#DetailPl-@enroll.IDPGroupItem.CompetencyId">
                                             <strong>@(enroll.ResultItem.Actual1 != 0 ? enroll.ResultItem.Actual1.ToString() : "?")</strong>
                                         </button>
                                     }
-                                    
                                     <div class="modal fade modal-xl modal1" id="DetailPl-@enroll.IDPGroupItem.CompetencyId" aria-labelledby="deleteModalLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-scrollable">
                                             <div class="modal-content">
@@ -165,7 +143,7 @@
                                                         <br />
                                                         <i class="fa-solid fa-signature fs-4"></i> ชื่อ: <strong>@enroll.Competency.CompetencyNameTH</strong>
                                                         <br />
-                                                        <i class="fa-solid fa-scale-balanced fs-4"></i> ความต้องการ: <strong>PL@(enroll.IDPGroupItem.Pl)</strong>
+                                                        ความต้องการ: <strong>PL@(enroll.IDPGroupItem.Pl)</strong>
                                                     </h6>
                                                 </div>
                                                 <div class="modal-body">
@@ -293,6 +271,14 @@
                                         {
                                             @enroll.ResultItem.Priority
                                         }
+                                        else if ((ViewBag.Status == "1st Evaluating" || ViewBag.Status == "2nd Evaluating") && (ViewBag.Approver == ViewBag.Username))
+                                        {
+                                            @enroll.ResultItem.Priority
+                                        }
+                                        else if (ViewBag.Status == "2nd Evaluating" && (ViewBag.isGM == true || ViewBag.isAdmin == true))
+                                        {
+                                            @enroll.ResultItem.Priority
+                                        }
                                         else if (enroll.ResultItem.Priority != null)
                                         {
                                             <select class="form-select" name="forms[@i].Priority">
@@ -307,6 +293,14 @@
                                 <td class="text-center">
                                     <span id="type-@i">
                                         @if (ViewBag.Status == "Developing" || ViewBag.Status == "Success")
+                                        {
+                                            @enroll.ResultItem.Type
+                                        }
+                                        else if ((ViewBag.Status == "1st Evaluating" || ViewBag.Status == "2nd Evaluating") && (ViewBag.Approver == ViewBag.Username))
+                                        {
+                                            @enroll.ResultItem.Type
+                                        }
+                                        else if (ViewBag.Status == "2nd Evaluating" && (ViewBag.isGM == true || ViewBag.isAdmin == true))
                                         {
                                             @enroll.ResultItem.Type
                                         }
@@ -330,6 +324,14 @@
                                         {
                                             @enroll.ResultItem.DevPlan
                                         }
+                                        else if ((ViewBag.Status == "1st Evaluating" || ViewBag.Status == "2nd Evaluating") && (ViewBag.Approver == ViewBag.Username))
+                                        {
+                                            @enroll.ResultItem.DevPlan
+                                        }
+                                        else if (ViewBag.Status == "2nd Evaluating" && (ViewBag.isGM == true || ViewBag.isAdmin == true))
+                                        {
+                                            @enroll.ResultItem.DevPlan
+                                        }
                                         else if (enroll.ResultItem.Priority != null)
                                         {
                                             <textarea class="form-control" name="forms[@i].DevPlan">@enroll.ResultItem.DevPlan</textarea>
@@ -339,6 +341,13 @@
                                 <td class="text-center">
                                     <span id="q1-@i">
                                         @if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success")
+                                        {
+                                            if (enroll.ResultItem.Q1 == "1")
+                                            {
+                                                <i class="fa fa-check" aria-hidden="true"></i>
+                                            }
+                                        }
+                                        else if ((ViewBag.Status == "1st Evaluating" || ViewBag.Status == "2nd Evaluating") && (ViewBag.Approver == ViewBag.Username))
                                         {
                                             if (enroll.ResultItem.Q1 == "1")
                                             {
@@ -360,6 +369,13 @@
                                                 <i class="fa fa-check" aria-hidden="true"></i>
                                             }
                                         }
+                                        else if ((ViewBag.Status == "1st Evaluating" || ViewBag.Status == "2nd Evaluating") && (ViewBag.Approver == ViewBag.Username))
+                                        {
+                                            if (enroll.ResultItem.Q2 == "1")
+                                            {
+                                                <i class="fa fa-check" aria-hidden="true"></i>
+                                            }
+                                        }
                                         else if (enroll.ResultItem.Priority != null)
                                         {
                                             <input class="form-check-input" type="checkbox" name="forms[@i].Q2" value="1" @(enroll.ResultItem.Q2 == "1" ? "checked" : "") />
@@ -369,6 +385,13 @@
                                 <td class="text-center">
                                     <span id="q3-@i">
                                         @if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success")
+                                        {
+                                            if (enroll.ResultItem.Q3 == "1")
+                                            {
+                                                <i class="fa fa-check" aria-hidden="true"></i>
+                                            }
+                                        }
+                                        else if ((ViewBag.Status == "1st Evaluating" || ViewBag.Status == "2nd Evaluating") && (ViewBag.Approver == ViewBag.Username))
                                         {
                                             if (enroll.ResultItem.Q3 == "1")
                                             {
@@ -390,6 +413,13 @@
                                                 <i class="fa fa-check" aria-hidden="true"></i>
                                             }
                                         }
+                                        else if ((ViewBag.Status == "1st Evaluating" || ViewBag.Status == "2nd Evaluating") && (ViewBag.Approver == ViewBag.Username))
+                                        {
+                                            if (enroll.ResultItem.Q4 == "1")
+                                            {
+                                                <i class="fa fa-check" aria-hidden="true"></i>
+                                            }
+                                        }
                                         else if (enroll.ResultItem.Priority != null)
                                         {
                                             <input class="form-check-input" type="checkbox" name="forms[@i].Q4" value="1" @(enroll.ResultItem.Q4 == "1" ? "checked" : "") />
@@ -402,7 +432,14 @@
                                         {
                                             <textarea class="form-control" name="forms[@i].DevRst">@enroll.ResultItem.DevRst</textarea>
                                         }
-                                        
+                                        else if (ViewBag.Status == "2nd Evaluating" && (ViewBag.Approver == ViewBag.Username))
+                                        {
+                                            @enroll.ResultItem.DevRst
+                                        }
+                                        else if (ViewBag.Status == "Success")
+                                        {
+                                            @enroll.ResultItem.DevRst
+                                        }
                                     </span>
                                 </td>
                                 <td class="text-center">
@@ -411,6 +448,16 @@
                                         <button id="actual2Button" onchange="calculateGap2(this)" type="button" class="btn active-link-competency m-1 disabled" data-bs-toggle="modal" style="background-color: #6FCAEA; color: #147092; width: auto" data-bs-target="#Detail2Pl-@enroll.IDPGroupItem.CompetencyId">
                                             <strong>@(enroll.ResultItem.Actual2 != 0 ? enroll.ResultItem.Actual2.ToString() : "?")</strong>
                                         </button>
+                                    }
+                                    else if (ViewBag.Status == "2nd Evaluating" && (ViewBag.Approver == ViewBag.Username))
+                                    {
+                                        <button id="actual2Button" onchange="calculateGap2(this)" type="button" class="btn active-link-competency m-1 disabled" data-bs-toggle="modal" style="background-color: #6FCAEA; color: #147092; width: auto" data-bs-target="#Detail2Pl-@enroll.IDPGroupItem.CompetencyId">
+                                            <strong>@(enroll.ResultItem.Actual2 != 0 ? enroll.ResultItem.Actual2.ToString() : "?")</strong>
+                                        </button>
+                                    }
+                                    else if (ViewBag.Status == "Success")
+                                    {
+                                        @enroll.ResultItem.Actual2
                                     }
                                     else
                                     {
@@ -743,7 +790,6 @@
     </div>
 </form>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
 
 @if (ViewBag.Status == "Self" || ViewBag.Status == "1st Evaluating")
 {
@@ -1146,8 +1192,6 @@ else if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating")
     </script>
 }
 
-
-
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
@@ -1261,11 +1305,9 @@ else if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating")
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
-
-    h2, p {
+    h2{
         margin-bottom: 0;
     }
-
     .user-icon,
     .fa-book,
     .fa-signature {
@@ -1315,14 +1357,14 @@ else if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating")
         transition: background .2s ease-in-out, border .2s ease-in-out;
     }
 
-        .drop-container:hover {
-            background: #eee;
-            border-color: #111;
-        }
+    .drop-container:hover {
+        background: #eee;
+        border-color: #111;
+    }
 
-            .drop-container:hover .drop-title {
-                color: #222;
-            }
+    .drop-container:hover .drop-title {
+        color: #222;
+    }
 
     .drop-title {
         color: #444;
@@ -1343,23 +1385,23 @@ else if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating")
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     }
 
-        .active-link-send:hover {
-            transform: scale(.95);
-            background-color: white;
-            border: 2px solid #FBB040;
-        }
+    .active-link-send:hover {
+        transform: scale(.95);
+        background-color: white;
+        border: 2px solid #FBB040;
+    }
 
-        .active-link-submit:hover {
-            transform: scale(.95);
-            background-color: white;
-            border: 2px solid #2D4686;
-        }
+    .active-link-submit:hover {
+        transform: scale(.95);
+        background-color: white;
+        border: 2px solid #2D4686;
+    }
 
-        .active-link-exit:hover {
-            transform: scale(.95);
-            background-color: white;
-            border: 2px solid #B30021;
-        }
+    .active-link-exit:hover {
+        transform: scale(.95);
+        background-color: white;
+        border: 2px solid #B30021;
+    }
 
     .gradient-icon-submit {
         background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );

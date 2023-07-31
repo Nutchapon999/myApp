@@ -9,13 +9,13 @@
             <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34; );">
                 <ol class="breadcrumb breadcrumb-chevron bg-body-tertiary ms-3 mt-3">
                     <li class="breadcrumb-item">
-                        <a class="link-body-emphasis text-decoration-none" href="@Url.Action("Employee", "Home")">
-                            <i class="fa-solid fa-users" style="color: #C8E8FF"></i> <strong style="color: #C8E8FF">พนักงาน</strong>
+                        <a class="link-body-emphasis text-decoration-none" href="@Url.Action("Index", "Form")">
+                            <i class="fa-solid fa-home" style="color: #C8E8FF"></i> <strong style="color: #C8E8FF">หน้าแรก</strong>
                             <span class="visually-hidden">Home</span>
                         </a>
                     </li>
                     <li class="breadcrumb-item">
-                        <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF"><strong>ข้อมูลรายละเอียด</strong></a>
+                        <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF" href="@Url.Action("Info", "Form", new { year = (DateTime.Now.Year + 543).ToString() })"><strong>ข้อมูลรายละเอียด</strong></a>
                     </li>
                 </ol>
             </nav>
@@ -23,10 +23,10 @@
         <div class="col-auto overflow-x">
             <ul class="nav align-items-center text-center me-2 py-2">
                 <li class="nav-item ms-2">
-                    <a class="nav-link year" href="@Url.Action("Info", "Home", new { user = ViewBag.User, year = (DateTime.Now.Year + 543).ToString() })" style="color: #C8E8FF"><strong>@(DateTime.Now.Year + 543)</strong></a>
+                    <a class="nav-link year" href="@Url.Action("Info", "Form", new { year = (DateTime.Now.Year + 543).ToString() })" style="color: #C8E8FF"><strong>@(DateTime.Now.Year + 543)</strong></a>
                 </li>
                 <li class="nav-item ms-2">
-                    <a class="nav-link year" href="@Url.Action("Info", "Home", new { user = ViewBag.User, year = (DateTime.Now.Year + 542).ToString() })" style="color: #C8E8FF"><strong>@(DateTime.Now.Year + 542)</strong></a>
+                    <a class="nav-link year" href="@Url.Action("Info", "Form", new { year = (DateTime.Now.Year + 542).ToString() })" style="color: #C8E8FF"><strong>@(DateTime.Now.Year + 542)</strong></a>
                 </li>
                 <li class="nav-item ms-2 dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="yearDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #C8E8FF">
@@ -34,7 +34,7 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="yearDropdown">
                         <li>
-                            <a class="nav-link year" href="@Url.Action("Info", "Home", new { user = ViewBag.Username, year = (DateTime.Now.Year + 541).ToString() })"><strong>@(DateTime.Now.Year + 541)</strong></a>
+                            <a class="nav-link year" href="@Url.Action("Info", "Form", new { year = (DateTime.Now.Year + 541).ToString() })"><strong>@(DateTime.Now.Year + 541)</strong></a>
                         </li>
                     </ul>
                 </li>

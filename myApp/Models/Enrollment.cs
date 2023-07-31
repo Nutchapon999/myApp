@@ -21,6 +21,7 @@ namespace myApp.Models
         public virtual Competency Competency { get; set; }
         public virtual ResultItem ResultItem { get; set; }
         public virtual Result Result { get; set; }
+        public virtual RemarkHS RemarkHS { get; set; }
 
 
     }
