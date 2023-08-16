@@ -15,7 +15,9 @@ using Antlr.Runtime.Misc;
 using MailKit.Net.Smtp;
 using MailKit;
 using MimeKit;
-using OfficeOpenXml; 
+using OfficeOpenXml;
+using System.Web.Helpers;
+using DocumentFormat.OpenXml.Bibliography;
 
 
 namespace myApp.Controllers
@@ -33,7 +35,7 @@ namespace myApp.Controllers
         OleDbConnection Econ;
 
 
-        //Competency
+        //COMPETENCY
         public ActionResult Competency()
         {
             
@@ -53,7 +55,7 @@ namespace myApp.Controllers
             else
             {
 
-                return RedirectToAction("Index", "Form");
+                return RedirectToAction("Error", "Home");
             }
         }
         public ActionResult CreateCompetency()
@@ -69,7 +71,7 @@ namespace myApp.Controllers
             else
             {
       
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Form");
             }
         }
         [HttpPost]
@@ -122,6 +124,7 @@ namespace myApp.Controllers
             }
             return RedirectToAction("Competency", "Home");
         }
+        
         public ActionResult DeleteCompetency(string id)
         {
             app.DeleteCompetency(id);
@@ -149,6 +152,7 @@ namespace myApp.Controllers
                     idpGroup.EmployeeCompetencyCount = app.GetCountCompetency(idpGroup.IDPGroupId);
                 }
 
+
                 return View(iDPGroups);
 
             }
@@ -158,26 +162,6 @@ namespace myApp.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
-        /*public ActionResult CreateIDPGroup()
-        {
-            HttpCookie usernameCookie = Request.Cookies["username"];
-            if (usernameCookie != null)
-            {
-                string username = usernameCookie.Value;
-                List<UserFormAuth> auths = app.GetUserFormAuths();
-                bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
-
-                ViewBag.isAdmin = isAdmin;
-                ViewBag.Username = username;
-
-                return View();
-            }
-            else
-            { 
-
-                return RedirectToAction("Index", "Home");
-            }
-        }*/
         [HttpPost]
         public ActionResult CreateIDPGroup(IDPGroup iDPGroup)
         {
@@ -214,35 +198,87 @@ namespace myApp.Controllers
 
             return RedirectToAction("IDPGroup", "Home");
         }
-
-        public ActionResult EditIDPGroup(string id)
-        {
-            string idpGroupName = app.GetIDPGroupNameByIDPGroupId(id);
-            string year = app.GetYearById(id);
-            ViewBag.IDPGroupId = id;
-            ViewBag.IDPGroupName = idpGroupName;
-            ViewBag.Year = year;
-            ViewBag.Username = Request.Cookies["username"].Value;
-            IDPGroup iDPGroup = app.EditIDPGroup(id, ViewBag.Username);
-            return View(iDPGroup);
-        }
         [HttpPost]
         public ActionResult EditIDPGroup(IDPGroup iDPGroup)
         {
             ViewBag.Username = Request.Cookies["username"].Value;
-            if (ModelState.IsValid)
+            try
             {
                 app.UpdateIDPGroup(iDPGroup, ViewBag.Username);
-                return RedirectToAction("IDPGroup");
             }
-            return View(iDPGroup);
-        }
-        public ActionResult DeleteIDPGroup(string id)
-        {
-            app.DeleteIDPGroup(id);
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+
             return RedirectToAction("IDPGroup");
         }
-        public ActionResult DetailIDPGroup(string id)
+        [HttpPost]
+        public ActionResult CopyIDPGroup(IDPGroup iDPGroup, bool Emp = false, bool Cmpt = false)
+        {
+            string copyIDP = Request.Form["IDPGroupIdCopy"];
+
+            ViewBag.Username = Request.Cookies["username"].Value;
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    string year = app.GetYearById(copyIDP);
+                    app.CreateIDPGroup(iDPGroup, ViewBag.Username);
+                    if(Cmpt == true)
+                    {
+                        List<IDPGroupItem> copyIDPGroupItems = app.GetIDPGroupItems(copyIDP);
+                        app.InsertIDPGroupItemCopy(copyIDPGroupItems, iDPGroup);
+                    }
+                    if(Emp == true)
+                    {
+                        List<Enrollment> copyEnrolls = app.GetEnrollments(copyIDP);
+                        app.InsertEnrollCopy(copyEnrolls, iDPGroup);
+                        List<User> userCopies = app.GetUsersById(copyEnrolls);  
+                        app.InsertResultEmployees(userCopies, iDPGroup.Year, ViewBag.Username, iDPGroup.IDPGroupId);
+                    }
+                    
+                    return RedirectToAction("IDPGroup", "Home");
+                }
+                catch (Exception ex)
+                {
+                    if (ex.Message.Contains("@Id"))
+                    {
+                        ModelState.AddModelError("IDPGroupId", "กรุณากรอกรหัส IDP Group");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("IDPGroupId", "เกิดข้อผิดพลาด โปรดกรอกใหม่อีกที");
+                    }
+                    TempData["ErrorMessage"] = ex.Message;
+                }
+            }
+
+            List<IDPGroup> iDPGroups = app.GetIDPGroups();
+            foreach (var idpGroup in iDPGroups)
+            {
+                idpGroup.EmployeeEnrollmentCount = app.GetCountEmployee(idpGroup.IDPGroupId);
+                idpGroup.EmployeeCompetencyCount = app.GetCountCompetency(idpGroup.IDPGroupId);
+            }
+
+            return RedirectToAction("IDPGroup", "Home");
+        }
+        [HttpPost]
+        public ActionResult DeleteIDPGroup(string idpGroupId)
+        {
+            try
+            {
+                app.DeleteIDPGroup(idpGroupId);
+            }
+            catch(Exception ex) 
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+
+            return Json(new { success = true, message = "IDP group deleted successfully." });
+        }
+        public ActionResult DetailIDPGroup(string idpGroupId)
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
             if (usernameCookie != null)
@@ -254,20 +290,26 @@ namespace myApp.Controllers
                 ViewBag.isAdmin = isAdmin;
                 ViewBag.Username = usernameCookie.Value;
 
-                string idpGroupName = app.GetIDPGroupNameByIDPGroupId(id);
-                string year = app.GetYearById(id);
-                int members = app.GetCountEmployee(id);
-                int competencies = app.GetCountCompetency(id);
-                
-                List<IDPGroup> iDPGroups = app.GetDetails(id);
+                string idpGroupName = app.GetIDPGroupNameByIDPGroupId(idpGroupId);
+                string year = app.GetYearById(idpGroupId);
+                int members = app.GetCountEmployee(idpGroupId);
+                int competencies = app.GetCountCompetency(idpGroupId);
 
-                ViewBag.IDPGroupId = id;
+                List<IDPGroupItem> iDPGroupItems = app.GetIDPGroupItems(idpGroupId);
+                List<Enrollment> enrollments = app.GetEnrollments(idpGroupId);
+
+                //List<IDPGroup> iDPGroups = app.GetDetails(idpGroupId);
+
+                ViewBag.IDPGroupId = idpGroupId;
                 ViewBag.IDPGroupName = idpGroupName;
                 ViewBag.Year = year;
                 ViewBag.Member = members;
                 ViewBag.Competency = competencies;
 
-                return View(iDPGroups);
+                ViewBag.IDPGroupItem = iDPGroupItems;
+                ViewBag.Enrollment = enrollments;
+
+                return View();
             }
             else
             {
@@ -276,7 +318,7 @@ namespace myApp.Controllers
         }
        
 
-        //HR User
+        //USER
         public ActionResult Employee()
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
@@ -301,7 +343,7 @@ namespace myApp.Controllers
             app.DeleteEmployee(id);
             return RedirectToAction("Employee");
         }
-        /*public ActionResult AddIDPGroup(string id)
+        public ActionResult AddIDPGroup(string id)
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
             if (usernameCookie != null)
@@ -316,6 +358,18 @@ namespace myApp.Controllers
                 List<Enrollment> enrollments = app.GetIDPGroupByEmployee(id);
 
                 ViewBag.Id = id;
+                User user = app.GetUserById(id);
+                if(user != null)
+                {
+                    ViewBag.Prefix = user.Prefix;
+                    ViewBag.FirstName = user.FirstNameTH;
+                    ViewBag.LastName = user.LastNameTH;
+                    ViewBag.Company = user.Company;
+                    ViewBag.Joblevel = user.JobLevel;
+                    ViewBag.Department = user.Department;
+                    ViewBag.Position = user.Position;
+                    ViewBag.UserLogin = user.UserLogin;
+                }
 
                 return View(enrollments);
             }
@@ -324,39 +378,110 @@ namespace myApp.Controllers
                 return RedirectToAction("Index", "Home");
             }
         }
+        [HttpPost]
+        public ActionResult AddIDPGroup(List<string> idpGroupIds, string id, bool isChecked)
+        {
+            if (idpGroupIds != null && idpGroupIds.Any())
+            {
+                foreach (var idpGroupId in idpGroupIds) 
+                {
+                    if (!isChecked)
+                    {
+                        try
+                        {
+                            app.UpdateEnrollmentStatus_1(id, idpGroupId);
+
+                            int count = app.GetCountCompetencyThisId(idpGroupId);
+                            string guid = app.GetGuidById_IDPGroupId(id, idpGroupId);
+
+                            List<IDPGroupItem> iDPGroupItems = app.GetIDPGroupItems(idpGroupId);
+
+                            string year = app.GetYearByGuid(guid);
+
+                            List<ResultItem> actual2 = app.GetPreActual2(id, year);
+
+                            app.InsertResultDetails(iDPGroupItems, guid, count, actual2);
+                        }
+                        catch 
+                        {
+                            TempData["ErrorMessage"] = "ทำไม่ได้";
+                        }
+                    }
+                    else
+                    {
+                        app.UpdateEnrollmentStatus_6(id, idpGroupId);
+                    }
+                }
+            }
+            return RedirectToAction("AddIDPGroup", new { id = id });
+        }
         public ActionResult SelectIDPGroup(string id)
         {
-            List<IDPGroup> iDPGroups = app.GetIDPGroups();
+            HttpCookie usernameCookie = Request.Cookies["username"];
+            if (usernameCookie != null)
+            {
+                string username = usernameCookie.Value;
+                List<UserFormAuth> auths = app.GetUserFormAuths();
+                bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
 
-            List<string> enrolledIDPGroupId = app.GetCheckedIDPGroup(id);
+                ViewBag.isAdmin = isAdmin;
+                List<IDPGroup> iDPGroups = app.GetIDPGroups();
 
-            List<IDPGroup> availableIDPGroupId = iDPGroups.Where(g => !enrolledIDPGroupId.Contains(g.IDPGroupId)).ToList();
+                List<string> enrolledIDPGroupId = app.GetCheckedIDPGroup(id);
 
-            availableIDPGroupId.ForEach(g => g.Enrollment = new Enrollment());
+                List<IDPGroup> availableIDPGroupId = iDPGroups.Where(g => !enrolledIDPGroupId.Contains(g.IDPGroupId)).ToList();
 
-            ViewBag.Id = id;
-            return View(availableIDPGroupId);
+                availableIDPGroupId.ForEach(g => g.Enrollment = new Enrollment());
+
+                ViewBag.Id = id;
+
+                User user = app.GetUserById(id);
+                if (user != null)
+                {
+                    ViewBag.Prefix = user.Prefix;
+                    ViewBag.FirstName = user.FirstNameTH;
+                    ViewBag.LastName = user.LastNameTH;
+                    ViewBag.Company = user.Company;
+                    ViewBag.Joblevel = user.JobLevel;
+                    ViewBag.Department = user.Department;
+                    ViewBag.Position = user.Position;
+                    ViewBag.UserLogin = user.UserLogin;
+                }
+
+                foreach (var idpGroup in iDPGroups)
+                {
+                    idpGroup.EmployeeEnrollmentCount = app.GetCountEmployee(idpGroup.IDPGroupId);
+                    idpGroup.EmployeeCompetencyCount = app.GetCountCompetency(idpGroup.IDPGroupId);
+                }
+
+                return View(availableIDPGroupId);
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
         [HttpPost]
-        public ActionResult SelectedIDPGroup(List<string> iDPGroupIds, string userId)
+        public ActionResult SelectedIDPGroup(List<string> iDPGroupIds, string id)
         {
+            ViewBag.Username = Request.Cookies["username"].Value;
+
             if (iDPGroupIds == null)
             {
-                return RedirectToAction("AddIDPGroup", new { id = userId });
+                return RedirectToAction("AddIDPGroup", new { id = id });
             }
 
             List<IDPGroup> selectedIDPGroups = new List<IDPGroup>();
 
-            string id = userId;
 
-            List<string> enrolledIDPGroups = app.GetCheckedIDPGroup(userId);
+            List<string> enrolledIDPGroups = app.GetCheckedIDPGroup(id);
 
             foreach (string iDPGroupId in iDPGroupIds)
             {
                 if (enrolledIDPGroups.Contains(iDPGroupId))
                 {
 
-                    return RedirectToAction("SelectStudent", new { id = userId });
+                    return RedirectToAction("SelectStudent", new { id = id });
                 }
 
                 IDPGroup iDPGroup = app.GetIDPGroups().FirstOrDefault(g => g.IDPGroupId == iDPGroupId);
@@ -368,39 +493,54 @@ namespace myApp.Controllers
 
             app.InsertIDPGroup(selectedIDPGroups, id);
 
-            return RedirectToAction("AddIDPGroup", new { id = userId });
+            app.InsertResultEmployees2(selectedIDPGroups, ViewBag.Username, id);
+
+            return RedirectToAction("AddIDPGroup", new { id = id });
         }
-        public ActionResult DeleteIDPGroupByEmployee(int id)
+        public ActionResult DeleteIDPGroupByEmployee(int enrollId)
         {
-            string userId = app.GetIdByEnrollment(id);
+            string id = app.GetIdByEnrollment(enrollId);
+            string idpGroupId = app.GetIDPGroupIdByEnrollment(enrollId);
+            try
+            {
+                app.DeleteIDPGroupByEmployee(enrollId);
+                app.DeleteResult(id, idpGroupId);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
 
-            app.DeleteIDPGroupByEmployee(id);
+            return RedirectToAction("AddIDPGroup", new { id = id });
 
-            return RedirectToAction("AddIDPGroup", new { id = userId });
-
-        }*/
+        }
 
 
-        //Competency Item
-        public ActionResult AddCompetency(string id)
+        //IDP GROUP ITEM
+        public ActionResult AddCompetency(string idpGroupId)
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
             if (usernameCookie != null)
             {
-                string username = usernameCookie.Value;
-                List<UserFormAuth> auths = app.GetUserFormAuths();
-                bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
+                
+                    string username = usernameCookie.Value;
+                    List<UserFormAuth> auths = app.GetUserFormAuths();
+                    bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
+                    bool canAdd = app.CheckIfIDPGroupIsDraft(idpGroupId);
 
-                ViewBag.isAdmin = isAdmin;
-                ViewBag.Username = username;
+                    ViewBag.isAdmin = isAdmin;
+                    ViewBag.Username = username;
+                    ViewBag.CanAdd = canAdd;
+                    ViewBag.Massage = "IDP Group นี้ใช้งานแล้วและไม่สามารถเพิ่มได้";
 
-                string idpGroupName = app.GetIDPGroupNameByIDPGroupId(id);
-                string year = app.GetYearById(id);
-                List<IDPGroupItem> competencyItems = app.GetIDPGroupItems(id);
-                ViewBag.IDPGroupId = id;
-                ViewBag.IDPGroupName = idpGroupName;
-                ViewBag.Year = year;
-                return View(competencyItems);
+                    string idpGroupName = app.GetIDPGroupNameByIDPGroupId(idpGroupId);
+                    string year = app.GetYearById(idpGroupId);
+                    List<IDPGroupItem> competencyItems = app.GetIDPGroupItems(idpGroupId);
+                    ViewBag.IDPGroupId = idpGroupId;
+                    ViewBag.IDPGroupName = idpGroupName;
+                    ViewBag.Year = year;
+                    return View(competencyItems);
+                
             }
             else
             {
@@ -410,11 +550,12 @@ namespace myApp.Controllers
         [HttpPost]
         public ActionResult AddCompetency(string idpGroupId, Dictionary<string, IDPGroupItem> idpGroupItems)
         {
-            app.UpdateIDPGroupItems(idpGroupItems);
-
-            return RedirectToAction("AddCompetency", new { id = idpGroupId });
+            
+            app.UpdateIDPGroupItems(idpGroupItems, idpGroupId);
+            return RedirectToAction("AddCompetency", new { idpGroupId = idpGroupId });
+            
         }
-        public ActionResult SelectCompetency(string id)
+        public ActionResult SelectCompetency(string idpGroupId)
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
             if (usernameCookie != null)
@@ -428,13 +569,18 @@ namespace myApp.Controllers
 
                 List<Competency> competencies = app.GetCompetencyAtActive();
 
-                List<string> enrolledSubjectCodes = app.GetCheckedCompetencyId(id);
+                List<string> enrolledSubjectCodes = app.GetCheckedCompetencyId(idpGroupId);
 
                 List<Competency> availableSubjects = competencies.Where(c => !enrolledSubjectCodes.Contains(c.CompetencyId)).ToList();
 
                 availableSubjects.ForEach(c => c.IDPGroupItem = new IDPGroupItem());
 
-                ViewBag.IDPGroupId = id;
+                string idpGroupName = app.GetIDPGroupNameByIDPGroupId(idpGroupId);
+                string year = app.GetYearById(idpGroupId);
+
+                ViewBag.IDPGroupId = idpGroupId;
+                ViewBag.IDPGroupName = idpGroupName;
+                ViewBag.Year = year;
                 return View(availableSubjects);
             }
             else
@@ -452,7 +598,6 @@ namespace myApp.Controllers
 
             List<Competency> selectedCompetencies = new List<Competency>();
 
-            string id = idpGroupId;
             string year = app.GetYearById(idpGroupId);
 
 
@@ -476,36 +621,43 @@ namespace myApp.Controllers
                 }
             }
 
-            app.InsertCompetency(selectedCompetencies, id);
+            app.InsertCompetency(selectedCompetencies, idpGroupId);
 
             bool hasExistingResults = app.IsAlreadyResultEachYearByIds(allIdsInEnroll, year);
             if (hasExistingResults)
             {
-                app.UpdateResultEmployeesById(allIdsInEnroll, year);
+                app.UpdateResultEmployeesById(allIdsInEnroll, idpGroupId);
             }
 
 
-            return RedirectToAction("AddCompetency", new { id = idpGroupId });
+            return RedirectToAction("AddCompetency", new { idpGroupId = idpGroupId });
         }
-        public ActionResult DeleteIDPGroupItem(int id)
+        public ActionResult DeleteIDPGroupItem(int idpGroupItem)
         {
-            string idpGroupId = app.GetIDPGroupIdByIDPGroupItem(id);
+            
+            string idpGroupId = app.GetIDPGroupIdByIDPGroupItem(idpGroupItem);
             string year = app.GetYearById(idpGroupId);
             List<string> allIdsInEnroll = app.GetIdsThatEnrollByIDPGroupId(idpGroupId);
 
-            app.DeleteIDPGroupItem(id);
+            try
+            {
+                app.DeleteIDPGroupItem(idpGroupItem, idpGroupId);
 
-            int thisGroup = app.GetCountCompetencyThisId(idpGroupId);
+                int thisGroup = app.GetCountCompetencyThisId(idpGroupId);
     
-            app.UpdateResultEmployeeAfterDeleteFromAddCompetency(thisGroup, allIdsInEnroll, year, idpGroupId);
+                app.UpdateResultEmployeeAfterDeleteFromAddCompetency(thisGroup, allIdsInEnroll, idpGroupId);
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
 
-            return RedirectToAction("AddCompetency", new { id = idpGroupId });
+            return RedirectToAction("AddCompetency", new { idpGroupId = idpGroupId });
         }
 
 
-
-        //User Enroll
-        public ActionResult AddEmployee(string id)
+        //USER ENROLL
+        public ActionResult AddEmployee(string idpGroupId)
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
             if (usernameCookie != null)
@@ -516,12 +668,12 @@ namespace myApp.Controllers
 
                 ViewBag.isAdmin = isAdmin;
                 ViewBag.Username = username;
-                List<Enrollment> enrollments = app.GetEnrollments(id);
+                List<Enrollment> enrollments = app.GetEnrollments(idpGroupId);
 
-                string IDPGroupName = app.GetIDPGroupNameByIDPGroupId(id);
-                string year = app.GetYearById(id);
+                string IDPGroupName = app.GetIDPGroupNameByIDPGroupId(idpGroupId);
+                string year = app.GetYearById(idpGroupId);
 
-                ViewBag.IDPGroupID = id;
+                ViewBag.IDPGroupID = idpGroupId;
                 ViewBag.IDPGroupName = IDPGroupName;
                 ViewBag.Year = year;
 
@@ -534,19 +686,53 @@ namespace myApp.Controllers
             }
         }
         [HttpPost]
-        public ActionResult AddEmployee(List<string> enrollIds, string idpGroupId)
+        public ActionResult AddEmployee(List<string> Ids, string idpGroupId, bool isChecked)
         {
-            if (enrollIds != null && enrollIds.Any())
+            if (Ids != null && Ids.Any())
             {
-                foreach (var enrollId in enrollIds)
+                foreach (var id in Ids)
                 {
-                    // อัปเดตสถานะเป็น "In Progress" สำหรับ enrollId ที่เลือก
-                    app.UpdateEnrollmentStatus_1(enrollId, idpGroupId);
+                    if (!isChecked)
+                    {
+                        try
+                        {
+                            app.UpdateEnrollmentStatus_1(id, idpGroupId);
+
+                            int count = app.GetCountCompetencyThisId(idpGroupId);
+                            string guid = app.GetGuidById_IDPGroupId(id, idpGroupId);
+
+                            List<IDPGroupItem> iDPGroupItems = app.GetIDPGroupItems(idpGroupId);
+
+                            string year = app.GetYearByGuid(guid);
+
+                            List<ResultItem> actual2 = app.GetPreActual2(id, year);
+
+                            app.InsertResultDetails(iDPGroupItems, guid, count, actual2);
+                        }
+                        catch
+                        {
+                            TempData["ErrorMessage"] = "ทำไม่ได้";
+                        }
+
+                        return RedirectToAction("AddEmployee", new { idpGroupId = idpGroupId });
+                    }
+                    else
+                    {
+                        try
+                        {
+                            app.UpdateEnrollmentStatus_6(id, idpGroupId);
+                        }
+                        catch (Exception ex)
+                        {
+                            TempData["ErrorMessage"] = ex.Message;
+                        }
+
+                    }                                                                                   
                 }
             }
-            return RedirectToAction("AddEmployee", new { id = idpGroupId });
+            return RedirectToAction("AddEmployee", new { idpGroupId = idpGroupId });
         }
-        public ActionResult SelectEmployee(string id)
+        public ActionResult SelectEmployee(string idpGroupId)
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
             if (usernameCookie != null)
@@ -559,17 +745,17 @@ namespace myApp.Controllers
                 ViewBag.Username = username;
                 List<User> users = app.GetEmployeeAtActive();
 
-                List<string> enrolledIds = app.GetCheckedId(id);
+                List<string> enrolledIds = app.GetCheckedId(idpGroupId);
 
                 List<User> availableIds = users.Where(u => !enrolledIds.Contains(u.Id)).ToList();
 
                 availableIds.ForEach(u => u.Enrollment = new Enrollment());
 
-                string IDPGroupName = app.GetIDPGroupNameByIDPGroupId(id);
-                string year = app.GetYearById(id);
+                string IDPGroupName = app.GetIDPGroupNameByIDPGroupId(idpGroupId);
+                string year = app.GetYearById(idpGroupId);
 
                 ViewBag.Username = Request.Cookies["username"].Value;
-                ViewBag.IDPGroupID = id;
+                ViewBag.IDPGroupID = idpGroupId;
                 ViewBag.IDPGroupName = IDPGroupName;
                 ViewBag.Year = year;
 
@@ -587,7 +773,7 @@ namespace myApp.Controllers
 
             if (userIds == null)
             {
-                return RedirectToAction("AddEmployee", new { id = idpGroupId });
+                return RedirectToAction("AddEmployee", new { idpGroupId = idpGroupId });
             }
 
             List<User> selectedUsers = new List<User>();
@@ -599,7 +785,7 @@ namespace myApp.Controllers
             {
                 if (enrolledUsers.Contains(userId))
                 {
-                    return RedirectToAction("SelectStudent", new { id = idpGroupId });
+                    return RedirectToAction("SelectStudent", new { idpGroupId = idpGroupId });
                 }
 
                 User user = app.GetEmployeeAtActive().FirstOrDefault(u => u.Id == userId);
@@ -611,44 +797,54 @@ namespace myApp.Controllers
 
             app.InsertEmployee(selectedUsers, idpGroupId);
 
-            /*bool hasExistingResults = app.IsAlreadyResultEachYear(selectedUsers, year);
-            if (hasExistingResults)
+            app.InsertResultEmployees(selectedUsers, year, ViewBag.Username, idpGroupId);
+
+            return RedirectToAction("AddEmployee", new { idpGroupId = idpGroupId });
+        }
+        public ActionResult DeleteEmployeeByIDPGroup(int enrollId) 
+        {
+            string idpGroupId = app.GetIDPGroupIdByEnrollment(enrollId);
+            string id = app.GetIdByEnrollment(enrollId);
+            //bool canDelete = app.CheckIfEnrollIsDecline(enrollId);
+
+            try
             {
-                app.UpdateResultEmployees(selectedUsers, year);
+                app.DeleteEmployeeByIDPGroup(enrollId);
+                
+                app.DeleteResult(id, idpGroupId);
+                
+                
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+            }
+            
+
+            return RedirectToAction("AddEmployee", new { idpGroupId = idpGroupId });
+        }
+
+
+        //UPLOAD COMPETENCY
+        public ActionResult UploadCompetency()
+        {
+            HttpCookie usernameCookie = Request.Cookies["username"];
+            if (usernameCookie != null)
+            {
+                string username = usernameCookie.Value;
+                List<UserFormAuth> auths = app.GetUserFormAuths();
+                bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
+
+                ViewBag.isAdmin = isAdmin;
+                ViewBag.Username = Request.Cookies["username"].Value;
+                int rowCount = TempData.ContainsKey("RowCount") ? int.Parse(TempData["RowCount"].ToString()) : 0;
+                TempData["RowCount"] = rowCount.ToString();
+                return View();
             }
             else
             {
-                app.InsertResultEmployees(selectedUsers, year, ViewBag.Username);
-            }*/
-
-            app.InsertResultEmployees(selectedUsers, year, ViewBag.Username, idpGroupId);
-
-            return RedirectToAction("AddEmployee", new { id = idpGroupId });
-        }
-        public ActionResult DeleteEmployeeByIDPGroup(int id) 
-        {
-            //ตอนกด Delete แล้ว
-            string idpGroupId = app.GetIDPGroupIdByEnrollment(id);
-            string year = app.GetYearById(idpGroupId);
-            string empid = app.GetIdByEnrollment(id);
-
-            app.DeleteEmployeeByIDPGroup(id);
-
-            //หลังกด Delete 
-
-            //app.UpdateResultEmployeeAfterDelete(empid, year);
-
-            return RedirectToAction("AddEmployee", new { id = idpGroupId });
-        }
-
-
-        //Upload Competency
-        public ActionResult UploadCompetency()
-        {
-            ViewBag.Username = Request.Cookies["username"].Value;
-            int rowCount = TempData.ContainsKey("RowCount") ? int.Parse(TempData["RowCount"].ToString()) : 0;
-            TempData["RowCount"] = rowCount.ToString();
-            return View();
+                return RedirectToAction("Index", "Form");
+            }
         }
         [HttpPost]
         public ActionResult UploadCompetency(HttpPostedFileBase file)
@@ -726,7 +922,7 @@ namespace myApp.Controllers
                         }
                         else
                         {
-                            SqlCommand updateCommand = new SqlCommand("UPDATE IDP_COMPTY SET CompetencyNameTH = @CompetencyNameTH, CompetencyNameEN = @CompetencyNameEN, CompetencyDesc = @CompetencyDesc, " +
+                            SqlCommand updateCommand = new SqlCommand("UPDATE IDP_COMPTY SET COMPETENCY_NAME_TH = @CompetencyNameTH, COMPETENCY_NAME_EN = @CompetencyNameEN, COMPETENCY_DESC = @CompetencyDesc, " +
                                 "Pl1 = @Pl1, Pl2 = @Pl2, Pl3 = @Pl3, Pl4 = @Pl4, Pl5 = @Pl5, Active = @Active, Type = @Type WHERE COMPETENCY_ID = @CompetencyId", con);
 
                             updateCommand.Parameters.AddWithValue("@CompetencyId", competencyId);
@@ -753,9 +949,9 @@ namespace myApp.Controllers
                 TempData["UploadError"] = "เกิดข้อผิดพลาดในการอัปโหลด: " + ex.Message;
             }
         }
-     
 
-        //Upload Employee
+
+        //UPLOAD EMPLOYEE
         public ActionResult UploadEmployee()
         {
             ViewBag.Username = Request.Cookies["username"].Value;
@@ -890,7 +1086,8 @@ namespace myApp.Controllers
             }
         }
 
-        //Upload IDP Group
+
+        //UPLOAD IDP GROUP
         public ActionResult UploadIDPGroup()
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
@@ -958,7 +1155,7 @@ namespace myApp.Controllers
                         checkExistCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
 
                         object existingCode = checkExistCommand.ExecuteScalar();
-                        if (existingCode == null)
+                        if (existingCode == null && !string.IsNullOrEmpty(IDPGroupId))
                         {
                             insertCommand.Parameters.Clear();
                             insertCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
@@ -994,7 +1191,7 @@ namespace myApp.Controllers
         }
 
 
-        //Email
+        //EMAIL
         public ActionResult SendEmail()
         {
             List<IDPGroup> competencyForms = app.SelectIDPGroup();
@@ -1049,7 +1246,7 @@ namespace myApp.Controllers
         }
 
 
-        //Form
+        //FORM
         public ActionResult SelectForm(string user, string year)
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
@@ -1075,7 +1272,6 @@ namespace myApp.Controllers
             {
                 return RedirectToAction("Index", "Form");
             }
-            
         }
         public ActionResult Form(string user, string idpGroupId, string guid)
         {
@@ -1085,9 +1281,7 @@ namespace myApp.Controllers
                 string username = usernameCookie.Value;
                 List<UserFormAuth> auths = app.GetUserFormAuths();
                 bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
-                //bool isGM = auths.Exists(auth => auth.Username == username && auth.ObjectName == "COST_CENTER" && auth.Value == "1050100");
                 ViewBag.isAdmin = isAdmin;
-                //ViewBag.isGM = isGM;
                 ViewBag.Username = username;
                 string id = app.GetIdByGuid(guid);
 
@@ -1121,6 +1315,12 @@ namespace myApp.Controllers
                 ViewBag.Guid = guid;
                 ViewBag.Status = status;
 
+                List<RemarkHS> remarkHS = app.GetRemark(guid);
+                List<Goodness> goodnesses = app.GetGoodnessByUser(ViewBag.UserLogin, ViewBag.Year);
+
+                ViewBag.Remark = remarkHS;
+                ViewBag.Goodness = goodnesses;
+
                 List<Enrollment> enrollments = app.GetFormsByGuid(enrollmentId, id, guid);
                 return View(enrollments);
             }
@@ -1133,12 +1333,6 @@ namespace myApp.Controllers
         public ActionResult SaveResultDetails(int enrollId, Dictionary<string, ResultItem> forms, bool isChecked, string remark, string Guid)
         {
 
-
-            string[] types = Request.Form.GetValues("Type");
-            string[] companies = Request.Form.GetValues("Company");
-            string[] date = Request.Form.GetValues("Date");
-            string[] hour = Request.Form.GetValues("Hour");
-
             string username = Request.Cookies["username"].Value;
             string IDPGroup = app.GetIDPGroupIdByEnrollment(enrollId);
             string Id = app.GetIdByEnrollment(enrollId);
@@ -1148,27 +1342,6 @@ namespace myApp.Controllers
             string status = app.GetStatus(Id, IDPGroup);
             int count = app.GetCountCompetencyThisId(IDPGroup);
             string user = app.GetUserLoginByEnrollId(enrollId);
-
-            if (types != null && companies != null && date != null && hour != null)
-            {
-                List<Goodness> goodnessList = new List<Goodness>();
-
-                for (int i = 0; i < types.Length; i++)
-                {
-                    Goodness goodness = new Goodness
-                    {
-                        Type = types[i],
-                        Company = companies[i],
-                        Date = date[i],
-                        Hour = hour[i],
-                    };
-
-                    goodnessList.Add(goodness);
-                }
-
-                // Insert data into the database
-                app.InsertGoodness(goodnessList, Guid, user);
-            }
 
             //INSERT AND UPDATE RESULTITEMS
             if (isFormSubmitted)
@@ -1187,87 +1360,41 @@ namespace myApp.Controllers
             }
             else
             {
-                app.InsertResultDetails(forms.Values, Guid, count);
+                //app.InsertResultDetails(forms.Values, Guid, count);
                 //LOG DATA
-                List<int> resultItemIds = app.GetResultItemIdByGuid(Guid);
-                List<ResultItem> resultItems = app.GetResultItemByGuidOnInsert(Guid);
-                app.InsertLogOnInsertResultItems(resultItemIds, username, resultItems, Guid);
+                //List<int> resultItemIds = app.GetResultItemIdByGuid(Guid);
+                //List<ResultItem> resultItems = app.GetResultItemByGuidOnInsert(Guid);
+                //app.InsertLogOnInsertResultItems(resultItemIds, username, resultItems, Guid);
             }
-
-
-            //Update Status
-            if (!isChecked)
-            {
-                bool is1stEvaluated = app.is1stEvaluated(enrollId);
-                bool isDeveloped = app.isDeveloped(enrollId);
-                bool is2ndEvaluated = app.is2ndEvaluated(enrollId);
-                if (is1stEvaluated)
-                {
-                    app.UpdateEnrollmentStatus_3(Id, IDPGroup); //Developing
-                }
-                else if (isDeveloped)
-                {
-                    app.UpdateEnrollmentStatus_4(Id, IDPGroup); //2nd Evaluating
-                }
-                else if (is2ndEvaluated)
-                {
-                    app.UpdateEnrollmentStatus_5(Id, IDPGroup); //Success
-                }
-                else
-                {
-                    app.UpdateEnrollmentStatus_2(Id, IDPGroup); //1st Evaluating
-                }
-                app.UpdateApprover(username, Guid);
-            }
-
-            int all = app.GetCompetencyAllByStatus(Id, Year);
-            int pass = app.GetCompetencyPassByGuid(Guid);
-            int didThis = app.GetCountCompetencyThisId(IDPGroup);
-            int didOther = app.GetCountCompetencyDid(Guid);
 
             //Calculate Values for Result
-            if (status == "Evaluating")
-            {
-                if (all == didOther)
-                {
-                    didThis = didOther;
-                }
-                else
-                {
-                    didThis += didOther;
-                }
-            }
+            int all = app.GetCompetencyAllByGuid(Guid);
+            int pass = app.GetCompetencyPassByGuid(Guid);
 
-            float per = (float)pass / didThis * 100;
-
+            float per = (float)pass / all * 100;
             string rank;
 
-            if (per >= 100)
+            switch (per)
             {
-                rank = "M";
-            }
-            else if (per < 100 && per >= 70)
-            {
-                rank = "C";
-            }
-            else
-            {
-                rank = "L";
+                case var p when p >= 100:
+                    rank = "M";
+                    break;
+                case var p when p < 100 && p >= 70:
+                    rank = "C";
+                    break;
+                default:
+                    rank = "L";
+                    break;
             }
 
-            app.UpdateResult(Guid, didThis, pass, per, rank);
-
-            /*if(isChecked)
-            {
-                return RedirectToAction("Check", "Form");
-            }*/
+            app.UpdateResult(Guid, pass, per, rank);
 
             return RedirectToAction("Form", "Home", new { user = user, idpGroupId = IDPGroup, guid = Guid });
 
         }
 
 
-        //info
+        //INFO
         public ActionResult Info(string user, string year)
         {
 
@@ -1279,34 +1406,9 @@ namespace myApp.Controllers
                 bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
 
                 ViewBag.isAdmin = isAdmin;
-                ViewBag.Username = username;
-                ViewBag.User = user;
-                string id = app.GetIdByCookie(user);
+                //User user = app.GetTypeByUserLogin(user);
 
-                int count = app.GetCountEnrollmentById(id);
-                string guid = app.GetGuidByIdAndYear(id, year);
-                string prefix = app.GetPrefixById(id);
-                string firstName = app.GetFirstNameById(id);
-                string lastName = app.GetLastNameById(id);
-                string company = app.GetCompanyById(id);
-                string joblevel = app.GetJoblevelById(id);
-                string department = app.GetDepartmentById(id);
-                string position = app.GetPositionById(id);
-
-                ViewBag.Prefix = prefix;
-                ViewBag.FirstName = firstName;
-                ViewBag.LastName = lastName;
-                ViewBag.Company = company;
-                ViewBag.Joblevel = joblevel;
-                ViewBag.Department = department;
-                ViewBag.Position = position;
-                ViewBag.Count = count;
-                ViewBag.Year = year;
-                ViewBag.Id = id;
-
-                List<Enrollment> enrollments = app.GetInfoEmployeeByCookie(user, year);
-
-                return View(enrollments);
+                return View();
             }
             else
             {
@@ -1314,7 +1416,113 @@ namespace myApp.Controllers
             }
         }
 
+        //GOODNESS
+        public ActionResult Goodness(string year) 
+        {
+            HttpCookie usernameCookie = Request.Cookies["username"];
+            if (usernameCookie != null)
+            {
+
+                string username = usernameCookie.Value;
+                List<UserFormAuth> auths = app.GetUserFormAuths();
+                bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
+                bool isGood = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Goodness");
+
+                List<User> users = app.GetUsers();
+
+                ViewBag.isAdmin = isAdmin;
+                ViewBag.isGood = isGood;
+                ViewBag.Username = username;
+                ViewBag.Year = year;
+                ViewBag.User = users;
+                List<Goodness> goodnessList = app.GetGoodness(year);
+                
+                return View(goodnessList);
+            }
+            else
+            {
+                return RedirectToAction("Index", "Form");
+            }
+        }
+        [HttpPost]
+        public ActionResult InsertGoodness(string Year, List<string> userIds, string caseVal, Goodness good)
+        {
+            HttpCookie usernameCookie = Request.Cookies["username"];
+            if (usernameCookie != null)
+            {
+                string username = usernameCookie.Value;
+                string[] types = Request.Form.GetValues("Type");
+                string[] companies = Request.Form.GetValues("Company");
+                string[] dates = Request.Form.GetValues("Date");
+                string[] hours = Request.Form.GetValues("Hour");
+                string[] descs = Request.Form.GetValues("Desc");
+
+                types = types.Where(s => !string.IsNullOrEmpty(s)).ToArray();
+
+                if(caseVal == "1")
+                {
+                    if (types != null && companies != null && date != null && hour != null)
+                    {
+                        List<Goodness> goodnessList = new List<Goodness>();
+
+                        for (int i = 0; i < types.Length; i++)
+                        {
+                            Goodness goodness = new Goodness
+                            {
+                                Type = types[i],
+                                Company = companies[i],
+                                Date = dates[i],
+                                Hour = hours[i],
+                                Desc = descs[i]
+                            };
+
+                            goodnessList.Add(goodness);
+                        }
+
+                        foreach (var id in userIds)
+                        {
+                            app.InsertGoodnessById(goodnessList, id, Year);
+                        }
+                    }
+                }
+                else if(caseVal == "2")
+                {
+                    app.UpdateGoodness(good);
+                }
+                return RedirectToAction("Goodness", "Home", new { year = Year });
+            }
+            else
+            {
+                return RedirectToAction("Index", "Form");
+            }
+
+        }
 
 
+        //DOWNLOAD
+        public ActionResult Download()
+        {
+            HttpCookie usernameCookie = Request.Cookies["username"];
+            if (usernameCookie != null)
+            {
+
+                string username = usernameCookie.Value;
+                List<UserFormAuth> auths = app.GetUserFormAuths();
+                bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
+
+                ViewBag.isAdmin = isAdmin;
+                ViewBag.Username = username;
+
+                List<User> downloads = app.GetListDownload();
+                List<IDPGroup> iDPGroups = app.GetIDPGroups();
+
+                ViewBag.iDPGroups = iDPGroups;
+                return View(downloads);
+            }
+            else
+            {
+                return RedirectToAction("Index", "Form");
+            }
+        }
     }
 }

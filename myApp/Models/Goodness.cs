@@ -7,13 +7,14 @@ namespace myApp.Models
 {
     public class Goodness
     {
-        public int GdId { get; set; }
-        public string GUID { get; set; }    
-        public string Name { get; set; }
+        public int GDId { get; set; }
         public string Type { get; set; }
         public string Company { get; set; }
         public string Date { get; set; }
         public string Hour { get; set; }
+        public string Desc { get; set; }
+        public byte file { get; set; }
 
+        public virtual User User { get; set; }
     }
 }

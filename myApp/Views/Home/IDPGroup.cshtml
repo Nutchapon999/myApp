@@ -38,8 +38,8 @@
                 <div class="col-4 text-end">
                     <div class="row justify-content-end">
                         <div class="col-auto d-flex align-items-center">
-                            <label for="selectType" class="form-label me-2 mt-2"> <i class="fa-solid fa-calendar-days fs-4" aria-hidden="true"></i></label>
-                            <select class="form-select" id="selectType">
+                            <label for="selectType" class="form-label me-2 mt-2"> ปี:</label>
+                            <select class="form-select" id="selectType" style="width: 100px">
                                 <option value="">ทั้งหมด</option>
                                 @foreach (var year in Model.Select(y => y.Year).Distinct())
                                 {
@@ -47,24 +47,21 @@
                                 }
                             </select>
                         </div>
-
-
-                        <div class="col-auto">
-                            <button type="button" class="btn btn-lg active-link-add me-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                        <div class="col-auto mt-1">
+                            <button type="button" class="btn btn-lg active-link-add me-2" data-bs-toggle="modal" data-bs-target="#CreateIDPGroup">
                                 <i class="fa-solid fa-file-circle-plus gradient-icon-add fs-4" aria-hidden="true"></i> <strong class="gradient-icon-add"> เพิ่ม</strong>
                             </button>
 
-                            <!-- Modal -->
-                            <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                            <div class="modal fade" id="CreateIDPGroup" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="CreateIDPGroupLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h1 class="modal-title fs-5 fw-bold" id="staticBackdropLabel">
+                                            <h1 class="modal-title fs-5 fw-bold" id="CreateIDPGroupLabel">
                                                 <i class="fa-solid fa-file-circle-plus gradient-icon-add fs-3"></i> เพิ่ม IDP Group
                                             </h1>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
-                                        <!-- Move the Create IDP Group Form inside the Modal Body -->
+
                                         @using (Html.BeginForm("CreateIDPGroup", "Home", FormMethod.Post, new { id = "createIDPGroupForm" }))
                                         {
                                             <div class="modal-body">
@@ -122,6 +119,15 @@
                     <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> @TempData["ErrorMessage"]
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
+
+                <script>
+                    window.setTimeout(function () {
+                        $(".alert-danger").fadeTo(500, 0).slideUp(500, function () {
+                            $(this).remove();
+
+                        });
+                    }, 5000);
+                </script>
             }
             <table class="table table-hover table-responsive table-striped" id="myTable">
                 <thead style="background-color: #2D4686; color: #C8E8FF ">
@@ -140,26 +146,81 @@
                         <tr>
                             <td class="text-center">@idp.IDPGroupId</td>
                             <td class="text-center">@idp.IDPGroupName</td>
-                            <td class="text-center">@idp.EmployeeEnrollmentCount</td>
-                            <td class="text-center">@idp.EmployeeCompetencyCount</td>
+                            <td class="text-end">@idp.EmployeeEnrollmentCount</td>
+                            <td class="text-end">@idp.EmployeeCompetencyCount</td>
                             <td class="text-center">@idp.Year</td>
                             <td class="text-center">
                                 <div class="btn-group" role="group" aria-label="Second group">
                                     <button id="link" type="button" class="btn active-link-edit" title="แก้ไข" data-bs-toggle="modal" data-bs-target="#editModal-@idp.IDPGroupId">
                                         <i class="fa-solid fa-pencil gradient-text-edit" aria-hidden="true"></i>
                                     </button>
-                                    <a id="link" href="@Url.Action("DetailIDPGroup", new { id = idp.IDPGroupId })" class="btn active-link-detail" title="รายละเอียด">
+                                    <button id="link" type="button" class="btn active-link-copy" data-bs-toggle="modal" data-bs-target="#copyModal-@idp.IDPGroupId" title="คัดลอก" style="background-color: white">
+                                        <i class="fa-solid fa-clone" aria-hidden="true"></i>
+                                    </button>
+                                    <a id="link" href="@Url.Action("DetailIDPGroup", new { idpGroupId = idp.IDPGroupId })" class="btn active-link-detail" title="รายละเอียด">
                                         <i class="fa-solid fa-eye gradient-text-detail" aria-hidden="true"></i>
                                     </a>
-                                    <a id="link" href="@Url.Action("AddCompetency", new { id = idp.IDPGroupId })" class="btn active-link-competency" title="เพิ่ม competency" style="background-color: white">
+                                    <a id="link" href="@Url.Action("AddCompetency", new { idpGroupId = idp.IDPGroupId })" class="btn active-link-competency" title="เพิ่ม competency" style="background-color: white">
                                         <i class="fa fa-solid fa-layer-group gradient-text-competency" aria-hidden="true"></i>
                                     </a>
-                                    <a id="link" href="@Url.Action("AddEmployee", new { id = idp.IDPGroupId })" class="btn  active-link-employee" title="เพิ่มพนักงาน" style="background-color: white">
+                                    <a id="link" href="@Url.Action("AddEmployee", new { idpGroupId = idp.IDPGroupId })" class="btn  active-link-employee" title="เพิ่มพนักงาน" style="background-color: white">
                                         <i class="fa fa-graduation-cap gradient-text-employee" aria-hidden="true"></i>
                                     </a>
                                     <button id="link" type="button" class="btn active-link-delete" data-bs-toggle="modal" data-bs-target="#deleteModal-@idp.IDPGroupId" title="ลบ" style="background-color: white">
                                         <i class="fa fa-trash gradient-text-delete" aria-hidden="true"></i>
                                     </button>
+                                </div>
+                                <div class="modal fade" id="copyModal-@idp.IDPGroupId" tabindex="-1" aria-labelledby="copyModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            @using (Html.BeginForm("CopyIDPGroup", "Home", FormMethod.Post))
+                                            {
+                                                <input type="hidden" name="IDPGroupIdCopy" value="@idp.IDPGroupId" />
+                                                <div class="modal-body">
+                                                    <div class="input-group input-group-lg mt-3 d-flex justify-content-center">
+                                                        <span class="input-group-text">
+                                                            <i class="fa-solid fa-key fs-4" aria-hidden="true"></i>
+                                                        </span>
+                                                        <input type="text" class="form-control" placeholder="รหัส IDP Group" name="IDPGroupId" id="IDPGroupId" required>
+                                                    </div>
+                                                    <div class="input-group input-group-lg mt-3 d-flex justify-content-center">
+                                                        <span class="input-group-text">
+                                                            <i class="fa-solid fa-tag fs-4" aria-hidden="true"></i>
+                                                        </span>
+                                                        <input type="text" class="form-control" placeholder="ชื่อ IDP Group" name="IDPGroupName" id="IDPGroupName" value="@idp.IDPGroupName">
+                                                    </div>
+
+                                                    <div class="input-group input-group-lg mt-3 d-flex justify-content-center">
+                                                        <span class="input-group-text">
+                                                            <i class="fa-solid fa-calendar-days fs-4" aria-hidden="true"></i>
+                                                        </span>
+                                                        <select class="form-select" id="Year" name="Year">
+                                                            @for (int year = DateTime.Now.Year + 541; year <= DateTime.Now.Year + 545; year++)
+                                                            {
+                                                                <option value="@year" @(year.ToString() == idp.Year ? "selected" : "")>@year</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div class="input-group mt-3 d-flex justify-content-center">
+                                                        <div class="input-group-text">
+                                                            <input class="form-check-input mt-0" type="checkbox" name="Emp" value="true" aria-label="Checkbox for following text input">
+                                                        </div>
+                                                        <input type="text" class="form-control" aria-label="Text input with checkbox" value="พนักงาน" disabled>
+                                                    </div>
+                                                    <div class="input-group mb-3 d-flex justify-content-center">
+                                                        <div class="input-group-text">
+                                                            <input class="form-check-input mt-0" type="checkbox" name="Cmpt" value="true" aria-label="Checkbox for following text input">
+                                                        </div>
+                                                        <input type="text" class="form-control" aria-label="Text input with checkbox" value="Competency" disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer flex-nowrap p-0">
+                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" data-bs-dismiss="modal"><i class="fa-solid fa-ban gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ยกเลิก</strong></button>
+                                                    <button type="submit" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit"><i class="fa-solid fa-save gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">บันทึก</strong></button>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="modal fade" id="editModal-@idp.IDPGroupId" aria-labelledby="editModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered">
@@ -206,19 +267,22 @@
                                 </div>
                                 <div class="modal fade" id="deleteModal-@idp.IDPGroupId" aria-labelledby="deleteModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-4">ต้องการที่จะลบรายวิชานี้หรือไม่?</h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        @using (Html.BeginForm("DeleteIDPGroup", "Home", FormMethod.Post, new { id = "myForm" }))
+                                        {
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-4">ต้องการที่จะลบรายวิชานี้หรือไม่?</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <h5>รหัส Competency: @idp.IDPGroupId</h5>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="deleteForm('@idp.IDPGroupId')">ลบ</button>
+                                                </div>
                                             </div>
-                                            <div class="modal-body">
-                                                <h5>รหัส Competency: @idp.IDPGroupId</h5>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-                                                <a href="@Url.Action("DeleteIDPGroup", new { id = idp.IDPGroupId })" class="btn btn-danger">ยืนยัน</a>
-                                            </div>
-                                        </div>
+                                        }
                                     </div>
                                 </div>
                             </td>
@@ -231,15 +295,14 @@
 </main>
 
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
-<script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
+<script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
 <script type="text/javascript">
     var js = jQuery.noConflict(true);
     js(document).ready(function () {
         js('#myTable').DataTable({
+            info: false,
+            paging: false,
             language: {
                 search: '',
                 searchPlaceholder: 'ค้นหา',
@@ -250,15 +313,36 @@
                 },
                 info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
             },
-
+            columnDefs: [{
+                targets: 5,
+                orderable: false
+            }],
 
             initComplete: function () {
                 js('#myTable_length label').addClass('entries-label');
             }
         });
     });
-</script>
-<script>
+
+    function deleteForm(idpGroupId) {
+        var formData = $('#myForm').serialize();
+
+        formData += '&idpGroupId=' + encodeURIComponent(idpGroupId);
+
+        $.ajax({
+            type: 'POST',
+            url: $('#myForm').attr('action'),
+            data: formData,
+            success: function (data) {
+                window.location.href = '@Url.Action("IDPGroup", "Home")';
+            },
+            error: function (xhr, status, error) {
+                // Handle error
+            }
+        });
+    }
+
+
     document.addEventListener('DOMContentLoaded', function () {
         const filterSelect = document.getElementById('selectType');
         const tableRows = document.querySelectorAll('#myTable tbody tr');
@@ -283,15 +367,20 @@
     });
 </script>
 
-
-
-
-
-
 <style>
 
     main {
         margin-top: -50px;
+    }
+
+    h3 {
+        margin-bottom: 0;
+    }
+
+    .form-check-input[type="checkbox"] {
+        width: 25px;
+        height: 25px;
+        margin-bottom: 0;
     }
 
     .background-container {
@@ -439,6 +528,19 @@
                 transform: scale(1.2);
             }
 
+    .active-link-copy {
+        border: none;
+        background: white;
+    }
+
+        .active-link-copy:hover {
+            background-color: white;
+            border-bottom: 2px solid #7F00FF;
+        }
+
+            .active-link-copy:hover i {
+                transform: scale(1.2);
+            }
 
     .gradient-text-edit {
         background-image: linear-gradient( 0deg, hsl(220deg 100% 47%) 0%, hsl(216deg 100% 47%) 6%, hsl(213deg 100% 48%) 14%, hsl(209deg 100% 48%) 22%, hsl(206deg 100% 48%) 32%, hsl(202deg 100% 49%) 43%, hsl(199deg 100% 49%) 56%, hsl(195deg 100% 49%) 70%, hsl(192deg 100% 50%) 85%, hsl(188deg 100% 50%) 100% );
@@ -482,20 +584,22 @@
         -webkit-text-fill-color: transparent;
     }
 
+
     .active-link-upload,
     .active-link-add {
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     }
 
-    .active-link-add:hover {
-        transform: scale(.95);
-        border: 2px solid #053a2f;
-    }
 
-    .active-link-upload:hover {
-        transform: scale(.95);
-        border: 2px solid #2D4686;
-    }
+        .active-link-add:hover {
+            transform: scale(.95);
+            border: 2px solid #053a2f;
+        }
+
+        .active-link-upload:hover {
+            transform: scale(.95);
+            border: 2px solid #2D4686;
+        }
 
     .gradient-icon-upload {
         background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
@@ -513,6 +617,12 @@
         border-radius: 10px;
         overflow: hidden;
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+    .fa-clone {
+        background-image: linear-gradient( 0deg, hsl(270deg 100% 50%) 0%, hsl(273deg 100% 50%) 11%, hsl(276deg 100% 50%) 22%, hsl(279deg 100% 50%) 33%, hsl(281deg 100% 50%) 44%, hsl(284deg 100% 50%) 56%, hsl(286deg 100% 50%) 67%, hsl(289deg 100% 50%) 78%, hsl(291deg 100% 50%) 89%, hsl(293deg 100% 50%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
     .fa-tag {

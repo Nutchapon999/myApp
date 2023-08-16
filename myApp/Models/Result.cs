@@ -11,6 +11,7 @@ namespace myApp.Models
         public string K2_No { get; set; }
         public string FormType { get; set; }
         public string FormId { get; set; }
+        public string IDPGroupID { get; set; }
         public string Status { get; set; }
         public string Id { get; set; }
         public string Subject { get; set; }
@@ -25,11 +26,12 @@ namespace myApp.Models
         public DateTime CompeletedOn { get; set; }
         public string CurrentApprover { get; set;}
         public int CompetencyAll { get; set; }
-        public int CompetencyDid { get; set; }
         public int CompetencyPass { get; set;}
         public float CompetencyPer { get; set;}
         public string Rank { get; set; }
         public string Year { get; set; }
 
+        public virtual ResultItem ResultItem { get; set; }
+        public virtual Competency Competency { get; set; }
     }
 }

@@ -89,7 +89,7 @@
                 var workbook = XLSX.read(data, { type: 'array' });
                 var worksheet = workbook.Sheets[workbook.SheetNames[0]];
                 var rowCount = XLSX.utils.sheet_to_json(worksheet).length;
-                document.getElementById("rowCountText").innerText = "จำนวนแถวที่ของข้อมูล: " + rowCount;
+                document.getElementById("rowCountText").innerText = "จำนวนแถวของข้อมูล: " + rowCount;
             };
             reader.readAsArrayBuffer(file);
         }

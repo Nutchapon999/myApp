@@ -34,5 +34,6 @@ namespace myApp.Models
 
         public virtual Enrollment Enrollment { get; set; }
         public virtual Result Result { get; set; }
+        public virtual ResultItem ResultItem { get; set; }
     }
 }

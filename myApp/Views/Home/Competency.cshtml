@@ -28,11 +28,11 @@
 </div>
 <main>
     <div class="card border-0 m-3">
-        <div class="card-body mt-4">
+        <div class="card-body border-0 mt-4">
             <div class="row mb-2">
-                <div class="col-4 text-start">
-                    <label for="selectType" class="form-label">ชนิด:</label>
-                    <select class="form-select" id="selectType">
+                <div class="col-4 d-flex align-items-center ">
+                    <label for="selectType" class="form-label me-2 mt-2">ชนิด:</label>
+                    <select class="form-select" id="selectType" style="width: 100px;">
                         <option value="">ทั้งหมด</option>
                         <option value="CC">CC</option>
                         <option value="FC">FC</option>
@@ -49,7 +49,7 @@
                     </a>
                 </div>
             </div>
-            <table class="table table-hover table-striped table-responsive" id="myTable">
+            <table class="table table-hover table-striped table-responsive" id="myTable" width="100%">
                 <thead style="background-color: #2D4686; color: #C8E8FF ">
                     <tr>
                         <th class="text-center" width="5%">ชนิด</th>
@@ -75,7 +75,7 @@
                             <td style="@(cmpty.Active ? "background-color: #D5F2E3; color: #006f57;" : "background-color: #F8D7DA; color: #9B0008")">@(cmpty.Active ? "ใช้" : "ไม่ใช้")</td>
                             <td style="font-size: 14px">@cmpty.CompetencyNameTH</td>
                             <td style="font-size: 14px">@cmpty.CompetencyNameEN</td>
-                            <td style="font-size: 12px">@cmpty.CompetencyDesc</td>
+                            <td style="font-size: 12px"> </td>
                             <td style="font-size: 12px">@cmpty.Pl1</td>
                             <td style="font-size: 12px">@cmpty.Pl2</td>
                             <td style="font-size: 12px">@cmpty.Pl3</td>
@@ -180,7 +180,7 @@
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h1 class="modal-title fs-4">ต้องการที่จะลบรายวิชานี้หรือไม่?</h1>
+                                                <h1 class="modal-title fs-4">ต้องการที่จะลบ Competency นี้หรือไม่?</h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
@@ -198,37 +198,31 @@
                     }
                 </tbody>
             </table>
-
         </div>
     </div>
-
 </main>
 
 
 
 
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css"/>
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
-<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
+<script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
 <script type="text/javascript">
     var js = jQuery.noConflict(true);
     js(document).ready(function () {
         js('#myTable').DataTable({
+            scrollX: true,
             language: {
                 search: '',
                 searchPlaceholder: 'ค้นหา',
                 lengthMenu: '_MENU_',
                 paginate: {
-                    next: 'ถัดไป <i class="fa fa-angle-right"></i>',
-                    previous: '<i class="fa fa-angle-left"></i> ก่อนหน้า'
+                    next: 'ถัดไป <i class="fa fa-angle-double-right"></i>',
+                    previous: '<i class="fa fa-angle-double-left"></i> ก่อนหน้า'
                 },
                 info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
             },
-
 
             initComplete: function () {
                 js('#myTable_length label').addClass('entries-label');
@@ -299,9 +293,9 @@
         font-weight: bold;
     }
 
-    .topic-title h1 {
-        font-weight: bold;
-    }
+        .topic-title h1 {
+            font-weight: bold;
+        }
 
     .card {
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
@@ -358,10 +352,10 @@
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     }
 
-    .active-link-add:hover {
-        transform: scale(.95);
-        border: 2px solid #053a2f;
-    }
+        .active-link-add:hover {
+            transform: scale(.95);
+            border: 2px solid #053a2f;
+        }
 
     .gradient-icon-add {
         background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
@@ -385,28 +379,28 @@
         background-color: white;
     }
 
-    .active-link-edit:hover {
-        background-color: white;
-        border-bottom: 2px solid #0061ff;
-    }
+        .active-link-edit:hover {
+            background-color: white;
+            border-bottom: 2px solid #0061ff;
+        }
 
-    .active-link-edit:hover i {
-        transform: scale(1.2);
-    }
+            .active-link-edit:hover i {
+                transform: scale(1.2);
+            }
 
     .active-link-delete {
         border: none;
         background-color: white;
     }
 
-    .active-link-delete:hover {
-        background-color: white;
-        border-bottom: 2px solid #9B0008;
-    }
+        .active-link-delete:hover {
+            background-color: white;
+            border-bottom: 2px solid #9B0008;
+        }
 
-    .active-link-delete:hover i {
-        transform: scale(1.2);
-    }
+            .active-link-delete:hover i {
+                transform: scale(1.2);
+            }
 
     .gradient-text-edit {
         background-image: linear-gradient( 0deg, hsl(220deg 100% 47%) 0%, hsl(216deg 100% 47%) 6%, hsl(213deg 100% 48%) 14%, hsl(209deg 100% 48%) 22%, hsl(206deg 100% 48%) 32%, hsl(202deg 100% 49%) 43%, hsl(199deg 100% 49%) 56%, hsl(195deg 100% 49%) 70%, hsl(192deg 100% 50%) 85%, hsl(188deg 100% 50%) 100% );

@@ -1,7 +1,11 @@
 ﻿@model  IEnumerable<myApp.Models.IDPGroup>
 @{
     ViewBag.Title = "DetailCompetency";
+    var idpGroupItemJson = Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.IDPGroupItem);
 }
+<script type="text/javascript">
+    var idpGroupItem = @Html.Raw(idpGroupItemJson);
+</script>
 <div class="sticky-header-breadcrumb">
     <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
         <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
@@ -42,7 +46,7 @@
             </div>
         </div>
     </div>
-    <div class="card border-0 ">    
+    <div class="card border-0 ">
         <div class="card-body border-0">
             <div class="row mb-2">
                 <div class="col-4">
@@ -70,30 +74,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @{
-                        var distinctCompetencies = Model.Select(c => new { c.IDPGroupItem.CompetencyId, c.Competency.CompetencyNameTH, c.IDPGroupItem.Pl, c.IDPGroupItem.Critical }).Distinct().ToList();
-                        foreach (var cmptyForm in distinctCompetencies)
-                        {
-                            <tr style="@(cmptyForm.Critical ? "background-color: #d4edda;" : "background-color: none;")">
-                                <th scope="row" class="text-center">@cmptyForm.CompetencyId</th>
-                                <td>@cmptyForm.CompetencyNameTH</td>
-                                <td class="text-center">@cmptyForm.Pl</td>
-                                <td class="text-center">
-                                    @if (cmptyForm.Critical == false)
-                                    {
+                    @foreach (var itm in ViewBag.IDPGroupItem)
+                    {
+                        <tr>
+                            <th scope="row" class="text-center">@itm.CompetencyId</th>
+                            <td>@itm.Competency.CompetencyNameTH</td>
+                            <td class="text-center">@itm.Pl</td>
+                            <td class="text-center">
+                                @if (itm.Critical == false)
+                                {
 
-                                        <text></text>
-                                    }
-                                    else
-                                    {
+                                    <text></text>
+                                }
+                                else
+                                {
 
-                                        <img src="~/Images/hexagon_icon.png" width="25" height="25" />
-                                    }
-                                </td>
-                            </tr>
-                        }
+                                    <img src="~/Images/hexagon_icon.png" width="25" height="25" />
+                                }
+                            </td>
+                        </tr>
                     }
-
                 </tbody>
             </table>
         </div>
@@ -107,28 +107,25 @@
             <table class="table table-hover table-striped" id="employeeTB" style="width: 100%">
                 <thead style="background-color: #2D4686; color: #C8E8FF">
                     <tr>
-                        <th width="10%" class="text-center">รหัส</th>
-                        <th width="30%" class="text-center">ชื่อพนักงาน</th>
-                        <th width="20%" class="text-center">ตำแหน่ง</th>
-                        <th width="10%" class="text-center">ชื่อแผนก</th>
-                        <th width="20%" class="text-center">ตำแหน่งขั้น</th>
+                        <th width="5%" class="text-center">รหัส</th>
+                        <th width="20%" class="text-center">ชื่อพนักงาน</th>
+                        <th width="10%" class="text-center">ตำแหน่ง</th>
+                        <th width="20%" class="text-center">ชื่อแผนก</th>
+                        <th width="10%" class="text-center">ตำแหน่งขั้น</th>
                         <th width="10%" class="text-center">บริษัท</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @{
-                        var distinctEmployees = Model.Select(e => new { e.Enrollment.Id, e.User.Prefix, e.User.FirstNameTH, e.User.LastNameTH, e.User.JobLevel, e.User.DepartmentName, e.User.Position, e.User.Company }).Distinct().ToList();
-                        foreach (var enroll in distinctEmployees)
-                        {
-                            <tr>
-                                <th scope="row" class="text-center">@enroll.Id</th>
-                                <td class="text-center">@enroll.Prefix @enroll.FirstNameTH @enroll.LastNameTH</td>
-                                <td class="text-center">@enroll.Position</td>
-                                <td class="text-center">@enroll.JobLevel</td>
-                                <td class="text-center">@enroll.DepartmentName</td>
-                                <td class="text-center">@enroll.Company</td>
-                            </tr>
-                        }
+                    @foreach (var enroll in ViewBag.Enrollment)
+                    {
+                        <tr>
+                            <th scope="row" class="text-center">@enroll.Id</th>
+                            <td>@enroll.User.Prefix @enroll.User.FirstNameTH @enroll.User.LastNameTH</td>
+                            <td class="text-center">@enroll.User.Position</td>
+                            <td class="text-center">@enroll.User.DepartmentName</td>
+                            <td class="text-center">@enroll.User.JobLevel</td>
+                            <td class="text-center">@enroll.User.Company</td>
+                        </tr>
                     }
                 </tbody>
             </table>
@@ -139,19 +136,19 @@
             <i class="fa fa-arrow-left gradient-icon-pdf" aria-hidden="true"></i> <strong class="gradient-icon-pdf">กลับ</strong>
         </a>
     </div>
+   
 </main>
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" />
-<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
-<script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
+<script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
 <script type="text/javascript">
     var js = jQuery.noConflict(true);
     js(document).ready(function () {
         js('#competencyTB').DataTable({
+            info: false,
+
+            paging: false,
+            ordering: false,
             language: {
                 search: '',
                 searchPlaceholder: 'ค้นหา',
@@ -169,6 +166,10 @@
         });
 
         js('#employeeTB').DataTable({
+            info: false,
+            scrollX: true,
+            paging: false,
+            ordering: false,
             language: {
                 search: '',
                 searchPlaceholder: 'ค้นหา',
@@ -191,41 +192,37 @@
 <script src="https://unpkg.com/exceljs/dist/exceljs.min.js"></script>
 <script type="text/javascript">
     function exportTableToExcel(tableId) {
-        // Get the table element
         var table = document.getElementById(tableId);
-
-        // Create a new Workbook object
         var workbook = new ExcelJS.Workbook();
-
-        // Add a new worksheet to the workbook
         var worksheet = workbook.addWorksheet('Sheet 1');
 
-        // Iterate over the table rows
         for (var i = 0; i < table.rows.length; i++) {
             var row = table.rows[i];
             var rowData = [];
 
-            // Iterate over the table cells in the current row
             for (var j = 0; j < row.cells.length; j++) {
                 var cell = row.cells[j];
-                rowData.push(cell.innerText);
-            }
+                var cellData = cell.innerText;
 
-            // Add the row data to the worksheet
+                if (cell.classList.contains("text-center") && cell.querySelector("img") !== null) {
+                    cellData = "1"; // Change the content to "1" for images in the 'Critical' column
+                }
+
+                rowData.push(cellData);
+            }
             worksheet.addRow(rowData);
         }
 
-        // Create a new Blob object with the workbook data
         workbook.xlsx.writeBuffer().then(function (buffer) {
             var blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
-            // Create a download link and click it to trigger the download
             var link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
             link.download = 'table_data.xlsx';
             link.click();
         });
     }
+
 </script>
 <script type="text/javascript">
     function printTable(tableId) {
@@ -241,21 +238,51 @@
         printDocument.write('<meta charset="utf-8">');
         printDocument.write('<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">');
         printDocument.write('<title>Print</title>');
-        printDocument.write('<meta name="filename" content="print_file.html">'); 
+        printDocument.write('<meta name="filename" content="Print">');
         printDocument.write('<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">');
         printDocument.write('</head>');
         printDocument.write('<body>');
         printDocument.write('<div class="container">');
-        printDocument.write('<img height="100" src="" />'); 
+        printDocument.write('<img height="100" src="https://www.satpcl.co.th/themes/default/assets/static/images/logo.png" />');
         printDocument.write('<h3 class="mt-4"><strong>รายละเอียด</strong></h3>');
         printDocument.write('<h5>รหัส IDP Group: <code>@ViewBag.IDPGroupId</code></h5>');
         printDocument.write('<h5></i> ชื่อ IDP Group: <code>@ViewBag.IDPGroupName</code></h5>');
         printDocument.write('<h5>ปี: <code>@ViewBag.Year</code></h5>');
         printDocument.write('<h5>จำนวนคน: <code>@ViewBag.Member</code> | จำนวน Competency: <code>@ViewBag.Competency</code></h5>');
         printDocument.write('<h5>วันที่พิมพ์: <code>' + new Date().toLocaleDateString() + '</code></h5>');
-        printDocument.write('<table class="table">');
+        //printDocument.write('<table class="table">');
         printDocument.write(printContents);
+        //printDocument.write('</table>');
+
+        printDocument.write('<table class="table table-hover table-striped mt-5">');
+        printDocument.write('<thead style="background-color: #2D4686; color: #C8E8FF">');
+        printDocument.write('<tr>');
+        printDocument.write('<th class="text-center">รหัส Competency</th>');
+        printDocument.write('<th class="text-center">ชื่อ Competency</th>');
+        printDocument.write('<th class="text-center">Pl1</th>');
+        printDocument.write('<th class="text-center">Pl2</th>');
+        printDocument.write('<th class="text-center">Pl3</th>');
+        printDocument.write('<th class="text-center">Pl4</th>');
+        printDocument.write('<th class="text-center">Pl5</th>');
+        printDocument.write('</tr>');
+        printDocument.write('</thead>');
+        printDocument.write('<tbody>');
+
+        for (var i = 0; i < idpGroupItem.length; i++) {
+            printDocument.write('<tr>');
+            printDocument.write('<th scope="row" class="text-center">' + idpGroupItem[i].CompetencyId + '</th>');
+            printDocument.write('<td>' + idpGroupItem[i].Competency.CompetencyNameTH + '</td>');
+            printDocument.write('<td>' + idpGroupItem[i].Competency.Pl1 + '</td>');
+            printDocument.write('<td>' + idpGroupItem[i].Competency.Pl2 + '</td>');
+            printDocument.write('<td>' + idpGroupItem[i].Competency.Pl3 + '</td>');
+            printDocument.write('<td>' + idpGroupItem[i].Competency.Pl4 + '</td>');
+            printDocument.write('<td>' + idpGroupItem[i].Competency.Pl5 + '</td>');
+            printDocument.write('</tr>');
+        }
+
+        printDocument.write('</tbody>');
         printDocument.write('</table>');
+
         printDocument.write('</div>');
         printDocument.write('</body>');
         printDocument.write('</html>');
@@ -267,8 +294,8 @@
             document.body.innerHTML = originalContents;
         }, 500);
     }
-        
 </script>
+
 <style>
     .background-container {
         background-color: white; /* Set the white background */
@@ -279,7 +306,7 @@
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px; /* Add a box shadow */
         z-index: 20;
     }
-
+    
     .topic-icon {
         background: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
         -webkit-background-clip: text; /* Clip the background to the text */
@@ -287,33 +314,40 @@
         font-size: 45px;
         /* Any other styles for the icon, if needed */
     }
+
     .topic-title {
         background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         font-weight: bold;
     }
+
     .fa-key {
         background-image: linear-gradient( 0deg, hsl(36deg 96% 62%) 0%, hsl(38deg 96% 61%) 11%, hsl(40deg 96% 61%) 22%, hsl(43deg 95% 61%) 33%, hsl(45deg 95% 60%) 44%, hsl(47deg 95% 60%) 56%, hsl(50deg 95% 60%) 67%, hsl(52deg 95% 59%) 78%, hsl(54deg 94% 59%) 89%, hsl(56deg 94% 59%) 100% );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
+
     .fa-book-bg {
         background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
+
     .fa-calendar-days {
         background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
+
     .topic-title h1 {
         font-weight: bold;
     }
+
     .card {
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     }
+
     .active-link-excel:hover {
         transform: scale(1.05);
         border: 3px solid #006f57;
@@ -331,6 +365,7 @@
     .active-link-pdf:active {
         transform: scale(.95);
     }
+
     .sticky-header-topic {
         position: sticky;
         top: 150px;
@@ -338,6 +373,7 @@
         background-color: #eeeeee;
         border: 5px dotted #B30021;
     }
+
     .sticky-header-breadcrumb {
         position: sticky;
         z-index: 10;
@@ -345,28 +381,34 @@
         top: 85px;
         background-color: #2D4686;
     }
+
     .active-link-excel,
     .active-link-pdf {
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     }
-    .active-link-pdf:hover {
-        transform: scale(.95);
-        border: 2px solid #9B0008;
-    }
+
+        .active-link-pdf:hover {
+            transform: scale(.95);
+            border: 2px solid #9B0008;
+        }
+
     .gradient-icon-pdf {
         background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
+
     .active-link-excel:hover {
         transform: scale(.95);
         border: 2px solid #053a2f;
     }
+
     .gradient-icon-excel {
         background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
+
     #competencyTB,
     #employeeTB {
         border-radius: 10px;

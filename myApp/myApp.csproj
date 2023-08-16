@@ -94,6 +94,12 @@
     <Reference Include="OfficeOpenXml.Extends, Version=1.0.6.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\OfficeOpenXml.Extends.1.0.6.0\lib\net40\OfficeOpenXml.Extends.dll</HintPath>
     </Reference>
+    <Reference Include="PdfSharp, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.1.50.5147\lib\net20\PdfSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Charting, Version=1.50.5147.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.1.50.5147\lib\net20\PdfSharp.Charting.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="SixLabors.Fonts, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d998eea7b14cab13, processorArchitecture=MSIL">
       <HintPath>..\packages\IronOcr.2023.6.6\lib\netstandard2.0\SixLabors.Fonts.dll</HintPath>
@@ -263,7 +269,7 @@
     <Compile Include="Models\Goodness.cs" />
     <Compile Include="Models\Competency.cs" />
     <Compile Include="Models\IDPGroup.cs" />
-    <Compile Include="Models\CompetencyItem.cs" />
+    <Compile Include="Models\IDPGroupItem.cs" />
     <Compile Include="Models\Enrollment.cs" />
     <Compile Include="Models\Log.cs" />
     <Compile Include="Models\Remark.cs" />
@@ -472,6 +478,7 @@
     <Content Include="Images\logo.png" />
     <Content Include="Images\mesh-gradient.png" />
     <Content Include="JS\Form.js" />
+    <Content Include="JS\print.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -702,10 +709,13 @@
     <Content Include="Views\Shared\_UserLayout.cshtml" />
     <Content Include="Views\Form\Form.cshtml" />
     <Content Include="Views\Form\Info.cshtml" />
-    <Content Include="Views\Form\Check.cshtml" />
-    <Content Include="Views\Form\FormCheck.cshtml" />
     <Content Include="Views\Home\CreateIDPGroup.cshtml" />
     <Content Include="Views\Home\UploadIDPGroup.cshtml" />
+    <Content Include="Views\Form\Goodness.cshtml" />
+    <Content Include="Views\Home\Error.cshtml" />
+    <Content Include="Views\Home\Goodness.cshtml" />
+    <Content Include="Views\Home\Download.cshtml" />
+    <Content Include="Views\Home\_ResultItem.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

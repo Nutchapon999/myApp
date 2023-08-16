@@ -14,10 +14,10 @@
                     </a>
                 </li>
                 <li class="breadcrumb-item">
-                    <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF" href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })"><strong>แก้ไข Competency (@ViewBag.IDPGroupId)</strong></a>
+                    <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF" href="@Url.Action("AddCompetency", new { idpGroupId = ViewBag.IDPGroupId })"><strong>แก้ไข Competency (@ViewBag.IDPGroupId)</strong></a>
                 </li>
                 <li class="breadcrumb-item">
-                    <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF" href="@Url.Action("SelectCompetency", new { id = ViewBag.IDPGroupId })"><strong>เพิ่ม Competency (@ViewBag.IDPGroupId)</strong></a>
+                    <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF" href="@Url.Action("SelectCompetency", new { idpGroupId = ViewBag.IDPGroupId })"><strong>เพิ่ม Competency (@ViewBag.IDPGroupId)</strong></a>
                 </li>
             </ol>
         </nav>
@@ -48,7 +48,7 @@
                 </div>
                 <div class="row justify-content-center mb-2">
                     <div class="col-4">
-                        <a href="@Url.Action("AddCompetency", new { id = ViewBag.IDPGroupId })" class="btn btn-lg active-link-back shadow-sm">
+                        <a href="@Url.Action("AddCompetency", new { idpGroupId = ViewBag.IDPGroupId })" class="btn btn-lg active-link-back shadow-sm">
                             <i class="fa fa-arrow-left gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back"> กลับ</strong>
                         </a>
                         <button type="submit" class="btn btn-lg active-link-submit shadow-sm">
@@ -66,11 +66,11 @@
                     </div>
 
                     <div class="col-4 text-end">
-                        
+
                     </div>
                 </div>
                 <table class="table table-hover table-responsive" id="myTable">
-                    <thead style="background-color: #2D4686; color: #C8E8FF">
+                    <thead style="background-color: #2D4686; color: #C8E8FF;">
                         <tr>
                             <th width="5%">
                                 <div class="form-check">
@@ -144,15 +144,17 @@
     }
 </main>
 <script src="~/Scripts/jquery-3.4.1.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
-<script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
+<link  rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css"/>
+<script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
+<script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
 <script type="text/javascript">
     var js = jQuery.noConflict(true);
     js(document).ready(function () {
         js('#myTable').DataTable({
+            info: false,
+            order: [[1, 'asc']],
+            paging: true,
             language: {
                 search: '',
                 searchPlaceholder: 'ค้นหา',
@@ -163,7 +165,14 @@
                 },
                 info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
             },
-
+            fixedHeader: {
+                header: true,
+                footer: true
+            },
+            columnDefs: [{
+                targets: 0,
+                orderable: false
+            }],
 
             initComplete: function () {
                 js('#myTable_length label').addClass('entries-label');
@@ -176,8 +185,17 @@
         width: 25px;
         height: 25px;
     }
+
     main {
         margin-top: -50px;
+    }
+    .table-container {
+        max-height: 400px; /* Set the desired height for the container */
+        overflow: auto;
+    }
+    .table thead tr {
+        position: sticky;
+        top: 0;
     }
 
     .background-container {
@@ -204,9 +222,9 @@
         -webkit-text-fill-color: transparent;
     }
 
-    .topic-title h2 {
-        font-weight: bold;
-    }
+        .topic-title h2 {
+            font-weight: bold;
+        }
 
     .sticky-header-breadcrumb {
         position: sticky;
@@ -247,14 +265,14 @@
         background-color: white;
     }
 
-    .active-link-delete:hover {
-        background-color: white;
-        border-bottom: 2px solid #9B0008;
-    }
+        .active-link-delete:hover {
+            background-color: white;
+            border-bottom: 2px solid #9B0008;
+        }
 
-    .active-link-delete:hover i {
-        transform: scale(1.2);
-    }
+            .active-link-delete:hover i {
+                transform: scale(1.2);
+            }
 
     .gradient-text-delete {
         background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(357deg 94% 33%) 11%, hsl(358deg 89% 36%) 22%, hsl(358deg 84% 39%) 33%, hsl(358deg 79% 42%) 44%, hsl(359deg 74% 46%) 56%, hsl(359deg 70% 49%) 67%, hsl(359deg 73% 53%) 78%, hsl(360deg 80% 56%) 89%, hsl(0deg 87% 60%) 100% );
@@ -267,10 +285,10 @@
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     }
 
-    .active-link-add:hover {
-        transform: scale(.95);
-        border: 2px solid #053a2f;
-    }
+        .active-link-add:hover {
+            transform: scale(.95);
+            border: 2px solid #053a2f;
+        }
 
     .gradient-icon-add {
         background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );

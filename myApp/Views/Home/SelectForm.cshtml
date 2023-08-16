@@ -35,6 +35,9 @@
             <div class="col-auto">
                 <ul class="nav align-items-center text-center me-2 py-2">
                     <li class="nav-item ms-2">
+                        <a class="nav-link year" href="@Url.Action("SelectForm", new { user = ViewBag.User, year = (DateTime.Now.Year + 544).ToString() })" style="color: #C8E8FF"><strong>@(DateTime.Now.Year + 544)</strong></a>
+                    </li>
+                    <li class="nav-item ms-2">
                         <a class="nav-link year" href="@Url.Action("SelectForm", new { user = ViewBag.User, year = (DateTime.Now.Year + 543).ToString() })" style="color: #C8E8FF"><strong>@(DateTime.Now.Year + 543)</strong></a>
                     </li>
                     <li class="nav-item ms-2">
@@ -65,9 +68,7 @@
 <div class="container">
     <div class="row">
         <div class="col-3">
-            <a href="@Url.Action("Info", "Home",new { user = ViewBag.User, year = ViewBag.Year})" class="btn btn-lg active-link-info">
-                <i class="fa fa-info gradient-text-edit" aria-hidden="true"></i> <strong class="gradient-text-edit">ข้อมูล</strong>
-            </a>
+
         </div>
         <div class="col-6 text-center topic-title">
             <h1>เลือกแบบประเมิน</h1>
@@ -83,13 +84,13 @@
 
         @if (Model.Count() == 0)
         {
-            <div class="alert alert-danger alert-dismissible fade show text-center" role="alert" id="alertBox">
-                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>ไม่มี <strong>IDP Group</strong> ที่ลงทะเบียนไว้
+            <div class="alert alert-danger alert-dismissible fade show text-center container mt-2" role="alert" id="alertBox">
+                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> ไม่มี <strong>IDP Group</strong> ที่ลงทะเบียนไว้
             </div>
         }
         <div id="list-view">
             <div class="container">
-                <table class="table" id="myTable">
+                <table class="table table-striped" id="myTable">
                     <thead style="background-color: #2D4686; color: #C8E8FF">
                         <tr>
                             <th width="10%" class="text-center">K2 No.</th>
@@ -121,7 +122,7 @@
                                     }
                                     else if (emp.Status == "1st Evaluating")
                                     {
-                                        <p style="color: #DAAB00; background-color: #FDF3CE; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@emp.Status</p>
+                                        <p style="color: #DAAB00; background-color: #FDF3CE; padding: 3px; border-radius: 3rem; width: auto; font-size: 14px;" class="text-center fw-bold">@emp.Status</p>
                                     }
                                     else if (emp.Status == "Developing")
                                     {
@@ -129,17 +130,26 @@
                                     }
                                     else if (emp.Status == "2nd Evaluating")
                                     {
-                                        <p style="color: #DAAB00; background-color: #FDF3CE; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@emp.Status</p>
+                                        <p style="color: #DAAB00; background-color: #FDF3CE; padding: 3px; border-radius: 3rem; width: auto; font-size: 14px;" class="text-center fw-bold">@emp.Status</p>
                                     }
                                     else if (emp.Status == "Success")
                                     {
                                         <p style="color: #14B789; background-color: #D5F8EF; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@emp.Status</p>
                                     }
+                                    else if (emp.Status == "Decline")
+                                    {
+                                        <p style="color: #CC660A; background-color: #FFF2E7; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@emp.Status</p>
+                                    }
                                 </td>
                                 <td class="text-center">
-                                    <a id="link" href="@Url.Action("Form", "Home", new { user = ViewBag.User, idpGroupId = emp.IDPGroupId, guid = emp.Result.GUID})" class="btn active-link-form" title="ทำแบบประเมิน">
-                                        <i class="fa fa-file-text gradient-icon-form fa-beat fs-5" aria-hidden="true"></i>
-                                    </a>
+                                    <div class="btn-group" role="group" aria-label="Second group">
+                                        <a href="@Url.Action("Info", "Home",new { user = ViewBag.User, idpGroupId = emp.IDPGroupId, guid = emp.Result.GUID })" class="btn active-link-info" title="ผลลัพธ์">
+                                            <i class="fa fa-info gradient-text-edit fs-5" aria-hidden="true"></i>
+                                        </a>
+                                        <a id="link" href="@Url.Action("Form", "Home", new { user = ViewBag.User, idpGroupId = emp.IDPGroupId, guid = emp.Result.GUID })" class="btn active-link-form" title="ทำแบบประเมิน">
+                                            <i class="fa-solid fa-file-text gradient-icon-form fs-5" aria-hidden="true"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -158,28 +168,34 @@
                     @for (int i = 0; i < Model.Count(); i++)
                     {
                         var enroll = Model.ElementAt(i);
-                        string url = Url.Action("Form", new { id = ViewBag.Id, idpGroupId = enroll.IDPGroupId, year = ViewBag.Year });
+                        var form = Url.Action("Form", "Home", new { user = ViewBag.User, idpGroupId = enroll.IDPGroupId, guid = enroll.Result.GUID });
+                        var info = Url.Action("Info", "Home", new { user = ViewBag.User, idpGroupId = enroll.IDPGroupId, guid = enroll.Result.GUID });
                         string backgroundColor = "";
                         string color = "";
-                        if(enroll.Status == "Draft")
+                        if (enroll.Status == "Draft")
                         {
                             backgroundColor = "#802FDE";
                             color = "#E8E2F7";
                         }
-                        else if(enroll.Status == "Evaluating")
+                        else if (enroll.Status == "Self")
                         {
                             backgroundColor = "#E50087";
                             color = "#FFE5F4";
                         }
-                        else if (enroll.Status == "Checking")
+                        else if (enroll.Status == "1st Evaluating")
                         {
                             backgroundColor = "#DAAB00";
                             color = "#FDF3CE";
                         }
-                        else if (enroll.Status == "Waiting")
+                        else if (enroll.Status == "Developing")
+                        {
+                            backgroundColor = "#00AEE5";
+                            color = "#D8F6FF";
+                        }
+                        else if (enroll.Status == "2nd Evaluating")
                         {
                             backgroundColor = "#DAAB00";
-                            color = "#D8F6FF";
+                            color = "#FDF3CE";
                         }
                         else if (enroll.Status == "Success")
                         {
@@ -188,45 +204,63 @@
                         }
                         else if (enroll.Status == "Decline")
                         {
-                            backgroundColor = "#C52F2F";
-                            color = "#FFC9C9";
+                            backgroundColor = "#CC660A";
+                            color = "#FFF2E7";
                         }
                         <div class="col">
-                            <a href="@url" class="border-0">
-                                <div class="card card-cover h-100 overflow-hidden rounded-4 border-0" >
-                                    <div class="d-flex flex-column h-100 p-5 pb-3 text-white border-0" style="background-color: @backgroundColor">
-                                        <h1 class="lh-1 fw-bold" style="color: @color">@enroll.IDPGroupId</h1>
-                                        <h3 class="lh-1 fw-bold" style="color: @color">@enroll.IDPGroup.IDPGroupName</h3>
+                                <div class="card card-cover h-100 overflow-hidden rounded-4 border-0" style="background-color: @backgroundColor;">
+                                    <div class="d-flex flex-column h-100 p-5 pb-3 pt-3 text-white border-0">
+                                        <div class="d-flex flex-row">
+                                            <h3 class="lh-1 fw-bold mt-2 me-auto" style="color: @color">@enroll.IDPGroupId</h3>
+                                            <div class="p-2">
+                                                <a href="@form">
+                                                    <i class="fa-solid fa-file-text fs-5" style="color: @color"></i>
+                                                </a>
+                                            </div>
+                                            <div class="p-2">
+                                                <a href="@info">
+                                                    <i class="fa-solid fa-info fs-5" style="color: @color"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+                                        <h4 class="lh-1 fw-bold mt-2" style="color: @color">@enroll.IDPGroup.IDPGroupName</h4>
                                         <ul class="d-flex list-unstyled mt-5">
-                                            <li class="me-auto">
-                                                @if (enroll.Status == "Evaluating")
+                                            <li>
+                                                @if (enroll.Status == "Self")
                                                 {
-                                                    <i class="fa-solid fa-pen-to-square fa-beat" aria-hidden="true" style="font-size: xx-large; color: @color; "></i>
+                                                    <i class="fa-solid fa-file-signature fa-beat" aria-hidden="true" style="font-size: xx-large; color: @color; "></i>
                                                 }
-                                                else if (enroll.Status == "Checking")
+                                                else if (enroll.Status == "1st Evaluating")
                                                 {
                                                     <i class="fa fa-spinner fa-spin" aria-hidden="true" style="font-size: xx-large; color: @color;"></i>
                                                 }
-                                                else if (enroll.Status == "Waiting")
+                                                else if (enroll.Status == "Developing")
                                                 {
-                                                    <i class="fa fa-spinner fa-spin" aria-hidden="true" style="font-size: xx-large; color: #9B0008;"></i>
+                                                    <i class="fa-solid fa-graduation-cap fa-beat" aria-hidden="true" style="font-size: xx-large; color: @color;"></i>
+                                                }
+                                                else if (enroll.Status == "2nd Evaluating")
+                                                {
+                                                    <i class="fa fa-spinner fa-spin" aria-hidden="true" style="font-size: xx-large; color: @color;"></i>
                                                 }
                                                 else if (enroll.Status == "Success")
                                                 {
-                                                    <i class="fa fa-checke" aria-hidden="true" style="font-size: xx-large; color: #006f57;"></i>
+                                                    <i class="fa-solid fa-circle-check" aria-hidden="true" style="font-size: xx-large; color: @color;"></i>
                                                 }
                                                 else if (enroll.Status == "Decline")
                                                 {
-                                                    <i class="fa fa-checke" aria-hidden="true" style="font-size: xx-large; color: #006f57;"></i>
+                                                    <i class="fa-solid fa-ban" aria-hidden="true" style="font-size: xx-large; color: @color;"></i>
                                                 }
                                             </li>
+                                            <li class="me-auto">
+                                                <h4 style="color: @color" class="ms-2 mt-1"> <strong>@enroll.Status</strong></h4>
+                                            </li>
                                             <li class="d-flex align-items-center">
-                                                <h4 style="color: @color"><i class="fa fa-layer-group"></i> @enroll.Competencies</h4>
+                                                <h4 style="color: @color" class="mt-1"><i class="fa fa-layer-group"></i> <strong>@enroll.Competencies</strong></h4>
                                             </li>
                                         </ul>
                                     </div>
                                 </div>
-                            </a>
+                            
                         </div>
                     }
 
@@ -307,9 +341,8 @@
             text-decoration: none;
         }
 
-        .card:hover {
-            transform: scale(.95);
-            border: none;
+        h3{
+            margin-bottom: 0;
         }
 
         .active-link-back:hover {
@@ -390,13 +423,17 @@
             -webkit-text-fill-color: transparent;
         }
         .active-link-info {
-            box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+            border: none;
             background-color: white;
         }
 
-        .active-link-info:hover {
-            transform: scale(.95);
-            background-color: white;
-            border: 2px solid #2D4686;
-        }
+            .active-link-info:hover {
+                background-color: white;
+                border-bottom: 2px solid #0061ff;
+            }
+
+                .active-link-info:hover i {
+                    transform: scale(1.2);
+                }
+        
     </style>

@@ -6,7 +6,8 @@ body {
 }
 
 .dataTables_length, .dataTables_filter {
-    margin-bottom: 10px
+    margin-bottom: 10px;
+    
 }
 
 .dataTables_wrapper .dataTables_filter input[type="search"] {
@@ -14,17 +15,16 @@ body {
     border-radius: 2rem;
     padding: 0.6rem;
     outline: none;
-    width: 80%; /* Increase the width percentage as desired */
+    width: 180px; 
     transition: 0.3s;
     background-color: #eeeeee60;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
-
-
     .dataTables_wrapper .dataTables_filter input[type="search"]:hover,
     .dataTables_wrapper .dataTables_filter input[type="search"]:focus {
-        width: 100%;
+        width: 280px;
     }
+
 
 .dataTables_wrapper .dataTables_length label {
     color: #2D4686;
@@ -48,7 +48,7 @@ body {
         }
 
 .entries-label::before {
-    content: '\f06e  แสดงทีละ';
+    content: 'แสดงทีละ';
     font-family: 'FontAwesome';
     display: inline;
     margin-right: 5px;

@@ -3,159 +3,475 @@
     ViewBag.Title = "AddIDPGroup";
 }
 <link rel="stylesheet" href="/CSS/Style.css">
-<div class="m-3 rounded-3" style="background-color: #84B5E9">
-    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
-        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
-            <li class="breadcrumb-item">
-                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("Employee")">
-                    <i class="fa fa-users" style="color: #2D4686"></i> <strong style="color: #2D4686">พนักงาน</strong>
-                    <span class="visually-hidden">Home</span>
-                </a>
-            </li>
-            <li class="breadcrumb-item">
-                <a class="link-body-emphasis text-decoration-none" style="color: #2D4686" href="@Url.Action("AddIDPGroup", new { id = ViewBag.Id })"><strong>เพิ่ม IDP Group</strong></a>
-            </li>
-        </ol>
-    </nav>
+<div class="sticky-header-breadcrumb">
+    <div class="header-breadcrumb" style="background-color: #2D4686;">
+        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+            <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+                <li class="breadcrumb-item">
+                    <a class="link-body-emphasis text-decoration-none link" href="@Url.Action("Employee")">
+                        <i class="fa fa-users" style="color: #C8E8FF; "></i> <strong style="color: #C8E8FF "> พนักงาน</strong>
+                        <span class="visually-hidden">Home</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF" href="@Url.Action("AddIDPGroup", new { id = ViewBag.Id })"><strong>แก้ไข IDP Group (@ViewBag.Id)</strong></a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+    <div class="text-center sticky-header">
+        <div class="background-container">
+            <i class="fa fa-book topic-icon"></i>
+        </div>
+    </div>
 </div>
 <main>
-    <div class="card shadow border-0 m-3">
-        <div class="card-header text-center border-0 py-3" style="background-color: #86E49D;">
-            <i class="fa fa-book" style="font-size: 60px; color: #006B21"></i>
-            <h1 style="color: #006B21"><strong>เพิ่ม IDP Group</strong></h1>
-        </div>
-        <div class="card-body">
-            <div class="row mb-2">
-                <div class="col-auto me-auto">
+    <div class="card border-0 m-3">
+        <div class="card-body border-0 mt-4">
+            @using (Html.BeginForm("AddIDPGroup", "Home", new { id = ViewBag.Id, isChecked = false }, FormMethod.Post, new { id = "myForm" }))
+            {
+                <div class="row">
+                    <div class="col-3 d-flex align-items-center ">
+                        <label for="selectType" class="form-label me-2 mt-2"> ปี:</label>
+                        <select class="form-select" id="selectType" style="width: 100px;">
+                            <option value="">ทั้งหมด</option>
+                            @foreach (var year in Model.Select(y => y.IDPGroup.Year).Distinct())
+                            {
+                                <option value="@year">@year</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-6 text-center topic-title">
+                        <h2 class="mt-2 ">แก้ไข IDP Group</h2>
 
+                    </div>
+                    <div class="col-3">
+
+                    </div>
                 </div>
-                <div class="col-auto">
-                    <a href="@Url.Action("SelectIDPGroup", new { id = ViewBag.Id })" class="btn shadow-sm mb-2 me-2 btn-lg active-link" style="background-color: #86E49D; width: auto">
-                        <i class="fa fa-plus" style="color: #006B21" aria-hidden="true"><strong> เพิ่ม</strong></i>
-                    </a>
+                <div class="row justify-content-center mb-2">
+                    <div class="col-3 me-auto">
+                        <button type="submit" class="btn btn-lg active-link-submit mb-2">
+                            <i class="fa fa-flag gradient-icon-start" aria-hidden="true"></i><strong class="gradient-icon-submit"> เริ่มประเมิน</strong>
+                        </button>
+                        <button type="button" class="btn btn-lg active-link-back mb-2" id="actionButton" data-bs-toggle="modal" data-bs-target="#declineModal" disabled>
+                            <i class="fa-solid fa-ban gradient-icon-decline" aria-hidden="true"></i><strong class="gradient-icon-decline"> ยกเลิก</strong>
+                        </button>
+                    </div>
+                    <div class="col-6 text-center">
+                        <h6>
+                            <i class="fa fa-key fs-4 ms-2"></i> รหัส<strong>: @ViewBag.Id</strong>
+                            <i class="fa fa-user user-icon fs-4 ms-2"></i> ชื่อ<strong>: @ViewBag.Prefix @ViewBag.FirstName @ViewBag.LastName</strong>
+                            <i class="fa fa-solid fa-ranking-star fs-4 ms-2"></i> ตำแหน่งขั้น<strong>: @ViewBag.JobLevel</strong>
+                        </h6>
+                        <h6>
+                            <i class="fa fa-solid fa-location-dot fs-4 ms-2"></i> ตำแหน่ง<strong>: @ViewBag.Position</strong>
+                            <i class="fa fa-home-user fs-4 ms-2"></i> แผนก<strong>: @ViewBag.Department</strong>
+                            <i class="fa fa-solid fa-building ms-2 fs-4"></i> บริษัท<strong>: @ViewBag.Company</strong>
+                        </h6>
+                    </div>
+
+                    <div class="col-3 ms-auto text-end">
+
+                        <a href="@Url.Action("SelectIDPGroup", new { id = ViewBag.Id })" class="btn mb-2 me-2 btn-lg active-link-add">
+                            <i class="fa fa-plus gradient-icon-add" aria-hidden="true"></i> <strong class="gradient-icon-add"> เพิ่ม</strong>
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <table class="table table-hover table-responsive table-striped" id="myTable">
-                <thead style="background-color: #84B5E9; color: #2D4686">
-                    <tr>
-                        <th width="10%">รหัส IDP Group</th>
-                        <th width="75%">ชื่อ IDP Group</th>
-                        <th width="10%">ปี</th>
-                        <th width="5%"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var enroll in Model)
-                    {
+                if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show text-center" role="alert" id="alertBox">
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                <table class="table table-hover table-responsive table-striped" id="myTable">
+                    <thead style="background-color: #2D4686; color: #C8E8FF">
                         <tr>
-                            <td>@enroll.IDPGroupId</td>
-                            <td>@enroll.IDPGroup.IDPGroupName</td>
-                            <td>@enroll.IDPGroup.Year</td>
-                            <td>
-                                <button id="link" type="button" class="btn  active-link-delete" data-bs-toggle="modal" style="background-color: #D893A3" data-bs-target="#deleteModal-@enroll.EnrollId" title="ลบ @enroll.Id">
-                                    <i class="fa fa-trash" style="color: #B30021" aria-hidden="true"></i>
-                                </button>
-                                <div class="modal fade" id="deleteModal-@enroll.EnrollId" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-4">ต้องการที่จะลบ IDP Group นี้หรือไม่?</h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <h5>รหัส Enrollment: @enroll.EnrollId</h5>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-                                                <a href="@Url.Action("DeleteIDPGroupByEmployee", new { id = enroll.EnrollId })" class="btn btn-danger">ยืนยัน</a>
+                            <th width="1%"></th>
+                            <th width="10%" class="text-center">รหัส IDP Group</th>
+                            <th width="10%" class="text-center">สถานะ</th>
+                            <th width="75%" class="text-center">ชื่อ IDP Group</th>
+                            <th width="10%" class="text-center">ปี</th>
+                            <th width="5%" class="text-center"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var enroll in Model)
+                        {
+                            <tr>
+                                @if (enroll.Status != "Success" && enroll.Status != "Decline")
+                                {
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="idpGroupIds" value="@enroll.IDPGroupId" data-status="@enroll.Status" />
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                                    <td class="text-center">@enroll.IDPGroupId</td>
+                                    <td class="text-center">
+                                        @if (enroll.Status == "Draft")
+                                        {
+                                            <p style="color: #802FDE; background-color: #E8E2F7; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                        }
+                                        else if (enroll.Status == "Self")
+                                        {
+                                            <p style="color: #E50087; background-color: #FFE5F4; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                        }
+                                        else if (enroll.Status == "1st Evaluating")
+                                        {
+                                            <p style="color: #DAAB00; background-color: #FDF3CE; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                        }
+                                        else if (enroll.Status == "Developing")
+                                        {
+                                            <p style="color: #00AEE5; background-color: #D8F6FF; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                        }
+                                        else if (enroll.Status == "2nd Evaluating")
+                                        {
+                                            <p style="color: #DAAB00; background-color: #FDF3CE; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                        }
+                                        else if (enroll.Status == "Success")
+                                        {
+                                            <p style="color: #14B789; background-color: #D5F8EF; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                        }
+                                        else if (enroll.Status == "Decline")
+                                        {
+                                            <p style="color: #CC660A; background-color: #FFF2E7; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                        }
+                                    </td>
+                                    <td>@enroll.IDPGroup.IDPGroupName</td>
+                                    <td class="text-center">@enroll.IDPGroup.Year</td>
+                                    <td>
+                                        <button id="link" type="button" class="btn  active-link-delete" data-bs-toggle="modal" data-bs-target="#deleteModal-@enroll.EnrollId" title="ลบ @enroll.Id">
+                                            <i class="fa fa-trash gradient-text-delete" aria-hidden="true"></i>
+                                        </button>
+                                        <div class="modal fade" id="deleteModal-@enroll.EnrollId" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h1 class="modal-title fs-4">ต้องการที่จะลบ IDP Group นี้หรือไม่?</h1>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <h5>รหัส Enrollment: @enroll.EnrollId</h5>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                                                        <a href="@Url.Action("DeleteIDPGroupByEmployee", new { enrollId = enroll.EnrollId })" class="btn btn-danger">ยืนยัน</a>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            <a href="@Url.Action("Employee")" class="btn btn-lg active-link-back shadow-sm mt-3 mb-2" style="width: auto; background-color: #D893A3">
-                <i class="fa fa-arrow-left" style="color: #B30021" aria-hidden="true">  <strong style="color: #B30021"> กลับ</strong></i>
-            </a>
+                                    </td>
+                                </tr>
+                        }
+                    </tbody>
+                </table>
+                <a href="@Url.Action("Employee")" class="btn btn-lg active-link-back mt-2">
+                    <i class="fa fa-arrow-left gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back"> กลับ</strong>
+                </a>
+            }
+        </div>
+    </div>
+    <div class="modal fade" id="declineModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="alert alert-primary" role="alert" style="font-size: 18px">
+                        คุณต้องการที่จะยกเลิกประเมินนี้/เหล่านี้หรือไม่?
+                    </div>
+                    <button type="button" class="btn btn-lg active-link-back" data-bs-toggle="modal" onclick="submitFormAjax(true)" data-bs-target="#exampleModal" style="width: 100%;" id="sendButton">
+                        <i class="fa fa-ban gradient-icon-back"></i><strong class="gradient-icon-back"> ยกเลิกแบบประเมิน</strong>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </main>
-<div class="m-3 rounded-3" style="background-color: #84B5E9">
-    <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
-        <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
-            <li class="breadcrumb-item">
-                <a class="link-body-emphasis text-decoration-none" href="@Url.Action("Employee")">
-                    <i class="fa fa-users" style="color: #2D4686"></i> <strong style="color: #2D4686">พนักงาน</strong>
-                    <span class="visually-hidden">Home</span>
-                </a>
-            </li>
-            <li class="breadcrumb-item">
-                <a class="link-body-emphasis text-decoration-none" style="color: #2D4686" href="@Url.Action("AddIDPGroup", new { id = ViewBag.Id })"><strong>เพิ่ม IDP Group</strong></a>
-            </li>
-        </ol>
-    </nav>
-</div>
-<script src="~/Scripts/jquery-3.7.0.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
-<script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
+<script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
 <script type="text/javascript">
     var js = jQuery.noConflict(true);
     js(document).ready(function () {
         js('#myTable').DataTable({
+            info: false,
+            order: [[1, 'asc']],
+            paging: false,
             language: {
                 search: '',
                 searchPlaceholder: 'ค้นหา',
                 lengthMenu: '_MENU_',
+                paginate: {
+                    next: 'ถัดไป <i class="fa fa-angle-right"></i>',
+                    previous: '<i class="fa fa-angle-left"></i> ก่อนหน้า'
+                },
+                info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
             },
+            columnDefs: [{
+                targets: 0,
+                orderable: false
+            }],
+            columnDefs: [{
+                targets: 5,
+                orderable: false
+            }],
 
             initComplete: function () {
                 js('#myTable_length label').addClass('entries-label');
             }
         });
-
-
     });
+
+    function submitFormAjax(isChecked) {
+        var formData = $('#myForm').serialize();
+        formData += '&isChecked=' + isChecked;
+
+
+        $.ajax({
+            type: 'POST',
+            url: $('#myForm').attr('action'),
+            data: formData,
+            success: function (data) {
+                location.reload();
+
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterSelect = document.getElementById('selectType');
+        const tableRows = document.querySelectorAll('#myTable tbody tr');
+
+        function filterTableByType() {
+            const selectedType = filterSelect.value;
+
+            tableRows.forEach((row) => {
+                const rowType = row.cells[4].textContent.trim();
+
+                if (selectedType === '' || rowType === selectedType) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        filterSelect.addEventListener('change', filterTableByType);
+
+        filterTableByType();
+    });
+
+
+    //const checkAllCheckbox = document.getElementById('checkAll');
+
+    const checkboxes = document.querySelectorAll('tbody input[name="idpGroupIds"]');
+    const actionButton = document.getElementById('actionButton');
+
+    /*checkAllCheckbox.addEventListener('change', function () {
+        checkboxes.forEach(function (checkbox) {
+            checkbox.checked = checkAllCheckbox.checked;
+        });
+
+        updateButtonState();
+    });*/
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateButtonState);
+    });
+
+    function updateButtonState() {
+        const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked && checkbox.dataset.status !== "Draft");
+        actionButton.disabled = !isChecked;
+    }
 </script>
 <style>
-    .active-link:hover {
-        transform: scale(1.05);
-        border-color: #006B21;
+    .form-check-input[type="checkbox"] {
+        width: 25px;
+        height: 25px;
+    }   
+    main {
+        margin-top: -50px;
     }
 
-    .active-link:active {
-        transform: scale(.95);
+    .background-container {
+        background-color: white; /* Set the white background */
+        display: inline-block; /* Display the container as an inline block to wrap the icon */
+        border-radius: 50%; /* Apply a circular shape to the container */
+        padding: 1rem; /* Add padding around the icon */
+        overflow: hidden; /* Hide any overflow from the circular container */
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px; /* Add a box shadow */
+        margin-top: -50px;
     }
 
-    .active-link-delete:hover {
-        transform: scale(1.25);
-        border-color: #B30021;
+    .topic-icon {
+        background: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text; /* Clip the background to the text */
+        -webkit-text-fill-color: transparent; /* Make the text transparent to show the background gradient */
+        font-size: 45px;
+        /* Any other styles for the icon, if needed */
     }
 
-    .active-link-delete:active {
-        transform: scale(1);
+    .topic-title {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+        .topic-title h2 {
+            font-weight: bold;
+        }
+
+    .sticky-header-breadcrumb {
+        position: sticky;
+        border-radius: 0px;
+        z-index: 10;
+        top: 85px;
+    }
+
+    .sticky-header {
+        position: sticky;
+        z-index: 20;
+    }
+
+    .card {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+    .fa-address-card,
+    .fa-location-dot,
+    .fa-calendar-days {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .gradient-icon-start,
+    .gradient-icon-send,
+    .fa-key,
+    .fa-scale-balanced {
+        background-image: linear-gradient( 0deg, hsl(36deg 96% 62%) 0%, hsl(38deg 96% 61%) 11%, hsl(40deg 96% 61%) 22%, hsl(43deg 95% 61%) 33%, hsl(45deg 95% 60%) 44%, hsl(47deg 95% 60%) 56%, hsl(50deg 95% 60%) 67%, hsl(52deg 95% 59%) 78%, hsl(54deg 94% 59%) 89%, hsl(56deg 94% 59%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-book-bg {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-calendar-days {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .user-icon,
+    .fa-signature {
+        background-image: linear-gradient( 0deg, hsl(220deg 100% 47%) 0%, hsl(216deg 100% 47%) 6%, hsl(213deg 100% 48%) 14%, hsl(209deg 100% 48%) 22%, hsl(206deg 100% 48%) 32%, hsl(202deg 100% 49%) 43%, hsl(199deg 100% 49%) 56%, hsl(195deg 100% 49%) 70%, hsl(192deg 100% 50%) 85%, hsl(188deg 100% 50%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-ranking-star {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(237deg 17% 44%) 11%, hsl(298deg 1% 48%) 22%, hsl(52deg 13% 52%) 33%, hsl(54deg 26% 54%) 44%, hsl(55deg 40% 56%) 56%, hsl(55deg 54% 58%) 67%, hsl(56deg 67% 59%) 78%, hsl(56deg 81% 59%) 89%, hsl(56deg 94% 59%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-home-user,
+    .fa-building {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-tag {
+        background-image: linear-gradient( 0deg, hsl(335deg 85% 55%) 0%, hsl(335deg 86% 57%) 11%, hsl(335deg 87% 59%) 22%, hsl(334deg 89% 61%) 33%, hsl(334deg 90% 63%) 44%, hsl(334deg 91% 66%) 56%, hsl(334deg 93% 68%) 67%, hsl(333deg 95% 70%) 78%, hsl(333deg 97% 72%) 89%, hsl(333deg 100% 75%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-file-text {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-delete {
+        border: none;
+        background-color: white;
+    }
+
+        .active-link-delete:hover {
+            background-color: white;
+            border-bottom: 2px solid #9B0008;
+        }
+
+            .active-link-delete:hover i {
+                transform: scale(1.2);
+            }
+
+    .gradient-text-delete {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(357deg 94% 33%) 11%, hsl(358deg 89% 36%) 22%, hsl(358deg 84% 39%) 33%, hsl(358deg 79% 42%) 44%, hsl(359deg 74% 46%) 56%, hsl(359deg 70% 49%) 67%, hsl(359deg 73% 53%) 78%, hsl(360deg 80% 56%) 89%, hsl(0deg 87% 60%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-add,
+    .active-link-back,
+    .active-link-submit {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+        .active-link-add:hover {
+            transform: scale(.95);
+            border: 2px solid #053a2f;
+        }
+
+    .gradient-icon-add {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
     .active-link-submit:hover {
-        transform: scale(1.05);
-        border-color: #2D4686;
+        transform: scale(.95);
+        border: 2px solid #2D4686;
     }
 
-    .active-link-submit:active {
-        transform: scale(.95);
+    .gradient-icon-submit {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .icon-item {
+        margin-left: 20px;
+    }
+
+    #myTable {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     }
 
     .active-link-back:hover {
-        transform: scale(1.05);
-        border-color: #B30021;
-    }
-
-    .active-link-back:active {
         transform: scale(.95);
+        border: 2px solid #9B0008;
+    }
+    .gradient-icon-decline,
+    .gradient-icon-back {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 </style>
