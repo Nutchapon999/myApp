@@ -1,0 +1,773 @@
+﻿@model IEnumerable<myApp.Models.Goodness>
+@{
+    ViewBag.Title = "Goodness";
+    string good1 = "การแบ่งปันความรู้ให้กับผู้มีส่วนได้เสียของบริษัท";
+    string good2 = "กิจกรรม Lean Kaizen Suggestion";
+    string good3 = "บริจาคเลือดและอวัยวะ";
+    string good4 = "การบำเพ็ญประโยชน์เพื่อสังคม";
+}
+<link rel="stylesheet" href="/CSS/Style.css">
+<div class="sticky-header-breadcrumb">
+    <div class="row me-2">
+        <div class="col-auto me-auto">
+            <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34; );">
+                <ol class="breadcrumb breadcrumb-chevron bg-body-tertiary ms-3 mt-3">
+                    <li class="breadcrumb-item">
+                        <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF" href="@Url.Action("Goodness", "Home", new { year = ViewBag.Year })">
+                            <i class="fa-solid fa-star" style="color: #C8E8FF"></i> <strong style="color: #C8E8FF">บันทึกความดี (ปี @ViewBag.Year)</strong>
+                            <span class="visually-hidden">Home</span>
+                        </a>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show text-center" role="alert" id="alertBox">
+        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+<form id="myForm" method="post" action="@Url.Action("InsertGoodness", "Home", new { Year = ViewBag.Year })">
+    <div class="table-container m-4">
+        <div class="row">
+            <div class="col-auto mt-2 me-auto">
+                <h2 class="ms-2 mt-2 fw-bold">บันทึกความดี</h2>
+            </div>
+            <div class="col-auto">
+                <button type="button" id="addRowBtn" onclick="addRow()" class="btn btn-lg active-link-add me-2 mt-2">
+                    <i class="fa-solid fa-plus gradient-icon-add"></i><strong class="gradient-icon-add"> เพิ่ม</strong>
+                </button>
+                <button id="submitButton" type="button" class="btn btn-lg active-link-submit me-2 mt-2" data-bs-toggle="modal" data-bs-target="#AddModal">
+                    <i class="fa-solid fa-save gradient-icon-submit"></i><strong class="gradient-icon-submit"> บันทึก</strong>
+                </button>
+            </div>
+        </div>
+        <div class="m-2">
+            <table class="table table-hover table-responsive table-striped" id="myTable" width="100%">
+                <thead class="text-center" style="background-color: #2D4686; color: #C8E8FF">
+                    <tr>
+                        <th width="15%">ชื่อพนักงาน</th>
+                        <th width="10%">ประเภทความดี</th>
+                        <th width="15%">หน่วยงาน/สถานที่ทำ</th>
+                        <th width="20%">รายละเอียด</th>
+                        <th width="1%">วันที่</th>
+                        <th width="5%">จำนวนชั่วโมง</th>
+                        <th width="10%">ไฟล์แนบ</th>
+                        <th width="5%"></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    @foreach (var good in Model)
+                    {
+                        <tr>
+                            @if (good.User.Prefix == "นาง" || good.User.Prefix == "นางสาว")
+                            {
+                                <td>
+                                    <i class="fa-solid fa-person-dress" style="color:palevioletred; font-size:large" aria-hidden="true"></i>
+                                    @(good.User.Prefix) @(good.User.FirstNameTH) @(good.User.LastNameTH)
+                                </td>
+                            }
+                            else if (good.User.Prefix == "นาย" || good.User.Prefix == " นาย")
+                            {
+                                <td>
+                                    <i class="fa-solid fa-person" style="color:cornflowerblue; font-size:large" aria-hidden="true"></i>
+                                    @(good.User.Prefix) @(good.User.FirstNameTH) @(good.User.LastNameTH)
+                                </td>
+                            }
+                            else
+                            {
+                                <td>
+                                    @(good.User.Prefix) @(good.User.FirstNameTH) @(good.User.LastNameTH)
+                                </td>
+                            }
+                            <td>@good.Type</td>
+                            <td>@good.Company</td>
+                            <td>@good.Desc</td>
+                            <td class="text-center">@good.Date</td>
+                            <td class="text-center">@good.Hour</td>
+                            <td class="text-center"></td>
+                            <td class="text-center">
+                                <div class="btn-group me-2" role="group" aria-label="Second group">
+                                    <button id="link" type="button" class="btn active-link-edit" title="แก้ไข" data-bs-toggle="modal" data-bs-target="#editModal-@good.GDId">
+                                        <i class="fa-solid fa-pencil gradient-text-edit" aria-hidden="true"></i>
+                                    </button>
+                                    <button id="link" type="button" class="btn active-link-delete" data-bs-toggle="modal" data-bs-target="#deleteModal-@good.GDId" title="ลบ" style="background-color: white">
+                                        <i class="fa fa-trash gradient-text-delete" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                                <div class="modal fade" id="editModal-@good.GDId" aria-labelledby="editModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5 fw-bold" id="staticBackdropLabel">
+                                                    <i class="fa-solid fa-pencil gradient-text-edit"></i> แก้ไข IDP Group
+                                                </h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+
+                                            <input type="hidden" name="IDPGroupId" value="@good.GDId" />
+                                            <div class="modal-body">
+                                                @if (good.Type != good1 && good.Type != good2 && good.Type != good3 && good.Type != good4)
+                                                {
+                                                    <div class="input-group input-group-lg mt-3 d-flex justify-content-center">
+                                                        <span class="input-group-text">
+                                                            <i class="fa-solid fa-tag fs-4" aria-hidden="true"></i>
+                                                        </span>
+                                                        <textarea class="form-control" placeholder="ประเภทความดี" name="Type" id="Type">@good.Type</textarea>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="input-group input-group-lg mt-3 d-flex justify-content-center">
+                                                        <span class="input-group-text">
+                                                            <i class="fa-solid fa-calendar-days fs-4" aria-hidden="true"></i>
+                                                        </span>
+                                                        <select class="form-select" aria-label="Default select example" name="Type" onchange="toggleEdit(this)">
+                                                            <option value="@good1" @(good.Type == good1 ? "selected" : "")>การแบ่งปันความรู้ให้กับผู้มีส่วนได้เสียของบริษัท</option>
+                                                            <option value="@good2" @(good.Type == good2 ? "selected" : "")>กิจกรรม Lean Kaizen Suggestion</option>
+                                                            <option value="@good3" @(good.Type == good3 ? "selected" : "")>บริจาคเลือดและอวัยวะ</option>
+                                                            <option value="@good4" @(good.Type == good4 ? "selected" : "")>การบำเพ็ญประโยชน์เพื่อสังคม</option>
+                                                            <option value="__other__">อื่น ๆ</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="input-group input-group-lg mt-3 d-flex justify-content-center" id="otherInput">
+                                                        <span class="input-group-text">
+                                                            <i class="fa-solid fa-tag fs-4" aria-hidden="true"></i>
+                                                        </span>
+                                                        <textarea class="form-control" placeholder="ประเภทความดีอื่นๆ" name="Type" id="Type">@good.Type</textarea>
+                                                    </div>
+                                                }
+                                            </div>
+                                            <div class="modal-footer flex-nowrap p-0">
+                                                <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" data-bs-dismiss="modal"><i class="fa-solid fa-ban gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ยกเลิก</strong></button>
+                                                <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" onclick="submitFormAjax('2')">
+                                                    <i class="fa-solid fa-save gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">บันทึก</strong>
+                                                </button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    <tr class="new-row">
+                        <td></td>
+                        <td class="text-center">
+                            <select class="form-select" aria-label="Default select example" name="Type" onchange="toggleInput(this)">
+                                <option value="@good1">การแบ่งปันความรู้ให้กับผู้มีส่วนได้เสียของบริษัท</option>
+                                <option value="@good2">กิจกรรม Lean Kaizen Suggestion</option>
+                                <option value="@good3">บริจาคเลือดและอวัยวะ</option>
+                                <option value="@good4">การบำเพ็ญประโยชน์เพื่อสังคม</option>
+                                <option value="__other__">อื่น ๆ</option>
+                            </select>
+                            <input type="text" class="form-control mt-2" name="Type" style="display: none;" placeholder="ประเภทความดีอื่น ๆ" />
+                        </td>
+
+                        <td class="text-center">
+                            <textarea class="form-control" name="Company" style="min-width: 100%"></textarea>
+                        </td>
+                        <td class="text-center">
+                            <textarea class="form-control" name="Desc" style="min-width: 100%"></textarea>
+                        </td>
+                        <td class="text-center">
+                            <input type="date" class="form-control" name="Date" />
+                        </td>
+                        <td class="text-center">
+                            <input type="number" class="form-control" name="Hour" min="0" />
+                        </td>
+                        <td class="text-center">
+                            <input type="file" class="form-control" />
+                        </td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal fade" id="AddModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="row align-items-center">
+                        <div class="col-2">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">เลือกพนักงาน</h1>
+                        </div>
+                        <div class="col-5 ms-auto text-end">
+                            <button type="button" class="btn btn-lg active-link-submit me-2" onclick="submitFormAjax('1')" id="actionButton" disabled>
+                                <i class="fa-solid fa-save gradient-icon-submit"></i><strong class="gradient-icon-submit"> บันทึก</strong>
+                            </button>
+                            <input type="text" id="myInput" onkeyup="myFunction()" placeholder="ค้นหา">
+                        </div>
+                        <div class="col-auto text-end">
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive" style="max-height: 600px; border-radius: 10px; box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;">
+                        <table class="table table-hover" id="empTB" width="100%" style="table-layout: fixed;">
+                            <thead class="sticky-header">
+                                <tr>
+                                    <th width="5%">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="checkAll" />
+                                            <label class="form-check-label" for="checkAll">
+                                            </label>
+                                        </div>
+                                    </th>
+                                    <th class="text-center sortable" id="col1" width="5%">
+                                        รหัส <span id="col1Icon"><i class='fa-solid fa-sort'></i></span>
+                                    </th>
+                                    <th class="text-center sortable" id="col2" width="15%">
+                                        ชื่อพนักงาน <span id="col2Icon"><i class='fa-solid fa-sort'></i></span>
+                                    </th>
+                                    <th class="text-center sortable" id="col3" width="5%">
+                                        สถานะ <span id="col3Icon"><i class='fa-solid fa-sort'></i></span>
+                                    </th>
+                                    <th class="text-center sortable" id="col4" width="15%">
+                                        ตำแหน่ง <span id="col4Icon"><i class='fa-solid fa-sort'></i></span>
+                                    </th>
+                                    <th class="text-center sortable" id="col5" width="10%">
+                                        ตำแหน่งขั้น <span id="col5Icon"><i class='fa-solid fa-sort-up'></i></span>
+                                    </th>
+                                    <th class="text-center sortable" id="col6" width="10%">
+                                        Cost-Center <span id="col6Icon"><i class='fa-solid fa-sort'></i></span>
+                                    </th>
+                                    <th class="text-center sortable" id="col7" width="15%">
+                                        ชื่อแผนก <span id="col7Icon"><i class='fa-solid fa-sort'></i></span>
+                                    </th>
+                                    <th class="text-center sortable" id="col8" width="5%">
+                                        บริษัท <span id="col8Icon"><i class='fa-solid fa-sort'></i></span>
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                                @foreach (var user in ViewBag.User)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="userIds" value="@user.Id" />
+                                            </div>
+                                        </td>
+                                        <td>@user.Id</td>
+                                        @if (user.Prefix == "นาง" || user.Prefix == "นางสาว")
+                                        {
+                                            <td>
+                                                <i class="fa fa-female" style="color:palevioletred; font-size:large" aria-hidden="true"></i>
+                                                @(user.Prefix) @(user.FirstNameTH) @(user.LastNameTH)
+
+                                            </td>
+                                        }
+                                        else if (user.Prefix == "นาย" || user.Prefix == " นาย")
+                                        {
+                                            <td>
+                                                <i class="fa fa-male" style="color:cornflowerblue; font-size:large" aria-hidden="true"></i>
+                                                @(user.Prefix) @(user.FirstNameTH) @(user.LastNameTH)
+
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td>
+                                                @(user.Prefix) @(user.FirstNameTH) @(user.LastNameTH)
+
+                                            </td>
+                                        }
+                                        <td class="text-center fw-bold">
+                                            @if (user.Status == "ทำงาน")
+                                            {
+                                                <p style="padding: 3px; border-radius: 3rem; background-color: #D5F8EF; color: #14B789; width: auto ">
+                                                    @user.Status
+                                                </p>
+                                            }
+                                            else
+                                            {
+                                                <p style="padding: 3px; border-radius: 3rem; background-color: #FFE5F4; color: #E50087; width: auto">
+                                                    @user.Status
+                                                </p>
+                                            }
+                                        </td>
+                                        <td>@user.Position</td>
+                                        <td class="text-center">@user.JobLevel</td>
+                                        <td class="text-center">@user.CostCenter</td>
+                                        <td>@user.DepartmentName</td>
+                                        <td>@user.Company</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" name="caseVal" id="caseValInput" value="">
+</form>
+
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
+<script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
+<script type="text/javascript">
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+        js('#myTable').DataTable({
+            info: false,
+            paging: false,
+            order: [[0, 'desc']],
+            language: {
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
+                paginate: {
+                    next: 'ถัดไป <i class="fa fa-angle-right"></i>',
+                    previous: '<i class="fa fa-angle-left"></i> ก่อนหน้า'
+                },
+                info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
+            },
+            columnDefs: [{
+                targets: 7,
+                orderable: false
+            }],
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
+        });
+    });
+</script>
+<script>
+    function submitFormAjax(caseVal) {
+        // กำหนดค่า caseVal ให้กับฟิลด์ input ที่มีชื่อเป็น "caseVal" ในฟอร์ม
+        $('#caseValInput').val(caseVal);
+
+        var formData = $('#myForm').serialize();
+        $.ajax({
+            type: 'POST',
+            url: $('#myForm').attr('action'),
+            data: formData,
+            success: function (data) {
+                // ในกรณีนี้คุณอาจจะทำตามที่คุณเคยทำไว้ เช่น redirect
+                window.location.href = '@Url.Action("Goodness", "Home", new { year = ViewBag.Year })';
+            },
+            error: function (xhr, status, error) {
+                console.warn("Error");
+            }
+        });
+    }
+
+
+    function addRow() {
+        var newRow = `
+            <tr class="new-row">
+                <td></td>
+                <td class="text-center">
+                    <select class="form-select" aria-label="Default select example" name="Type" onchange="toggleInput(this)">
+                        <option value="@good1">การแบ่งปันความรู้ให้กับผู้มีส่วนได้เสียของบริษัท</option>
+                        <option value="@good2">กิจกรรม Lean Kaizen Suggestion</option>
+                        <option value="@good3">บริจาคเลือดและอวัยวะ</option>
+                        <option value="@good4">การบำเพ็ญประโยชน์เพื่อสังคม</option>
+                        <option value="__other__">อื่น ๆ</option>
+                    </select>
+                    <input type="text" class="form-control mt-2" name="Type" style="display: none;" placeholder="ประเภทความดีอื่น ๆ" />
+                </td>
+                <td class="text-center">
+                    <textarea class="form-control" name="Company" style="min-width: 100%" ></textarea>
+                </td>
+                <td class="text-center">
+                    <textarea class="form-control" name="Desc" style="min-width: 100%" ></textarea>
+                </td>
+                <td class="text-center">
+                    <input type="date" class="form-control" name="Date" />
+                </td>
+                <td class="text-center">
+                    <input type="number" class="form-control" name="Hour" />
+                </td>
+                 <td class="text-center">
+                    <input type="file" class="form-control"  />
+                </td>
+                <td></td>
+            </tr>
+        `;
+
+        $('#tableBody').append(newRow);
+    }
+
+    function toggleInput(selectElement) {
+        var inputElement = selectElement.parentElement.querySelector('input[name="Type"]');
+        var otherOption = selectElement.querySelector('option[value="__other__"]');
+
+        if (selectElement.value === "__other__") {
+            inputElement.style.display = "block";
+            inputElement.setAttribute("required", "required");
+            inputElement.name = "Type";
+            otherOption.disabled = true;
+        } else {
+            inputElement.name = "Type";
+            inputElement.style.display = "none";
+            inputElement.removeAttribute("required");
+            otherOption.disabled = false;
+        }
+    }
+
+    function toggleEdit(selectElement) {
+        var inputElement = selectElement.parentElement.querySelector('textarea[name="TypeTextarea"]');
+        var textareaElement = selectElement.parentElement.querySelector('input[name="OtherType"]');
+        var otherOption = selectElement.querySelector('option[value="__other__"]');
+
+        if (selectElement.value === "__other__") {
+            inputElement.style.display = "block";
+            inputElement.setAttribute("required", "required");
+            textareaElement.style.display = "block";
+            otherOption.disabled = true;
+        } else {
+            inputElement.style.display = "none";
+            inputElement.removeAttribute("required");
+            textareaElement.style.display = "none";
+            otherOption.disabled = false;
+        }
+    }
+
+
+
+
+    function myFunction() {
+        var input, filter, table, tr, td, i, j, txtValue;
+        input = document.getElementById("myInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("empTB");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 1; i < tr.length; i++) {
+            var rowMatchesFilter = false;
+
+            for (j = 1; j < tr[i].cells.length; j++) {
+                td = tr[i].cells[j];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        rowMatchesFilter = true;
+                        break;
+                    }
+                }
+            }
+
+            if (rowMatchesFilter) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+
+    var table = document.getElementById("empTB");
+    var th = table.getElementsByTagName("th");
+    var activeHeader = null;
+
+    for (var i = 0; i < th.length; i++) {
+        th[i].addEventListener("click", function () {
+            if (activeHeader !== null && activeHeader.id !== this.id) {
+                resetHeaderIcon(activeHeader);
+            }
+            activeHeader = this;
+
+            if (this.id !== "col5") {
+                sortStatus["col5"] = "asc"; // Reset sort status for col5
+                resetHeaderIcon(document.getElementById("col5"));
+            }
+
+            sortTable(this.id);
+        });
+    }
+
+
+    var sortStatus = {
+        "col5": "asc"
+    };
+
+    function sortTable(columnId) {
+        var table, rows, switching, i, x, y, shouldSwitch;
+        table = document.getElementById("empTB");
+        switching = true;
+
+        if (!sortStatus[columnId]) {
+            sortStatus[columnId] = "asc";
+        } else if (sortStatus[columnId] === "asc") {
+            sortStatus[columnId] = "desc";
+        } else {
+            sortStatus[columnId] = "asc";
+        }
+
+        var icon = document.getElementById(columnId + "Icon");
+        if (sortStatus[columnId] === "asc") {
+            icon.innerHTML = "<i class='fa-solid fa-sort-up'></i>";
+        } else if (sortStatus[columnId] === "desc") {
+            icon.innerHTML = "<i class='fa-solid fa-sort-down'></i>";
+        } else {
+            icon.innerHTML = "<i class='fa-solid fa-sort'></i>";
+        }
+
+        while (switching) {
+            switching = false;
+            rows = table.getElementsByTagName("tr");
+
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+
+                x = rows[i].getElementsByTagName("td")[Number(columnId.substr(3))];
+                y = rows[i + 1].getElementsByTagName("td")[Number(columnId.substr(3))];
+
+                var xContent = x.textContent || x.innerText;
+                var yContent = y.textContent || y.innerText;
+
+                if (xContent === null || xContent.trim() === "") {
+                    if (sortStatus[columnId] === "asc") {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (yContent === null || yContent.trim() === "") {
+                    if (sortStatus[columnId] === "desc") {
+                        shouldSwitch = true;
+                        break;
+                    }
+                    continue;
+                }
+
+                if (sortStatus[columnId] === "asc") {
+                    if (isNaN(xContent) && isNaN(yContent)) {
+                        if (xContent.toLowerCase() > yContent.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else {
+                        var xValue = parseFloat(xContent);
+                        var yValue = parseFloat(yContent);
+                        if (xValue > yValue) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                } else {
+                    if (isNaN(xContent) && isNaN(yContent)) {
+                        if (xContent.toLowerCase() < yContent.toLowerCase()) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else {
+                        var xValue = parseFloat(xContent);
+                        var yValue = parseFloat(yContent);
+                        if (xValue < yValue) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+            }
+        }
+    }
+
+    function resetHeaderIcon(header) {
+        var icon = document.getElementById(header.id + "Icon");
+        icon.innerHTML = "<i class='fa-solid fa-sort'></i>";
+    }
+
+    const checkAllCheckbox = document.getElementById('checkAll');
+
+    const checkboxes = document.querySelectorAll('tbody input[name="userIds"]');
+    const actionButton = document.getElementById('actionButton');
+
+    checkAllCheckbox.addEventListener('change', function () {
+        checkboxes.forEach(function (checkbox) {
+            checkbox.checked = checkAllCheckbox.checked;
+        });
+
+        updateButtonState();
+    });
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateButtonState);
+    });
+
+    function updateButtonState() {
+        const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked && checkbox.dataset.status !== "Draft");
+        actionButton.disabled = !isChecked;
+    }
+
+    /*const inputFields = document.querySelectorAll('input[name="Company"], textarea[name="Desc"], input[name="Date"], input[name="Hour"]');
+    const submitButton = document.getElementById('submitButton');
+
+    inputFields.forEach(inputField => {
+        inputField.addEventListener('input', checkInputs);
+    });
+
+    function checkInputs() {
+        let allFieldsFilled = true;
+
+        inputFields.forEach(inputField => {
+            if (inputField.value.trim() === '') {
+                allFieldsFilled = false;
+            }
+        });
+
+        submitButton.disabled = !allFieldsFilled;
+    }*/
+
+
+</script>
+
+<style>
+    #myInput {
+        border: none;
+        border-radius: 2rem;
+        padding: 0.6rem;
+        outline: none;
+        width: 180px;
+        transition: 0.3s;
+        background-color: #eeeeee60;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+
+        #myInput:hover,
+        #myInput:focus {
+            width: 280px;
+        }
+
+    .modal-header {
+        display: block;
+    }
+
+    .form-check-input[type="checkbox"] {
+        width: 25px;
+        height: 25px;
+    }
+
+    .sticky-header-breadcrumb {
+        position: sticky;
+        z-index: 100;
+        border-radius: 0px;
+        top: 85px;
+        background-color: #2D4686;
+    }
+
+    .sticky-header {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        background-color: white;
+        cursor: pointer;
+    }
+
+    .modal-xl {
+        --bs-modal-width: 1600px;
+    }
+
+
+    #myTable,
+    .table-container {
+        overflow: hidden;
+        border-radius: 10px;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+    .active-link-add,
+    .active-link-submit,
+    .active-link-back {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+        background-color: white;
+    }
+
+        .active-link-add:hover {
+            background-color: white;
+            transform: scale(.95);
+            border: 2px solid #053a2f;
+        }
+
+    .gradient-icon-add {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-submit:hover {
+        background-color: white;
+        transform: scale(.95);
+        border: 2px solid #2D4686;
+    }
+
+    .gradient-icon-submit {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-back:hover {
+        background-color: white;
+        transform: scale(.95);
+        border: 2px solid #9B0008;
+    }
+
+    .gradient-icon-back {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .fa-person{
+        background-image: linear-gradient( 0deg, hsl(220deg 100% 47%) 0%, hsl(216deg 100% 47%) 6%, hsl(213deg 100% 48%) 14%, hsl(209deg 100% 48%) 22%, hsl(206deg 100% 48%) 32%, hsl(202deg 100% 49%) 43%, hsl(199deg 100% 49%) 56%, hsl(195deg 100% 49%) 70%, hsl(192deg 100% 50%) 85%, hsl(188deg 100% 50%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .fa-person-dress {
+        background-image: linear-gradient( 0deg, hsl(335deg 85% 55%) 0%, hsl(336deg 86% 58%) 11%, hsl(336deg 88% 60%) 22%, hsl(336deg 89% 63%) 33%, hsl(335deg 91% 65%) 44%, hsl(335deg 92% 67%) 56%, hsl(335deg 94% 69%) 67%, hsl(334deg 96% 71%) 78%, hsl(333deg 98% 73%) 89%, hsl(333deg 100% 75%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-edit {
+        border: none;
+        background-color: white;
+    }
+
+        .active-link-edit:hover {
+            background-color: white;
+            border-bottom: 2px solid #0061ff;
+        }
+
+            .active-link-edit:hover i {
+                transform: scale(1.2);
+            }
+
+    .active-link-delete {
+        border: none;
+        background: white;
+    }
+
+        .active-link-delete:hover {
+            background-color: white;
+            border-bottom: 2px solid #9B0008;
+        }
+
+            .active-link-delete:hover i {
+                transform: scale(1.2);
+            }
+
+    .gradient-text-delete {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(357deg 94% 33%) 11%, hsl(358deg 89% 36%) 22%, hsl(358deg 84% 39%) 33%, hsl(358deg 79% 42%) 44%, hsl(359deg 74% 46%) 56%, hsl(359deg 70% 49%) 67%, hsl(359deg 73% 53%) 78%, hsl(360deg 80% 56%) 89%, hsl(0deg 87% 60%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .gradient-text-edit {
+        background-image: linear-gradient( 0deg, hsl(220deg 100% 47%) 0%, hsl(216deg 100% 47%) 6%, hsl(213deg 100% 48%) 14%, hsl(209deg 100% 48%) 22%, hsl(206deg 100% 48%) 32%, hsl(202deg 100% 49%) 43%, hsl(199deg 100% 49%) 56%, hsl(195deg 100% 49%) 70%, hsl(192deg 100% 50%) 85%, hsl(188deg 100% 50%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+</style>

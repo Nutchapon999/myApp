@@ -1,0 +1,102 @@
+﻿
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai&display=swap');
+
+body {
+    font-family: 'Noto Serif Thai', serif;
+}
+
+.dataTables_length, .dataTables_filter {
+    margin-bottom: 10px;
+    
+}
+
+.dataTables_wrapper .dataTables_filter input[type="search"] {
+    border: none;
+    border-radius: 2rem;
+    padding: 0.6rem;
+    outline: none;
+    width: 180px; 
+    transition: 0.3s;
+    background-color: #eeeeee60;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+    .dataTables_wrapper .dataTables_filter input[type="search"]:hover,
+    .dataTables_wrapper .dataTables_filter input[type="search"]:focus {
+        width: 280px;
+    }
+
+
+.dataTables_wrapper .dataTables_length label {
+    color: #2D4686;
+    font-weight: bold;
+    padding: 0.3rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-radius: 7px;
+    background-color: #C8E8FF;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+
+    .dataTables_wrapper .dataTables_length label select {
+        border: none;
+        border-radius: 5px;
+        background-color: #eeeeee60;
+    }
+
+        .dataTables_wrapper .dataTables_length label select:hover {
+            transform: scale(1.1);
+        }
+
+.entries-label::before {
+    content: 'แสดงทีละ';
+    font-family: 'FontAwesome';
+    display: inline;
+    margin-right: 5px;
+}
+
+
+.entries-label::after {
+    margin-left: 4px;
+    content: 'แถว';
+    display: inline;
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    margin-top: 10px;
+    background-color: #eeeeee60;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 7px;
+    color: #198754;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    color: #fff;
+    background-color: #007bff;
+    cursor: pointer;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover,
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover:not(.current) {
+    background-color: #007bff;
+    transform: scale(1.2);
+}
+
+
+.dataTables_wrapper .dataTables_info {
+    background-color: #eeeeee60;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 7px;
+    color: #198754;
+    padding: 0.5rem;
+    margin-top: 10px;
+}
+
+
+
+
+
+
+
+
+

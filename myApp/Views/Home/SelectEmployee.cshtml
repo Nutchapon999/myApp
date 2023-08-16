@@ -1,30 +1,108 @@
-﻿@model IEnumerable<myApp.Models.User>
+﻿﻿@model IEnumerable<myApp.Models.User>
 
 @{
     ViewBag.Title = "SelectEmployee";
 }
+<link rel="stylesheet" href="/CSS/Style.css">
+<div class="sticky-header-breadcrumb" style="margin-top: -23px">
+    <div class="header-breadcrumb" style="background-color: #2D4686;">
+        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+            <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+                <li class="breadcrumb-item">
+                    <a class="link-body-emphasis text-decoration-none" href="@Url.Action("IDPGroup")">
+                        <i class="fa fa-book" style="color: #C8E8FF"></i> <strong style="color: #C8E8FF">IDP Group</strong>
+                        <span class="visually-hidden">Home</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF" href="@Url.Action("AddEmployee", new { idpGroupId = ViewBag.IDPGroupId })"><strong>แก้ไขพนักงาน (@ViewBag.IDPGroupId)</strong></a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF" href="@Url.Action("SelectEmployee", new { idpGroupId = ViewBag.IDPGroupId })"><strong>เพิ่มพนักงาน (@ViewBag.IDPGroupId)</strong></a>
+                </li>
+            </ol>
+        </nav>
+    </div>
 
-<main class="mb-2" style="margin-top: 50px">
-    @using (Html.BeginForm("SelectedEmployee", "Home", new { competencyFormId = ViewBag.CompetencyFormId }, FormMethod.Post))
+    <div class="text-center sticky-header">
+        <div class="background-container">
+            <i class="fa fa-users topic-icon"></i>
+        </div>
+    </div>
+</div>
+<main>
+    @using (Html.BeginForm("SelectedEmployee", "Home", new { idpGroupId = ViewBag.IDPGroupId }, FormMethod.Post))
     {
-        <div class="card shadow">
-            <div class="card-header bg-primary">
-                <h2 class="text-center" style="color:white"><i class="fa fa-user" aria-hidden="true"></i> <strong>เลือกพนักงาน</strong></h2>
-            </div>
-            <div class="card-body">
-                <table class="table table-hover table-responsive" id="myTable">
-                    <thead class="table-primary" style="font-size: 16px">
+        <div class="card border-0 m-3">
+            <div class="card-body mt-4 border-0">
+                <div class="row">
+                    <div class="col-3">
+
+                    </div>
+                    <div class="col-6 text-center topic-title">
+                        <h2 class="mt-2 ">เพิ่มพนักงาน</h2>
+                    </div>
+                    <div class="col-3 text-end">
+                        <div class="row">
+                            <div class="col-2">
+                                <label for="selectType" class="form-label me-2 mt-2"> แผนก:</label>
+                            </div>
+                            <div class="col-10 text-end">
+                                <select class="form-select" id="selectType">
+                                    <option value="">ทั้งหมด</option>
+                                    @foreach (var dpt in Model.Select(dpt => dpt.DepartmentName).Distinct())
+                                    {
+                                        <option value="@dpt">@dpt</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row justify-content-center mb-2">
+                    <div class="col-4">
+                        <a href="@Url.Action("AddEmployee", new { idpGroupId = ViewBag.IDPGroupId })" class="btn btn-lg active-link-back shadow-sm">
+                            <i class="fa fa-arrow-left gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back"> กลับ</strong>
+                        </a>
+                        <button type="submit" class="btn btn-lg active-link-submit shadow-sm">
+                            <i class="fa fa-save gradient-icon-submit" aria-hidden="true"></i> <strong class="gradient-icon-submit"> บันทึก</strong>
+                        </button>
+                    </div>
+                    <div class="col-4 text-center">
+                        <h5 class="me-3">
+                            <span class="icon-item"><i class="fa fa-key fs-4" title="รหัส IDP Group"></i></span> รหัส<strong>: @ViewBag.IDPGroupId</strong>
+
+                            <span class="icon-item"><i class="fa fa-book fa-book-bg fs-4" title="ชื่อ IDP Group"></i></span> ชื่อ<strong>: @ViewBag.IDPGroupName</strong>
+
+                            <span class="icon-item"><i class="fa fa-regular fa-calendar-days fs-4" title="ปี"></i></span> ปี<strong>: @ViewBag.Year</strong>
+                        </h5>
+                    </div>
+
+                    <div class="col-4 text-end">
+
+                    </div>
+                </div>
+                <table class="table table-hover table-responsive" id="myTable" width="100%">
+                    <thead style="background-color: #2D4686; color: #C8E8FF">
                         <tr>
-                            <th width="5%"></th>
-                            <th width="5%">รหัส</th>
-                            <th width="30%">ชื่อพนักงาน</th>
-                            <th width="20%">ตำแหน่ง</th>
-                            <th width="10%">ชื่อแผนก</th>
-                            <th width="22%">ตำแหน่งขั้น</th>
-                            <th width="18%">บริษัท</th>
+                            <th width="5%">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="checkAll" />
+                                    <label class="form-check-label" for="checkAll">
+                                    </label>
+                                </div>
+                            </th>
+                            <th width="5%" class="text-center">รหัส</th>
+                            <th width="20%" class="text-center">ชื่อพนักงาน</th>
+                            <th width="5%" class="text-center">สถานะ</th>
+                            <th width="20%" class="text-center">ตำแหน่ง</th>
+                            <th width="10%" class="text-center">ตำแหน่งขั้น</th>
+                            <th width="10%" class="text-center">Cost-Center</th>
+                            <th width="22%" class="text-center">ชื่อแผนก</th>
+                            <th width="18%" class="text-center">บริษัท</th>
                         </tr>
                     </thead>
-                    <tbody style="height: 100px">
+                    <tbody>
                         @foreach (var emp in Model)
                         {
                             <tr>
@@ -37,58 +115,115 @@
                                 @if (emp.Prefix == "นาง" || emp.Prefix == "นางสาว")
                                 {
                                     <td>
-
-                                        @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
                                         <i class="fa fa-female" style="color:palevioletred; font-size:large" aria-hidden="true"></i>
+                                        @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
+
                                     </td>
                                 }
                                 else if (emp.Prefix == "นาย" || emp.Prefix == " นาย")
                                 {
                                     <td>
-
-                                        @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
                                         <i class="fa fa-male" style="color:cornflowerblue; font-size:large" aria-hidden="true"></i>
+                                        @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
+
                                     </td>
                                 }
                                 else
                                 {
                                     <td>
-
                                         @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
 
                                     </td>
                                 }
+                                <td class="text-center fw-bold">
+                                    @if (emp.Status == "ทำงาน")
+                                    {
+                                        <p style="padding: 3px; border-radius: 3rem; background-color: #D5F8EF; color: #14B789; width: auto ">
+                                            @emp.Status
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p style="padding: 3px; border-radius: 3rem; background-color: #FFE5F4; color: #E50087; width: auto">
+                                            @emp.Status
+                                        </p>
+                                    }
+                                </td>
                                 <td>@emp.Position</td>
-                                <td>@emp.JobLevel</td>
+                                <td class="text-center">@emp.JobLevel</td>
+                                <td class="text-center">@emp.CostCenter</td>
                                 <td>@emp.DepartmentName</td>
                                 <td>@emp.Company</td>
                             </tr>
                         }
                     </tbody>
                 </table>
-                <button type="submit" class="btn btn-primary">ยืนยัน</button>
-                <a href="@Url.Action("AddEmployee", new { id = ViewBag.CompetencyFormId })" class="btn btn-danger">ยกเลิก</a>
+                <div class="row mt-3">
+                    <div class="col-auto me-auto">
+                        <a href="@Url.Action("AddEmployee", new { idpGroupId = ViewBag.IDPGroupId })" class="btn btn-lg active-link-back shadow-sm">
+                            <i class="fa fa-arrow-left gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back"> กลับ</strong>
+                        </a>
+                        <button type="submit" class="btn btn-lg active-link-submit shadow-sm">
+                            <i class="fa fa-save gradient-icon-submit" aria-hidden="true"></i> <strong class="gradient-icon-submit"> บันทึก</strong>
+                        </button>
+                    </div>
+                    <div class="col-auto">
+
+                    </div>
+                </div>
             </div>
         </div>
-     }
+    }
 </main>
 
-
 <script src="~/Scripts/jquery-3.4.1.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
-<script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
+<script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
 <script type="text/javascript">
     var js = jQuery.noConflict(true);
     js(document).ready(function () {
         js('#myTable').DataTable({
+            info: false,
+            paging: false,
+            order: [[5, 'asc']],
             language: {
-                search: "ค้นหา:",
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
             },
-
+             columnDefs: [{
+                targets: 0, 
+                orderable: false 
+            }],
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
         });
+
+
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterSelect = document.getElementById('selectType');
+        const tableRows = document.querySelectorAll('#myTable tbody tr');
+
+        function filterTableByType() {
+            const selectedType = filterSelect.value;
+
+            tableRows.forEach((row) => {
+                const rowType = row.cells[7].textContent.trim();
+
+                if (selectedType === '' || rowType === selectedType) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        filterSelect.addEventListener('change', filterTableByType);
+
+        filterTableByType();
     });
 </script>
 <style>
@@ -96,5 +231,154 @@
         width: 25px;
         height: 25px;
     }
-</style>
 
+    main {
+        margin-top: -50px;
+    }
+
+    .background-container {
+        background-color: white; /* Set the white background */
+        display: inline-block; /* Display the container as an inline block to wrap the icon */
+        border-radius: 50%; /* Apply a circular shape to the container */
+        padding: 1rem; /* Add padding around the icon */
+        overflow: hidden; /* Hide any overflow from the circular container */
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px; /* Add a box shadow */
+        margin-top: -50px;
+    }
+
+    .topic-icon {
+        background: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text; /* Clip the background to the text */
+        -webkit-text-fill-color: transparent; /* Make the text transparent to show the background gradient */
+        font-size: 45px;
+        /* Any other styles for the icon, if needed */
+    }
+
+    .topic-title {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+        .topic-title h2 {
+            font-weight: bold;
+        }
+
+    .sticky-header-breadcrumb {
+        position: sticky;
+        border-radius: 0px;
+        z-index: 10;
+        top: 85px;
+    }
+
+    .sticky-header {
+        position: sticky;
+        z-index: 20;
+    }
+
+    .card {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+    .gradient-icon-start,
+    .fa-key {
+        background-image: linear-gradient( 0deg, hsl(36deg 96% 62%) 0%, hsl(38deg 96% 61%) 11%, hsl(40deg 96% 61%) 22%, hsl(43deg 95% 61%) 33%, hsl(45deg 95% 60%) 44%, hsl(47deg 95% 60%) 56%, hsl(50deg 95% 60%) 67%, hsl(52deg 95% 59%) 78%, hsl(54deg 94% 59%) 89%, hsl(56deg 94% 59%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-book-bg {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-calendar-days {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-delete {
+        border: none;
+        background-color: white;
+    }
+
+        .active-link-delete:hover {
+            background-color: white;
+            border-bottom: 2px solid #9B0008;
+        }
+
+            .active-link-delete:hover i {
+                transform: scale(1.2);
+            }
+
+    .gradient-text-delete {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(357deg 94% 33%) 11%, hsl(358deg 89% 36%) 22%, hsl(358deg 84% 39%) 33%, hsl(358deg 79% 42%) 44%, hsl(359deg 74% 46%) 56%, hsl(359deg 70% 49%) 67%, hsl(359deg 73% 53%) 78%, hsl(360deg 80% 56%) 89%, hsl(0deg 87% 60%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-add,
+    .active-link-submit {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+        .active-link-add:hover {
+            transform: scale(.95);
+            border: 2px solid #053a2f;
+        }
+
+    .gradient-icon-add {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-submit:hover {
+        transform: scale(.95);
+        border: 2px solid #2D4686;
+    }
+
+    .gradient-icon-submit {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .icon-item {
+        margin-left: 20px;
+    }
+
+    #myTable {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+    .active-link-back:hover {
+        transform: scale(.95);
+        border: 2px solid #9B0008;
+    }
+
+    .gradient-icon-back {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+</style>
+<script>
+    // Get the "checkAll" checkbox element
+    const checkAllCheckbox = document.getElementById('checkAll');
+
+    // Get all checkboxes in the table body
+    const checkboxes = document.querySelectorAll('tbody input[name="userIds"]');
+
+    // Add an event listener to the "checkAll" checkbox
+    checkAllCheckbox.addEventListener('change', function () {
+        // Iterate over all checkboxes in the table body and set their checked property
+        checkboxes.forEach(function (checkbox) {
+            checkbox.checked = checkAllCheckbox.checked;
+        });
+    });
+</script>

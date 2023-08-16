@@ -11,9 +11,18 @@ namespace myApp.Models
         [Key]
         public int EnrollId { get; set; } 
         public string Id { get; set; }
-        public string CompetencyFormId { get; set; }
+        public string IDPGroupId { get; set; }
+        public string Status { get; set; }
+        public int Competencies { get; set; }
 
-        public virtual CompetencyForm CompetencyForm { get; set; }
+        public virtual IDPGroup IDPGroup { get; set; }
         public virtual User User { get; set; }
+        public virtual IDPGroupItem IDPGroupItem { get; set; }
+        public virtual Competency Competency { get; set; }
+        public virtual ResultItem ResultItem { get; set; }
+        public virtual Result Result { get; set; }
+        public virtual RemarkHS RemarkHS { get; set; }
+
+
     }
 }

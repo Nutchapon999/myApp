@@ -1,0 +1,373 @@
+﻿@model IEnumerable<myApp.Models.IDPGroup>
+@{
+    ViewBag.Title = "SelectIDPGroup";
+}
+<link rel="stylesheet" href="/CSS/Style.css">
+<div class="sticky-header-breadcrumb">
+    <div class="header-breadcrumb" style="background-color: #2D4686;">
+        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+            <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+                <li class="breadcrumb-item">
+                    <a class="link-body-emphasis text-decoration-none link" href="@Url.Action("Employee")">
+                        <i class="fa fa-users" style="color: #C8E8FF; "></i> <strong style="color: #C8E8FF "> พนักงาน</strong>
+                        <span class="visually-hidden">Home</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF" href="@Url.Action("AddIDPGroup", new { id = ViewBag.Id })"><strong>แก้ไข IDP Group (@ViewBag.Id)</strong></a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF" href="@Url.Action("SelectIDPGroup", new { id = ViewBag.Id })"><strong>เพิ่ม IDP Group (@ViewBag.Id)</strong></a>
+                </li>
+            </ol>
+        </nav>
+    </div>
+
+    <div class="text-center sticky-header">
+        <div class="background-container">
+            <i class="fa fa-book topic-icon"></i>
+        </div>
+    </div>
+</div>
+<main>
+    @using (Html.BeginForm("SelectedIDPGroup", "Home", new { id = ViewBag.Id }, FormMethod.Post))
+    {
+        <div class="card border-0 m-3">
+            <div class="card-body border-0 mt-4">
+                <div class="row">
+                    <div class="col-3 d-flex align-items-center ">
+                        <label for="selectType" class="form-label me-2 mt-2"> ปี:</label>
+                        <select class="form-select" id="selectType">
+                            <option value="">ทั้งหมด</option>
+                            @foreach (var year in Model.Select(y => y.Year).Distinct())
+                            {
+                                <option value="@year">@year</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-6 text-center topic-title">
+                        <h2 class="mt-2 ">เพิ่ม Competency</h2>
+
+                    </div>
+                    <div class="col-3 text-end">
+
+                    </div>
+                </div>
+                <div class="row justify-content-center mb-2">
+                    <div class="col-2">
+                        <a href="@Url.Action("AddIDPGroup", new { id = ViewBag.Id })" class="btn btn-lg active-link-back shadow-sm">
+                            <i class="fa fa-arrow-left gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back"> กลับ</strong>
+                        </a>
+                        <button type="submit" class="btn btn-lg active-link-submit shadow-sm">
+                            <i class="fa fa-save gradient-icon-submit" aria-hidden="true"></i> <strong class="gradient-icon-submit"> บันทึก</strong>
+                        </button>
+                    </div>
+                    <div class="col-8 text-center">
+                        <h6>
+                            <i class="fa fa-key fs-4 ms-2"></i> รหัส<strong>: @ViewBag.Id</strong>
+                            <i class="fa fa-user user-icon fs-4 ms-2"></i> ชื่อ<strong>: @ViewBag.Prefix @ViewBag.FirstName @ViewBag.LastName</strong>
+                            <i class="fa fa-solid fa-ranking-star fs-4 ms-2"></i> ตำแหน่งขั้น<strong>: @ViewBag.JobLevel</strong>
+                        </h6>
+                        <h6>
+                            <i class="fa fa-solid fa-location-dot fs-4 ms-2"></i> ตำแหน่ง<strong>: @ViewBag.Position</strong>
+                            <i class="fa fa-home-user fs-4 ms-2"></i> แผนก<strong>: @ViewBag.Department</strong>
+                            <i class="fa fa-solid fa-building ms-2 fs-4"></i> บริษัท<strong>: @ViewBag.Company</strong>
+                        </h6>
+                    </div>
+
+                    <div class="col-2 text-end">
+
+                    </div>
+                </div>
+                <table class="table table-hover table-responsive table-striped" id="myTable" width="100%">
+                    <thead style="background-color: #2D4686; color: #C8E8FF">
+                        <tr>
+                            <th width="5%" class="text-center"></th>
+                            <th width="10%" class="text-center">รหัส IDP Group</th>
+                            <th width="55%" class="text-center">ชื่อ IDP Group</th>
+                            <th width="10%" class="text-center">จำนวนคน</th>
+                            <th width="15%" class="text-center">จำนวน Competency</th>
+                            <th width="10%" class="text-center">ปี</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var idp in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="iDPGroupIds" value="@idp.IDPGroupId" />
+                                    </div>
+                                </td>
+                                <td class="text-center">@idp.IDPGroupId</td>
+                                <td>@idp.IDPGroupName</td>
+                                <td class="text-end">@idp.EmployeeEnrollmentCount</td>
+                                <td class="text-end">@idp.EmployeeCompetencyCount</td>
+                                <td class="text-center">@idp.Year</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="mt-2">
+                    <a href="@Url.Action("AddIDPGroup", new { id = ViewBag.Id })" class="btn btn-lg active-link-back shadow-sm">
+                        <i class="fa fa-arrow-left gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back"> กลับ</strong>
+                    </a>
+                    <button type="submit" class="btn btn-lg active-link-submit shadow-sm">
+                        <i class="fa fa-save gradient-icon-submit" aria-hidden="true"></i> <strong class="gradient-icon-submit"> บันทึก</strong>
+                    </button>
+                </div>
+            </div>
+        </div>
+    }
+</main>
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
+<script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
+<script type="text/javascript">
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+        js('#myTable').DataTable({
+            info: false,
+            order: [[1, 'asc']],
+            paging: false,
+            language: {
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
+                paginate: {
+                    next: 'ถัดไป <i class="fa fa-angle-right"></i>',
+                    previous: '<i class="fa fa-angle-left"></i> ก่อนหน้า'
+                },
+                info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
+            },
+            columnDefs: [{
+                targets: 0,
+                orderable: false
+            }],
+
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterSelect = document.getElementById('selectType');
+        const tableRows = document.querySelectorAll('#myTable tbody tr');
+
+        function filterTableByType() {
+            const selectedType = filterSelect.value;
+
+            tableRows.forEach((row) => {
+                const rowType = row.cells[5].textContent.trim();
+
+                if (selectedType === '' || rowType === selectedType) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        filterSelect.addEventListener('change', filterTableByType);
+
+        filterTableByType();
+    });
+</script>
+<script>
+    // Get the "checkAll" checkbox element
+    const checkAllCheckbox = document.getElementById('checkAll');
+
+    // Get all checkboxes in the table body
+    const checkboxes = document.querySelectorAll('tbody input[name="competencyIds"]');
+
+    // Add an event listener to the "checkAll" checkbox
+    checkAllCheckbox.addEventListener('change', function () {
+        // Iterate over all checkboxes in the table body and set their checked property
+        checkboxes.forEach(function (checkbox) {
+            checkbox.checked = checkAllCheckbox.checked;
+        });
+    });
+</script>
+<style>
+    .form-check-input[type="checkbox"] {
+        width: 25px;
+        height: 25px;
+    }
+
+    main {
+        margin-top: -50px;
+    }
+
+    .background-container {
+        background-color: white; /* Set the white background */
+        display: inline-block; /* Display the container as an inline block to wrap the icon */
+        border-radius: 50%; /* Apply a circular shape to the container */
+        padding: 1rem; /* Add padding around the icon */
+        overflow: hidden; /* Hide any overflow from the circular container */
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px; /* Add a box shadow */
+        margin-top: -50px;
+    }
+
+    .topic-icon {
+        background: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text; /* Clip the background to the text */
+        -webkit-text-fill-color: transparent; /* Make the text transparent to show the background gradient */
+        font-size: 45px;
+        /* Any other styles for the icon, if needed */
+    }
+
+    .topic-title {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+        .topic-title h2 {
+            font-weight: bold;
+        }
+
+    .sticky-header-breadcrumb {
+        position: sticky;
+        border-radius: 0px;
+        z-index: 10;
+        top: 85px;
+    }
+
+    .sticky-header {
+        position: sticky;
+        z-index: 20;
+    }
+
+    .card {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+    .fa-address-card,
+    .fa-location-dot,
+    .fa-calendar-days {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .gradient-icon-send,
+    .fa-key,
+    .fa-scale-balanced {
+        background-image: linear-gradient( 0deg, hsl(36deg 96% 62%) 0%, hsl(38deg 96% 61%) 11%, hsl(40deg 96% 61%) 22%, hsl(43deg 95% 61%) 33%, hsl(45deg 95% 60%) 44%, hsl(47deg 95% 60%) 56%, hsl(50deg 95% 60%) 67%, hsl(52deg 95% 59%) 78%, hsl(54deg 94% 59%) 89%, hsl(56deg 94% 59%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-book-bg {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-calendar-days {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .user-icon,
+    .fa-signature {
+        background-image: linear-gradient( 0deg, hsl(220deg 100% 47%) 0%, hsl(216deg 100% 47%) 6%, hsl(213deg 100% 48%) 14%, hsl(209deg 100% 48%) 22%, hsl(206deg 100% 48%) 32%, hsl(202deg 100% 49%) 43%, hsl(199deg 100% 49%) 56%, hsl(195deg 100% 49%) 70%, hsl(192deg 100% 50%) 85%, hsl(188deg 100% 50%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-ranking-star {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(237deg 17% 44%) 11%, hsl(298deg 1% 48%) 22%, hsl(52deg 13% 52%) 33%, hsl(54deg 26% 54%) 44%, hsl(55deg 40% 56%) 56%, hsl(55deg 54% 58%) 67%, hsl(56deg 67% 59%) 78%, hsl(56deg 81% 59%) 89%, hsl(56deg 94% 59%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-home-user,
+    .fa-building {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-tag {
+        background-image: linear-gradient( 0deg, hsl(335deg 85% 55%) 0%, hsl(335deg 86% 57%) 11%, hsl(335deg 87% 59%) 22%, hsl(334deg 89% 61%) 33%, hsl(334deg 90% 63%) 44%, hsl(334deg 91% 66%) 56%, hsl(334deg 93% 68%) 67%, hsl(333deg 95% 70%) 78%, hsl(333deg 97% 72%) 89%, hsl(333deg 100% 75%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-file-text {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-delete {
+        border: none;
+        background-color: white;
+    }
+
+        .active-link-delete:hover {
+            background-color: white;
+            border-bottom: 2px solid #9B0008;
+        }
+
+            .active-link-delete:hover i {
+                transform: scale(1.2);
+            }
+
+    .gradient-text-delete {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(357deg 94% 33%) 11%, hsl(358deg 89% 36%) 22%, hsl(358deg 84% 39%) 33%, hsl(358deg 79% 42%) 44%, hsl(359deg 74% 46%) 56%, hsl(359deg 70% 49%) 67%, hsl(359deg 73% 53%) 78%, hsl(360deg 80% 56%) 89%, hsl(0deg 87% 60%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-add,
+    .active-link-submit {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+        .active-link-add:hover {
+            transform: scale(.95);
+            border: 2px solid #053a2f;
+        }
+
+    .gradient-icon-add {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-submit:hover {
+        transform: scale(.95);
+        border: 2px solid #2D4686;
+    }
+
+    .gradient-icon-submit {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .icon-item {
+        margin-left: 20px;
+    }
+
+    #myTable {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+    .active-link-back:hover {
+        transform: scale(.95);
+        border: 2px solid #9B0008;
+    }
+
+    .gradient-icon-back {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+</style>

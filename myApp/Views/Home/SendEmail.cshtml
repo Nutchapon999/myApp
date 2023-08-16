@@ -1,7 +1,125 @@
-﻿
+﻿@model IEnumerable<myApp.Models.IDPGroup>
 @{
     ViewBag.Title = "SendEmail";
 }
 
-<h2>SendEmail</h2>
+<div class="container d-flex flex-column justify-content-center align-items-center">
+    <div class="card shadow" style="width: 500px; margin-top: 50px">
+        <div class="card-header bg-info">
+            <h3 class="text-center mt-1" style="color: azure;">
+                <i class="fa fa-envelope" aria-hidden="true"></i>
+                <strong>ส่งอีเมล</strong>
+            </h3>
+        </div>
+        <div class="card-body text-center justify-content-center">
+            @if (TempData["UploadError"] != null)
+            {
+                <div class="alert alert-danger mt-1">
+                    <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                    <strong>@TempData["UploadError"]</strong>
+                </div>
+
+                <script>
+                    window.setTimeout(function () {
+                        $(".alert-danger").fadeTo(500, 0).slideUp(500, function () {
+                            $(this).remove();
+                        });
+                    }, 5000);
+                </script>
+            }
+            else if (TempData["SendSuccess"] != null && (bool)TempData["SendSuccess"])
+            {
+                <div class="alert alert-success mt-1">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                    <strong>อีเมลส่งแล้ว!</strong>
+                </div>
+
+                <script>
+                    window.setTimeout(function () {
+                        $(".alert-success").fadeTo(500, 0).slideUp(500, function () {
+                            $(this).remove();
+                        });
+                    }, 5000);
+                </script>
+            }
+            else if (TempData["ConnectionError"] != null)
+            {
+                <div class="alert alert-danger mt-1">
+                    <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                    <strong>@TempData["ConnectionError"]</strong>
+                </div>
+
+                <script>
+                    window.setTimeout(function () {
+                        $(".alert-danger").fadeTo(500, 0).slideUp(500, function () {
+                            $(this).remove();
+                        });
+                    }, 5000);
+                </script>
+            }
+
+            <div id="loadingSpinner" class="d-none">
+                <div class="d-flex justify-content-center">
+                    <div class="fa fa-cog fa-spin fa-3x fa-fw" style="width: 3rem; height: 3rem;" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+
+            <form id="emailForm" method="post" action="@Url.Action("SendEmail", "Home")">
+                <div>
+                    <select class="form-select mt-3" name="CompetencyFormId" style="width: 350px; margin-left: 6.5rem" aria-label="Default select example">
+                        @{
+                            var distinctCompetencies = Model.Select(c => new { c.IDPGroupId, c.IDPGroupName }).Distinct().ToList();
+                            foreach (var competency in distinctCompetencies)
+                            {
+                                <option value="@competency.IDPGroupId">@competency.IDPGroupId | @competency.IDPGroupName</option>
+                            }
+                        }
+                    </select>
+                    <select class="form-select mt-3" name="SelectedUser" style="width: 350px; margin-left: 6.5rem" aria-label="Default select example">
+                        @{
+                            var gmList = Model.Where(gm => gm.User.JobLevel == "GM" && !string.IsNullOrEmpty(gm.User.Email)).Select(gm => gm.User).Distinct().ToList();
+                            var selectedGMs = new List<string>();
+                            if (gmList.Count > 0)
+                            {
+                                foreach (var gm in gmList)
+                                {
+                                    var fullName = $"{gm.FirstNameTH} {gm.LastNameTH} | {gm.JobLevel}";
+                                    if (!selectedGMs.Contains(fullName))
+                                    {
+                                        <option value="@gm.Email">@fullName</option>
+                                        selectedGMs.Add(fullName);
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <option value="">ไม่มีพนักงานที่มีระดับขั้น GM</option>
+                            }
+                        }
+                    </select>
+
+                    <button type="submit" onclick="startSendingEmail()" class="btn btn-primary ms-3 mt-3">
+                        <i class="fa fa-mail-forward" aria-hidden="true"></i>
+                        <strong>ส่ง</strong>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function startSendingEmail() {
+        // Show the loading spinner
+        $('#loadingSpinner').removeClass('d-none');
+
+        // Disable the submit button to prevent multiple submissions
+        $('#emailForm button[type="submit"]').prop('disabled', true);
+
+        // Submit the form
+        $('#emailForm').submit();
+    }
+</script>
 

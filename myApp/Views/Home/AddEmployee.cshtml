@@ -2,87 +2,435 @@
 @{
     ViewBag.Title = "AddEmployee";
 }
+<link rel="stylesheet" href="/CSS/Style.css">
+<div class="sticky-header-breadcrumb">
+    <div class="header-breadcrumb" style="background-color: #2D4686;">
+        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
+            <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
+                <li class="breadcrumb-item">
+                    <a class="link-body-emphasis text-decoration-none" href="@Url.Action("IDPGroup")">
+                        <i class="fa fa-book" style="color: #C8E8FF"></i> <strong style="color: #C8E8FF">IDP Group</strong>
+                        <span class="visually-hidden">Home</span>
+                    </a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF" href="@Url.Action("AddEmployee", new { idpGroupId = ViewBag.IDPGroupId })"><strong>แก้ไขพนักงาน (@ViewBag.IDPGroupId)</strong></a>
+                </li>
+            </ol>
+        </nav>
+    </div>
 
-<main class="mb-3" style="margin-top: 50px">
-    <div class="card shadow">
-        <div class="card-header bg-primary">
-            <h2 class="text-center" style="color:white"><i class="fa fa-book" aria-hidden="true"></i> <strong>พนักงานของของ "@ViewBag.CompetencyFormId"</strong></h2>
+    <div class="text-center sticky-header">
+        <div class="background-container">
+            <i class="fa fa-users topic-icon"></i>
         </div>
-        <div class="card-body">
-            <a href="@Url.Action("SelectEmployee", new { id = ViewBag.CompetencyFormId })" class="btn btn-success mb-3" style="width: 6rem; border-radius: 1rem"><i class="fa fa-plus" aria-hidden="true"><strong> เพิ่ม</strong></i></a>
-            <table class="table table-hover table-responsive" id="myTable">
-                <thead class="table-primary">
-                    <tr>
-                        <th width="5%">รหัส</th>
-                        <th width="30%">ชื่อพนักงาน</th>
-                        <th width="20%">ตำแหน่ง</th>
-                        <th width="10%">ชื่อแผนก</th>
-                        <th width="20%">ตำแหน่งขั้น</th>
-                        <th width="10%">บริษัท</th>
-                        <th width="5%"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var enroll in Model)
-                    {
+    </div>
+
+</div>
+<main>
+    <div class="card border-0 m-3">
+        <div class="card-body mt-4">
+            @using (Html.BeginForm("AddEmployee", "Home", new { idpGroupId = ViewBag.IDPGroupId, isChecked = false }, FormMethod.Post, new { id = "myForm" }))
+            {
+                <div class="row">
+                    <div class="col-3">
+
+                    </div>
+                    <div class="col-6 text-center topic-title">
+                        <h2 class="mt-2 ">แก้ไขพนักงาน</h2>
+
+                    </div>
+                    <div class="col-3 text-end">
+
+                    </div>
+                </div>
+                <div class="row justify-content-center">
+                    <div class="col-4">
+                        <button type="submit" class="btn btn-lg active-link-submit mb-2">
+                            <i class="fa fa-flag gradient-icon-start" aria-hidden="true"></i><strong class="gradient-icon-submit"> เริ่มประเมิน</strong>
+                        </button>
+                        <button type="button" class="btn btn-lg active-link-back mb-2" id="actionButton" data-bs-toggle="modal" data-bs-target="#declineModal" disabled>
+                            <i class="fa-solid fa-ban gradient-icon-decline" aria-hidden="true"></i><strong class="gradient-icon-decline"> ยกเลิก</strong>
+                        </button>
+                    </div>
+                    <div class="col-4 text-center">
+                        <h5 class="me-3">
+                            <span class="icon-item"><i class="fa fa-key fs-4" title="รหัส IDP Group"></i></span> รหัส<strong>: @ViewBag.IDPGroupId</strong>
+
+                            <span class="icon-item"><i class="fa fa-book fa-book-bg fs-4" title="ชื่อ IDP Group"></i></span> ชื่อ<strong>: @ViewBag.IDPGroupName</strong>
+
+                            <span class="icon-item"><i class="fa fa-regular fa-calendar-days fs-4" title="ปี"></i></span> ปี<strong>: @ViewBag.Year</strong>
+                        </h5>
+                    </div>
+
+                    <div class="col-4 text-end">
+                        <a href="@Url.Action("SelectEmployee", new { idpGroupId = ViewBag.IDPGroupId })" class="btn mb-2 me-2 btn-lg active-link-add">
+                            <i class="fa fa-plus gradient-icon-add" aria-hidden="true"></i> <strong class="gradient-icon-add"> เพิ่ม</strong>
+                        </a>
+                    </div>
+                </div>
+                if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show text-center" role="alert" id="alertBox">
+                        <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                <table class="table table-hover table-responsive table-striped" id="myTable" width="100%">
+                    <thead style="background-color: #2D4686; color: #C8E8FF">
                         <tr>
-                            <td scope="row">@enroll.Id</td>
-                            @if (enroll.User.Prefix == "นาง" || enroll.User.Prefix == "นางสาว")
-                            {
-                                <td>
-
-                                    @(enroll.User.Prefix) @(enroll.User.FirstNameTH) @(enroll.User.LastNameTH)
-                                    <i class="fa fa-female" style="color:palevioletred; font-size:large" aria-hidden="true"></i>
-                                </td>
-                            }
-                            else if (enroll.User.Prefix == "นาย" || enroll.User.Prefix == " นาย")
-                            {
-                                <td>
-
-                                    @(enroll.User.Prefix) @(enroll.User.FirstNameTH) @(enroll.User.LastNameTH)
-                                    <i class="fa fa-male" style="color:cornflowerblue; font-size:large" aria-hidden="true"></i>
-                                </td>
-                            }
-                            else
-                            {
-                                <td>
-
-                                    @(enroll.User.Prefix) @(enroll.User.FirstNameTH) @(enroll.User.LastNameTH)
-
-                                </td>
-                            }
-                            <td>@enroll.User.Position</td>
-                            <td>@enroll.User.JobLevel</td>
-                            <td>@enroll.User.DepartmentName</td>
-                            <td>@enroll.User.Company</td>
-                            <td>
-                                <a href="@Url.Action("", new { id = enroll.Id })" class="btn btn-danger" title="ลบ"><i class="fa fa-trash" aria-hidden="true"></i></a>
-                            </td>
+                            <th width="5%">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="checkAll" />
+                                    <label class="form-check-label" for="checkAll">
+                                    </label>
+                                </div>
+                            </th>
+                            <th width="10%" class="text-center">สถานะ</th>
+                            <th width="5%" class="text-center">รหัส</th>
+                            <th width="15%" class="text-center">ชื่อพนักงาน</th>
+                            <th width="15%" class="text-center">ตำแหน่ง</th>
+                            <th width="10%" class="text-center">ตำแหน่งขั้น</th>
+                            <th width="20%" class="text-center">ชื่อแผนก</th>
+                            <th width="10%" class="text-center">บริษัท</th>
+                            <th width="5%"></th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-            <a href="@Url.Action("CompetencyForm")" class="btn btn-danger">ออก</a>
+                    </thead>
+                    <tbody>
+                        @foreach (var enroll in Model)
+                        {
+                            <tr>
+                                @if (enroll.Status != "Success" && enroll.Status != "Decline")
+                                {
+                                    <td>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="Ids" value="@enroll.Id" data-status="@enroll.Status" />
+                                        </div>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td></td>
+                                }
+                                <td>
+                                    @if (enroll.Status == "Draft")
+                                    {
+                                        <p style="color: #802FDE; background-color: #E8E2F7; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                    }
+                                    else if (enroll.Status == "Self")
+                                    {
+                                        <p style="color: #E50087; background-color: #FFE5F4; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                    }
+                                    else if (enroll.Status == "1st Evaluating")
+                                    {
+                                        <p style="color: #DAAB00; background-color: #FDF3CE; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                    }
+                                    else if (enroll.Status == "Developing")
+                                    {
+                                        <p style="color: #00AEE5; background-color: #D8F6FF; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                    }
+                                    else if (enroll.Status == "2nd Evaluating")
+                                    {
+                                        <p style="color: #DAAB00; background-color: #FDF3CE; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                    }
+                                    else if (enroll.Status == "Success")
+                                    {
+                                        <p style="color: #14B789; background-color: #D5F8EF; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                    }
+                                    else if (enroll.Status == "Decline")
+                                    {
+                                        <p style="color: #CC660A; background-color: #FFF2E7; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@enroll.Status</p>
+                                    }
+                                </td>
+                                <th scope="row" class="text-center">@enroll.Id</th>
+                                @if (enroll.User.Prefix == "นาง" || enroll.User.Prefix == "นางสาว")
+                                {
+                                    <td>
+                                        <i class="fa fa-female" style="color:palevioletred; font-size:large" aria-hidden="true"></i>
+                                        @(enroll.User.Prefix) @(enroll.User.FirstNameTH) @(enroll.User.LastNameTH)
+                                    </td>
+                                }
+                                else if (enroll.User.Prefix == "นาย" || enroll.User.Prefix == " นาย")
+                                {
+                                    <td>
+                                        <i class="fa fa-male" style="color:cornflowerblue; font-size:large" aria-hidden="true"></i>
+                                        @(enroll.User.Prefix) @(enroll.User.FirstNameTH) @(enroll.User.LastNameTH)
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td>
+
+                                        @(enroll.User.Prefix) @(enroll.User.FirstNameTH) @(enroll.User.LastNameTH)
+
+                                    </td>
+                                }
+                                <td>@enroll.User.Position</td>
+                                <td class="text-center">@enroll.User.JobLevel</td>
+                                <td>@enroll.User.DepartmentName</td>
+                                <td class="text-center">@enroll.User.Company</td>
+                                <td class="text-center">
+                                    <button id="link" type="button" class="btn active-link-delete" data-bs-toggle="modal" data-bs-target="#deleteModal-@enroll.EnrollId" title="ลบ @enroll.Id">
+                                        <i class="fa fa-trash gradient-text-delete" aria-hidden="true"></i>
+                                    </button>
+                                    <div class="modal fade" id="deleteModal-@enroll.EnrollId" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-4">ต้องการที่จะลบพนักงานคนนี้หรือไม่?</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <h5>รหัสพนักงาน: @enroll.Id</h5>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                                                    <a href="@Url.Action("DeleteEmployeeByIDPGroup", new { EnrollId = enroll.EnrollId })" class="btn btn-danger">ยืนยัน</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <a href="@Url.Action("IDPGroup")" class="btn btn-lg active-link-back mt-2">
+                    <i class="fa fa-arrow-left gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back"> กลับ</strong>
+                </a>
+            }
+        </div>
+    </div>
+    <div class="modal fade" id="declineModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <div class="alert alert-primary" role="alert" style="font-size: 18px">
+                        คุณต้องการที่จะยกเลิกประเมินนี้/เหล่านี้หรือไม่?
+                    </div>
+                    <button type="button" class="btn btn-lg active-link-back" data-bs-toggle="modal" onclick="submitFormAjax(true)" data-bs-target="#exampleModal" style="width: 100%;" id="sendButton">
+                        <i class="fa fa-ban gradient-icon-back"></i><strong class="gradient-icon-back"> ยกเลิกแบบประเมิน</strong>
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </main>
 
 <script src="~/Scripts/jquery-3.4.1.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
-<script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
+<script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
 <script type="text/javascript">
     var js = jQuery.noConflict(true);
     js(document).ready(function () {
         js('#myTable').DataTable({
+            paging: false,
+            info: false,
+            order: [[5, 'asc']],
             language: {
-                search: "ค้นหา:", // Change the search label here
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
             },
-            scrollY: 500,
-
+            columnDefs: [{
+                targets: 0,
+                orderable: false
+            },{
+                targets: 8,
+                orderable: false
+            }],
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
         });
-    });
-</script>
 
+
+    });
+
+    function submitFormAjax(isChecked) {
+        var formData = $('#myForm').serialize();
+        formData += '&isChecked=' + isChecked;
+
+
+        $.ajax({
+            type: 'POST',
+            url: $('#myForm').attr('action'),
+            data: formData,
+            success: function (data) {
+                window.location.href = '@Url.Action("AddEmployee", "Home", new { idpGroupId = ViewBag.IDPGroupId })';
+
+            },
+            error: function (xhr, status, error) {
+
+            }
+        });
+    }
+
+    const checkAllCheckbox = document.getElementById('checkAll');
+
+    const checkboxes = document.querySelectorAll('tbody input[name="Ids"]');
+    const actionButton = document.getElementById('actionButton');
+
+    checkAllCheckbox.addEventListener('change', function () {
+        checkboxes.forEach(function (checkbox) {
+            checkbox.checked = checkAllCheckbox.checked;
+        });
+
+        updateButtonState();
+    });
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateButtonState);
+    });
+
+    function updateButtonState() {
+        const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked && checkbox.dataset.status !== "Draft");
+        actionButton.disabled = !isChecked;
+    }
+</script>
+<style>
+    .form-check-input[type="checkbox"] {
+        width: 25px;
+        height: 25px;
+    }
+
+    main {
+        margin-top: -50px;
+    }
+
+    .background-container {
+        background-color: white; /* Set the white background */
+        display: inline-block; /* Display the container as an inline block to wrap the icon */
+        border-radius: 50%; /* Apply a circular shape to the container */
+        padding: 1rem; /* Add padding around the icon */
+        overflow: hidden; /* Hide any overflow from the circular container */
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px; /* Add a box shadow */
+        margin-top: -50px;
+    }
+
+    .topic-icon {
+        background: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text; /* Clip the background to the text */
+        -webkit-text-fill-color: transparent; /* Make the text transparent to show the background gradient */
+        font-size: 45px;
+        /* Any other styles for the icon, if needed */
+    }
+
+    .topic-title {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+        .topic-title h2 {
+            font-weight: bold;
+        }
+
+    .sticky-header-breadcrumb {
+        position: sticky;
+        border-radius: 0px;
+        z-index: 10;
+        top: 85px;
+    }
+
+    .sticky-header {
+        position: sticky;
+        z-index: 20;
+    }
+
+    .card {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+    .gradient-icon-start,
+    .fa-key {
+        background-image: linear-gradient( 0deg, hsl(36deg 96% 62%) 0%, hsl(38deg 96% 61%) 11%, hsl(40deg 96% 61%) 22%, hsl(43deg 95% 61%) 33%, hsl(45deg 95% 60%) 44%, hsl(47deg 95% 60%) 56%, hsl(50deg 95% 60%) 67%, hsl(52deg 95% 59%) 78%, hsl(54deg 94% 59%) 89%, hsl(56deg 94% 59%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-book-bg {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .fa-calendar-days {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-delete {
+        border: none;
+        background-color: white;
+    }
+
+        .active-link-delete:hover {
+            background-color: white;
+            border-bottom: 2px solid #9B0008;
+        }
+
+            .active-link-delete:hover i {
+                transform: scale(1.2);
+            }
+
+    .gradient-text-delete {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(357deg 94% 33%) 11%, hsl(358deg 89% 36%) 22%, hsl(358deg 84% 39%) 33%, hsl(358deg 79% 42%) 44%, hsl(359deg 74% 46%) 56%, hsl(359deg 70% 49%) 67%, hsl(359deg 73% 53%) 78%, hsl(360deg 80% 56%) 89%, hsl(0deg 87% 60%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-add,
+    .active-link-submit {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+        .active-link-add:hover {
+            transform: scale(.95);
+            border: 2px solid #053a2f;
+        }
+
+    .gradient-icon-add {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-submit:hover {
+        transform: scale(.95);
+        border: 2px solid #2D4686;
+    }
+
+    .gradient-icon-submit {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .icon-item {
+        margin-left: 20px;
+    }
+
+    #myTable {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+    .active-link-decline,
+    .active-link-back {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+    .active-link-back:hover {
+        transform: scale(.95);
+        border: 2px solid #9B0008;
+    }
+
+    .gradient-icon-decline,
+    .gradient-icon-back {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+</style>

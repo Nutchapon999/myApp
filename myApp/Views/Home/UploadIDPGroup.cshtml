@@ -1,0 +1,165 @@
+﻿@{
+    ViewBag.Title = "Upload";
+}
+
+
+<main class="container" style="margin-top: 150px">
+    <div class="card shadow border-0">
+        <div class="card-header text-center border-0 py-3" style="background-color: #d4edda;">
+            <i class="fa fa-upload text-success" style="font-size: 60px;"></i>
+            <h1><strong>อัปโหลด IDP Group</strong></h1>
+        </div>
+        <div class="card-body text-center justify-content-center">
+            @if (TempData["UploadError"] != null)
+            {
+                <div class="alert alert-danger mt-3">
+                    <i class="fa fa-exclamation-circle" aria-hidden="true"></i>
+                    <strong>@TempData["UploadError"]</strong>
+                </div>
+
+                <!--<script>
+                    window.setTimeout(function () {
+                        $(".alert-danger").fadeTo(500, 0).slideUp(500, function () {
+                            $(this).remove();
+
+                        });
+                    }, 5000);
+                </script>-->
+            }
+            else if (TempData["UploadSuccess"] != null && (bool)TempData["UploadSuccess"])
+            {
+                <div class="alert alert-success mt-3">
+                    <i class="fa fa-check" aria-hidden="true"></i>
+                    <strong>อัปโหลดเสร็จสมบูรณ์</strong>
+                </div>
+
+                <script>
+                    window.setTimeout(function () {
+                        $(".alert-success").fadeTo(500, 0).slideUp(500, function () {
+                            $(this).remove();
+
+                        });
+                    }, 5000);
+                </script>
+            }
+
+            <div id="loadingSpinner" class="d-none mb-4">
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                <div>
+                    <label for="file" class="drop-container" id="dropContainer">
+                        <input name="file" id="file" type="file" class="form-control form-control-lg mt-2" style="width: 350px; margin-left: 1rem" required />
+                        <div id="drag-text">
+                            ลากไฟล์ของคุณมาวางไว้ในนี้
+                        </div>
+                    </label>
+                    <p id="rowCountText" class="text-muted mt-2">จำนวนแถวของข้อมูล: 0</p>
+                    <button type="submit" onclick="startSendingEmail()" class="btn btn-primary mt-3 btn-lg">
+                        <i class="fa fa-database" aria-hidden="true"></i>
+                        <strong>อัปโหลด</strong>
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</main>
+<script>
+    function startSendingEmail() {
+        $('#loadingSpinner').removeClass('d-none');
+
+        $('#emailForm button[type="submit"]').prop('disabled', true);
+
+        $('#emailForm').submit();
+    }
+</script>
+<script src="https://unpkg.com/xlsx/dist/xlsx.full.min.js"></script>
+<script>
+    document.getElementById("file").addEventListener("change", function () {
+        var file = this.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var data = new Uint8Array(e.target.result);
+                var workbook = XLSX.read(data, { type: 'array' });
+                var worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                var rowCount = XLSX.utils.sheet_to_json(worksheet).length;
+                document.getElementById("rowCountText").innerText = "จำนวนแถวของข้อมูล: " + rowCount;
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    });
+
+    const dropContainer = document.getElementById('dropContainer');
+
+    dropContainer.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropContainer.classList.add('dragover');
+        document.getElementById('drag-text').textContent = 'ปล่อยเลย!';
+    });
+
+    dropContainer.addEventListener('dragleave', () => {
+        dropContainer.classList.remove('dragover');
+        document.getElementById('drag-text').textContent = 'ลากไฟล์ของคุณมาวางไว้ในนี้';
+    });
+
+    dropContainer.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropContainer.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        document.getElementById('file').files = files;
+        document.getElementById('drag-text').textContent = `มี ${files.length} ไฟล์ที่เลือกไว้แล้ว`;
+
+        var file = files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                var data = new Uint8Array(e.target.result);
+                var workbook = XLSX.read(data, { type: 'array' });
+                var worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                var rowCount = XLSX.utils.sheet_to_json(worksheet).length;
+                document.getElementById("rowCountText").innerText = "จำนวนแถวของข้อมูล: " + rowCount;
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    });
+</script>
+<style>
+    .drop-container {
+        position: relative;
+        display: flex;
+        gap: 10px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+        padding: 20px;
+        border-radius: 10px;
+        border: 2px dashed #555;
+        color: #444;
+        cursor: pointer;
+        transition: background .2s ease-in-out, border .2s ease-in-out;
+    }
+
+        .drop-container:hover {
+            background: #eee;
+            border-color: #111;
+        }
+
+            .drop-container:hover .drop-title {
+                color: #222;
+            }
+
+    .drop-title {
+        color: #444;
+        font-size: 20px;
+        font-weight: bold;
+        text-align: center;
+        transition: color .2s ease-in-out;
+    }
+</style>

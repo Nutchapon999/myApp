@@ -1,0 +1,268 @@
+﻿@model IEnumerable<myApp.Models.Goodness>
+@{
+    ViewBag.Title = "Goodness";
+    string good1 = "การแบ่งปันความรู้ให้กับผู้มีส่วนได้เสียของบริษัท";
+    string good2 = "กิจกรรม Lean Kaizen Suggestion";
+    string good3 = "บริจาคเลือดและอวัยวะ";
+    string good4 = "การบำเพ็ญประโยชน์เพื่อสังคม";
+}
+<link rel="stylesheet" href="/CSS/Style.css">
+<div class="sticky-header-breadcrumb">
+    <div class="row me-2">
+        <div class="col-auto me-auto">
+            <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34; );">
+                <ol class="breadcrumb breadcrumb-chevron bg-body-tertiary ms-3 mt-3">
+                    <li class="breadcrumb-item">
+                        <a class="link-body-emphasis text-decoration-none" href="@Url.Action("Index", "Form", new { year = ViewBag.Year })">
+                            <i class="fa-solid fa-home" style="color: #C8E8FF"></i> <strong style="color: #C8E8FF">หน้าแรก</strong>
+                            <span class="visually-hidden">Home</span>
+                        </a>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF" href="@Url.Action("Goodness", "Form", new { year = ViewBag.Year })"><strong>บันทึกความดี</strong></a>
+                    </li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</div>
+<form id="myForm" method="post" action="@Url.Action("InsertGoodness", "Form", new { Year = ViewBag.Year })">
+    <div class="table-container m-4">
+        <div class="row">
+            <div class="col-auto mt-2 me-auto">
+                <h2 class="ms-2 mt-2 fw-bold">บันทึกความดี</h2>
+            </div>
+            <div class="col-auto">
+                <button type="button" id="addRowBtn" onclick="addRow()" class="btn btn-lg active-link-add me-2 mt-2">
+                    <i class="fa-solid fa-plus gradient-icon-add"></i><strong class="gradient-icon-add"> เพิ่ม</strong>
+                </button>
+                <button type="submit" class="btn btn-lg active-link-submit me-2 mt-2" id="liveToastBtn">
+                    <i class="fa-solid fa-save gradient-icon-submit"></i><strong class="gradient-icon-submit"> บันทึก</strong>
+                </button>
+            </div>
+        </div>
+        <div class="table-container m-2">
+            <table class="table table-hover table-responsive table-striped" id="myTable3" width="100%">
+                <thead class="text-center" style="background-color: #2D4686; color: #C8E8FF">
+                    <tr>
+                        <th width="20%">ประเภทความดี</th>
+                        <th width="15%">หน่วยงาน</th>
+                        <th width="30%">รายละเอียด</th>
+                        <th width="10%">วันที่</th>
+                        <th width="10%">จำนวนชั่วโมง</th>
+                        <th width="15%">ไฟล์แนบ</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    @foreach (var good in Model)
+                    {
+                        <tr>
+                            <td>@good.Type</td>
+                            <td>@good.Company</td>
+                            <td>@good.Desc</td>
+                            <td>@good.Date</td>
+                            <td>@good.Hour</td>
+                            <td></td>
+                        </tr>
+                    }
+                        <tr class="new-row">
+                            <td class="text-center">
+                                <select class="form-select" aria-label="Default select example" name="Type" onchange="toggleInput(this)">
+                                    <option value="@good1">การแบ่งปันความรู้ให้กับผู้มีส่วนได้เสียของบริษัท</option>
+                                    <option value="@good2">กิจกรรม Lean Kaizen Suggestion</option>
+                                    <option value="@good3">บริจาคเลือดและอวัยวะ</option>
+                                    <option value="@good4">การบำเพ็ญประโยชน์เพื่อสังคม</option>
+                                    <option value="__other__">อื่น ๆ</option>
+                                </select>
+                                <input type="text" class="form-control mt-2" name="Type" style="display: none;" placeholder="ประเภทความดีอื่น ๆ" />
+                            </td>
+
+                            <td class="text-center">
+                                <textarea class="form-control" name="Company" style="min-width: 100%" required></textarea>
+                            </td>
+                            <td class="text-center">
+                                <textarea class="form-control" name="Desc" style="min-width: 100%" required></textarea>
+                            </td>
+                            <td class="text-center">
+                                <input type="date" class="form-control" name="Date" required />
+                            </td>
+                            <td class="text-center">
+                                <input type="number" class="form-control" name="Hour" required />
+                            </td>
+                            <td class="text-center">
+                                <input type="file" class="form-control" />
+                            </td>
+                        </tr>
+
+                </tbody>
+            </table>
+        </div>
+        <a href="@Url.Action("Index", "Form", new { year = ViewBag.Year })" class="btn btn-lg active-link-back ms-2 mb-2">
+            <i class="fa fa-arrow-left gradient-icon-back"></i><strong class="gradient-icon-back"> ออก</strong>
+        </a>
+    </div>
+</form>
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
+<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script type="text/javascript">
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+        js('#myTable').DataTable({
+            info: false,
+            scrollX: true,
+            paging: false,
+            searching: false,
+            ordering: false,
+            language: {
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
+                paginate: {
+                    next: 'ถัดไป <i class="fa fa-angle-right"></i>',
+                    previous: '<i class="fa fa-angle-left"></i> ก่อนหน้า'
+                },
+                info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
+            },
+
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
+        });
+    });
+
+    function addRow() {
+        var newRow = `
+            <tr class="new-row">
+                <td class="text-center">
+                    <select class="form-select" aria-label="Default select example" name="Type" onchange="toggleInput(this)">
+                        <option value="@good1">การแบ่งปันความรู้ให้กับผู้มีส่วนได้เสียของบริษัท</option>
+                        <option value="@good2">กิจกรรม Lean Kaizen Suggestion</option>
+                        <option value="@good3">บริจาคเลือดและอวัยวะ</option>
+                        <option value="@good4">การบำเพ็ญประโยชน์เพื่อสังคม</option>
+                        <option value="__other__">อื่น ๆ</option>
+                    </select>
+                    <input type="text" class="form-control mt-2" name="Type" style="display: none;" placeholder="ประเภทความดีอื่น ๆ" />
+                </td>
+                <td class="text-center">
+                    <textarea class="form-control" name="Company" style="min-width: 100%" required></textarea>
+                </td>
+                <td class="text-center">
+                    <textarea class="form-control" name="Desc" style="min-width: 100%" required></textarea>
+                </td>
+                <td class="text-center">
+                    <input type="date" class="form-control" name="Date" required/>
+                </td>
+                <td class="text-center">
+                    <input type="number" class="form-control" name="Hour" required/>
+                </td>
+                 <td class="text-center">
+                    <input type="file" class="form-control"  />
+                </td>
+            </tr>
+        `;
+
+        $('#tableBody').append(newRow);
+    }
+
+    function toggleInput(selectElement) {
+        var inputElement = selectElement.parentElement.querySelector('input[name="Type"]');
+        var otherOption = selectElement.querySelector('option[value="__other__"]');
+
+        if (selectElement.value === "__other__") {
+            inputElement.style.display = "block";
+            inputElement.setAttribute("required", "required");
+            inputElement.name = "Type";
+            otherOption.disabled = true;
+        } else {
+            inputElement.style.display = "none";
+            inputElement.removeAttribute("required");
+            inputElement.name = "Type";
+            inputElement.value = "";
+            otherOption.disabled = false;
+        }
+    }
+
+    function submitFormAjax() {
+        var formData = $('#myForm').serialize();
+        $.ajax({
+            type: 'POST',
+            url: $('#myForm').attr('action'),
+            data: formData,
+            success: function (data) {
+                window.location.href = '@Url.Action("Goodness", "Form", new { year = ViewBag.Year })';
+            },
+            error: function (xhr, status, error) {
+                
+            }
+        });
+    }
+    $(document).ready(function () {
+        $('#liveToastBtn').click(function () {
+            submitFormAjax();
+        });
+    });
+</script>
+
+<style>
+    .sticky-header-breadcrumb {
+        position: sticky;
+        z-index: 100;
+        border-radius: 0px;
+        top: 85px;
+        background-color: #2D4686;
+    }
+
+    .table-container {
+        overflow: hidden;
+        border-radius: 10px;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
+    .active-link-add,
+    .active-link-submit,
+    .active-link-back {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+        background-color: white;
+    }
+
+        .active-link-add:hover {
+            background-color: white;
+            transform: scale(.95);
+            border: 2px solid #053a2f;
+        }
+
+    .gradient-icon-add {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-submit:hover {
+        background-color: white;
+        transform: scale(.95);
+        border: 2px solid #2D4686;
+    }
+
+    .gradient-icon-submit {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .active-link-back:hover {
+        background-color: white;
+        transform: scale(.95);
+        border: 2px solid #9B0008;
+    }
+
+    .gradient-icon-back {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+</style>
