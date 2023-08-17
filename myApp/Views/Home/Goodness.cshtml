@@ -37,9 +37,7 @@
                 <h2 class="ms-2 mt-2 fw-bold">บันทึกความดี</h2>
             </div>
             <div class="col-auto">
-                <button type="button" id="addRowBtn" onclick="addRow()" class="btn btn-lg active-link-add me-2 mt-2">
-                    <i class="fa-solid fa-plus gradient-icon-add"></i><strong class="gradient-icon-add"> เพิ่ม</strong>
-                </button>
+
                 <button id="submitButton" type="button" class="btn btn-lg active-link-submit me-2 mt-2" data-bs-toggle="modal" data-bs-target="#AddModal">
                     <i class="fa-solid fa-save gradient-icon-submit"></i><strong class="gradient-icon-submit"> บันทึก</strong>
                 </button>
@@ -59,7 +57,7 @@
                         <th width="5%"></th>
                     </tr>
                 </thead>
-                <tbody id="tableBody">
+                <tbody>
                     @foreach (var good in Model)
                     {
                         <tr>
@@ -107,47 +105,101 @@
                                                 </h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
-
-                                            <input type="hidden" name="IDPGroupId" value="@good.GDId" />
                                             <div class="modal-body">
-                                                @if (good.Type != good1 && good.Type != good2 && good.Type != good3 && good.Type != good4)
+                                                <input type="hidden" name="GDId" value="@good.GDId" />
+                                                @if (good.Type == good1 || good.Type == good2 || good.Type == good3 || good.Type == good4)
                                                 {
-                                                    <div class="input-group input-group-lg mt-3 d-flex justify-content-center">
-                                                        <span class="input-group-text">
-                                                            <i class="fa-solid fa-tag fs-4" aria-hidden="true"></i>
-                                                        </span>
-                                                        <textarea class="form-control" placeholder="ประเภทความดี" name="Type" id="Type">@good.Type</textarea>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <div class="input-group input-group-lg mt-3 d-flex justify-content-center">
+                                                    <div class="input-group mt-3 d-flex justify-content-center">
                                                         <span class="input-group-text">
                                                             <i class="fa-solid fa-calendar-days fs-4" aria-hidden="true"></i>
                                                         </span>
-                                                        <select class="form-select" aria-label="Default select example" name="Type" onchange="toggleEdit(this)">
+                                                        <select class="form-select" aria-label="Default select example" id="TypeEdit-@good.GDId" name="TypeEdit" onchange="toggleEdit(@good.GDId)">
                                                             <option value="@good1" @(good.Type == good1 ? "selected" : "")>การแบ่งปันความรู้ให้กับผู้มีส่วนได้เสียของบริษัท</option>
                                                             <option value="@good2" @(good.Type == good2 ? "selected" : "")>กิจกรรม Lean Kaizen Suggestion</option>
                                                             <option value="@good3" @(good.Type == good3 ? "selected" : "")>บริจาคเลือดและอวัยวะ</option>
                                                             <option value="@good4" @(good.Type == good4 ? "selected" : "")>การบำเพ็ญประโยชน์เพื่อสังคม</option>
-                                                            <option value="__other__">อื่น ๆ</option>
+                                                            <option value="__other__" @(good.Type != good1 && good.Type != good2 && good.Type != good3 && good.Type != good4 ? "selected" : "")>อื่น ๆ</option>
                                                         </select>
                                                     </div>
-                                                    <div class="input-group input-group-lg mt-3 d-flex justify-content-center" id="otherInput">
+                                                    <div class="mt-3 justify-content-center text-center" id="otherTypeEdit-@good.GDId" style="display: none;">
+                                                        <textarea type="text" class="form-control mt-2 justify-content-center" name="OtherTypeEdit" id="OtherTypeEdit-@good.GDId" placeholder="ประเภทความดีอื่น ๆ">@good.Type</textarea>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="input-group mt-3 d-flex justify-content-center">
                                                         <span class="input-group-text">
                                                             <i class="fa-solid fa-tag fs-4" aria-hidden="true"></i>
                                                         </span>
-                                                        <textarea class="form-control" placeholder="ประเภทความดีอื่นๆ" name="Type" id="Type">@good.Type</textarea>
+                                                        <select class="form-select" aria-label="Default select example" id="TypeEdit-@good.GDId" name="TypeEdit" onchange="toggleEdit(@good.GDId)">
+                                                            <option value="@good1" @(good.Type == good1 ? "selected" : "")>การแบ่งปันความรู้ให้กับผู้มีส่วนได้เสียของบริษัท</option>
+                                                            <option value="@good2" @(good.Type == good2 ? "selected" : "")>กิจกรรม Lean Kaizen Suggestion</option>
+                                                            <option value="@good3" @(good.Type == good3 ? "selected" : "")>บริจาคเลือดและอวัยวะ</option>
+                                                            <option value="@good4" @(good.Type == good4 ? "selected" : "")>การบำเพ็ญประโยชน์เพื่อสังคม</option>
+                                                            <option value="__other__" @(good.Type != good1 && good.Type != good2 && good.Type != good3 && good.Type != good4 ? "selected" : "")>อื่น ๆ</option>
+                                                        </select>
+                                                    </div>
+                                                    <div class="mt-3 justify-content-center text-center" id="otherTypeEdit-@good.GDId" style="display: flex;">
+                                                        <textarea type="text" class="form-control mt-2 justify-content-center " name="OtherTypeEdit" id="OtherTypeEdit-@good.GDId" placeholder="ประเภทความดีอื่นๆ">@good.Type</textarea>
                                                     </div>
                                                 }
+                                                <div class="input-group mt-3 d-flex justify-content-center">
+                                                    <span class="input-group-text">
+                                                        <i class="fa-solid fa-building fs-4" aria-hidden="true"></i>
+                                                    </span>
+                                                    <textarea type="text" class="form-control justify-content-center " name="CompanyEdit" id="CompanyEdit-@good.GDId" placeholder="หน่วยงาน/สถานที่ทำ">@good.Company</textarea>
+                                                </div>
+                                                <div class="input-group mt-3 d-flex justify-content-center">
+                                                    <span class="input-group-text">
+                                                        รายละเอียด
+                                                    </span>
+                                                    <textarea type="text" class="form-control justify-content-center " name="DescEdit" id="DescEdit-@good.GDId" placeholder="รายละเอียด">@good.Desc</textarea>
+                                                </div>
+                                                <div class="input-group mt-3 d-flex justify-content-center">
+                                                    <span class="input-group-text">
+                                                        <i class="fa-solid fa-calendar-days fs-4" aria-hidden="true"></i>
+                                                    </span>
+                                                    <input type="date" class="form-control justify-content-center " name="DateEdit" id="DateEdit-@good.GDId" value="@good.Date">
+                                                </div>
+                                                <div class="input-group mt-3 d-flex justify-content-center">
+                                                    <span class="input-group-text">
+                                                        <i class="fa-solid fa-clock fs-4" aria-hidden="true"></i>
+                                                    </span>
+                                                    <input type="number" class="form-control justify-content-center " name="HourEdit" id="HourEdit-@good.GDId" value="@good.Hour">
+                                                </div>
+                                                <div class="input-group mt-3 d-flex justify-content-center">
+                                                    <span class="input-group-text">
+                                                        <i class="fa-solid fa-file fs-4" aria-hidden="true"></i>
+                                                    </span>
+                                                    <input type="file" class="form-control justify-content-center " name="FileEdit" id="FileEdit-@good.GDId" value="@good.file">
+                                                </div>
                                             </div>
                                             <div class="modal-footer flex-nowrap p-0">
                                                 <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" data-bs-dismiss="modal"><i class="fa-solid fa-ban gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ยกเลิก</strong></button>
-                                                <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" onclick="submitFormAjax('2')">
+                                                <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" onclick="updateGoodnessViaAjax('@good.GDId')">
                                                     <i class="fa-solid fa-save gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">บันทึก</strong>
                                                 </button>
                                             </div>
-
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal fade" id="deleteModal-@good.GDId" aria-labelledby="editModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5 fw-bold" id="staticBackdropLabel">
+                                                    <i class="fa-solid fa-pencil gradient-text-edit"></i> ลบ Goodness
+                                                </h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                
+                                            <div class="modal-footer flex-nowrap p-0">
+                                                <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" data-bs-dismiss="modal"><i class="fa-solid fa-ban gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ยกเลิก</strong></button>
+                                                <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" onclick="DeleteGoodness('@good.GDId')">
+                                                    <i class="fa-solid fa-save gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">บันทึก</strong>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -197,7 +249,7 @@
                             <h1 class="modal-title fs-5" id="exampleModalLabel">เลือกพนักงาน</h1>
                         </div>
                         <div class="col-5 ms-auto text-end">
-                            <button type="button" class="btn btn-lg active-link-submit me-2" onclick="submitFormAjax('1')" id="actionButton" disabled>
+                            <button type="submit" class="btn btn-lg active-link-submit me-2" id="actionButton" disabled>
                                 <i class="fa-solid fa-save gradient-icon-submit"></i><strong class="gradient-icon-submit"> บันทึก</strong>
                             </button>
                             <input type="text" id="myInput" onkeyup="myFunction()" placeholder="ค้นหา">
@@ -310,7 +362,6 @@
     <input type="hidden" name="caseVal" id="caseValInput" value="">
 </form>
 
-
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
 <link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
 <script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
@@ -340,8 +391,74 @@
             }
         });
     });
+
+    function updateGoodnessViaAjax(gdId) {
+        var select = $("#TypeEdit-" + gdId);
+        var type = select.val();
+        var company = $("#CompanyEdit-" + gdId).val();
+        var desc = $("#DescEdit-" + gdId).val();
+        var date = $("#DateEdit-" + gdId).val();
+        var hour = $("#HourEdit-" + gdId).val();
+        //var file = $("#FileEdit-" + gdId).val();
+
+        console.log(type);
+        console.log(company);
+        console.log(gdId);
+        console.log(desc);
+        console.log(date);
+        console.log(hour);
+        //console.log(file);
+
+        if (type === "__other__") {
+            type = $("#OtherTypeEdit-" + gdId).val(); // Get the value from the textarea
+        }
+
+        var data = {
+            GDId: gdId,
+            TypeEdit: type,
+            CompanyEdit: company,
+            DescEdit: desc,
+            DateEdit: date,
+            HourEdit: hour,
+            //FileEdit: file,
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "/Home/EditGoodness",
+            data: data,
+            success: function (result) {
+                window.location.href = '@Url.Action("Goodness", "Home", new { year = ViewBag.Year })';
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+
+    function DeleteGoodness(gdId) {
+        console.log(gdId);
+        var data = {
+            GDId: gdId,
+        }
+
+        $.ajax({
+            type: "POST",
+            url: "/Home/DeleteGoodness",
+            data: data,
+            success: function (result) {
+                window.location.href = '@Url.Action("Goodness", "Home", new { year = ViewBag.Year })';
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+
+
 </script>
 <script>
+
     function submitFormAjax(caseVal) {
         // กำหนดค่า caseVal ให้กับฟิลด์ input ที่มีชื่อเป็น "caseVal" ในฟอร์ม
         $('#caseValInput').val(caseVal);
@@ -352,8 +469,13 @@
             url: $('#myForm').attr('action'),
             data: formData,
             success: function (data) {
-                // ในกรณีนี้คุณอาจจะทำตามที่คุณเคยทำไว้ เช่น redirect
-                window.location.href = '@Url.Action("Goodness", "Home", new { year = ViewBag.Year })';
+                if (caseVal === "1") {
+                    window.location.href = '@Url.Action("Goodness", "Home", new { year = ViewBag.Year })';
+                }
+                else if (caseVal === "2") {
+                    window.location.href = '@Url.Action("Index", "Form")';
+                }
+
             },
             error: function (xhr, status, error) {
                 console.warn("Error");
@@ -361,42 +483,6 @@
         });
     }
 
-
-    function addRow() {
-        var newRow = `
-            <tr class="new-row">
-                <td></td>
-                <td class="text-center">
-                    <select class="form-select" aria-label="Default select example" name="Type" onchange="toggleInput(this)">
-                        <option value="@good1">การแบ่งปันความรู้ให้กับผู้มีส่วนได้เสียของบริษัท</option>
-                        <option value="@good2">กิจกรรม Lean Kaizen Suggestion</option>
-                        <option value="@good3">บริจาคเลือดและอวัยวะ</option>
-                        <option value="@good4">การบำเพ็ญประโยชน์เพื่อสังคม</option>
-                        <option value="__other__">อื่น ๆ</option>
-                    </select>
-                    <input type="text" class="form-control mt-2" name="Type" style="display: none;" placeholder="ประเภทความดีอื่น ๆ" />
-                </td>
-                <td class="text-center">
-                    <textarea class="form-control" name="Company" style="min-width: 100%" ></textarea>
-                </td>
-                <td class="text-center">
-                    <textarea class="form-control" name="Desc" style="min-width: 100%" ></textarea>
-                </td>
-                <td class="text-center">
-                    <input type="date" class="form-control" name="Date" />
-                </td>
-                <td class="text-center">
-                    <input type="number" class="form-control" name="Hour" />
-                </td>
-                 <td class="text-center">
-                    <input type="file" class="form-control"  />
-                </td>
-                <td></td>
-            </tr>
-        `;
-
-        $('#tableBody').append(newRow);
-    }
 
     function toggleInput(selectElement) {
         var inputElement = selectElement.parentElement.querySelector('input[name="Type"]');
@@ -411,29 +497,23 @@
             inputElement.name = "Type";
             inputElement.style.display = "none";
             inputElement.removeAttribute("required");
+            inputElement.value = "";
             otherOption.disabled = false;
         }
     }
 
-    function toggleEdit(selectElement) {
-        var inputElement = selectElement.parentElement.querySelector('textarea[name="TypeTextarea"]');
-        var textareaElement = selectElement.parentElement.querySelector('input[name="OtherType"]');
-        var otherOption = selectElement.querySelector('option[value="__other__"]');
+    function toggleEdit(goodId) {
+        var select = document.getElementById("TypeEdit-" + goodId);
+        var otherTypeEdit = document.getElementById("otherTypeEdit-" + goodId);
+        var otherTypeTextarea = document.getElementById("OtherTypeEdit-" + goodId);
 
-        if (selectElement.value === "__other__") {
-            inputElement.style.display = "block";
-            inputElement.setAttribute("required", "required");
-            textareaElement.style.display = "block";
-            otherOption.disabled = true;
+        if (select.value === "__other__" || (select.value !== "@good1" && select.value !== "@good2" && select.value !== "@good3" && select.value !== "@good4")) {
+            otherTypeTextarea.value = ""; 
+            otherTypeEdit.style.display = "flex";
         } else {
-            inputElement.style.display = "none";
-            inputElement.removeAttribute("required");
-            textareaElement.style.display = "none";
-            otherOption.disabled = false;
+            otherTypeEdit.style.display = "none";
         }
     }
-
-
 
 
     function myFunction() {
@@ -720,11 +800,13 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
-    .fa-person{
+
+    .fa-person {
         background-image: linear-gradient( 0deg, hsl(220deg 100% 47%) 0%, hsl(216deg 100% 47%) 6%, hsl(213deg 100% 48%) 14%, hsl(209deg 100% 48%) 22%, hsl(206deg 100% 48%) 32%, hsl(202deg 100% 49%) 43%, hsl(199deg 100% 49%) 56%, hsl(195deg 100% 49%) 70%, hsl(192deg 100% 50%) 85%, hsl(188deg 100% 50%) 100% );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
+
     .fa-person-dress {
         background-image: linear-gradient( 0deg, hsl(335deg 85% 55%) 0%, hsl(336deg 86% 58%) 11%, hsl(336deg 88% 60%) 22%, hsl(336deg 89% 63%) 33%, hsl(335deg 91% 65%) 44%, hsl(335deg 92% 67%) 56%, hsl(335deg 94% 69%) 67%, hsl(334deg 96% 71%) 78%, hsl(333deg 98% 73%) 89%, hsl(333deg 100% 75%) 100% );
         -webkit-background-clip: text;

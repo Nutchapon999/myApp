@@ -18,6 +18,7 @@ using MimeKit;
 using OfficeOpenXml;
 using System.Web.Helpers;
 using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 
 namespace myApp.Controllers
@@ -1395,7 +1396,7 @@ namespace myApp.Controllers
 
 
         //INFO
-        public ActionResult Info(string user, string year)
+        public ActionResult Info(string user, string idpGroupId, string guid)
         {
 
             HttpCookie usernameCookie = Request.Cookies["username"];
@@ -1406,9 +1407,34 @@ namespace myApp.Controllers
                 bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
 
                 ViewBag.isAdmin = isAdmin;
-                //User user = app.GetTypeByUserLogin(user);
+                ViewBag.Username = username;
 
-                return View();
+                string year = app.GetYearByGuid(guid);
+                string idpGroupName = app.GetIDPGroupNameByIDPGroupId(idpGroupId);
+                ViewBag.Year = year;
+                string id = app.GetIdByCookie(user);
+                User us = app.GetUserByCookie(user);
+                if (user != null)
+                {
+                    ViewBag.Prefix = us.Prefix;
+                    ViewBag.FirstName = us.FirstNameTH;
+                    ViewBag.LastName = us.LastNameTH;
+                    ViewBag.Company = us.Company;
+                    ViewBag.Joblevel = us.JobLevel;
+                    ViewBag.Department = us.Department;
+                    ViewBag.Position = us.Position;
+                }
+                //ViewBag.Count = count;
+                ViewBag.Id = id;
+                ViewBag.IDPGroupID = idpGroupId;
+                ViewBag.IDPGroupName = idpGroupName;
+                ViewBag.Guid = guid;
+                string status = app.GetStatus(id, idpGroupId);
+                ViewBag.Status = status;
+
+                List<Result> results = app.GetInfoEmployeeByGuid(guid);
+
+                return View(results);
             }
             else
             {
@@ -1445,7 +1471,7 @@ namespace myApp.Controllers
             }
         }
         [HttpPost]
-        public ActionResult InsertGoodness(string Year, List<string> userIds, string caseVal, Goodness good)
+        public ActionResult InsertGoodness(string Year, List<string> userIds)
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
             if (usernameCookie != null)
@@ -1459,36 +1485,31 @@ namespace myApp.Controllers
 
                 types = types.Where(s => !string.IsNullOrEmpty(s)).ToArray();
 
-                if(caseVal == "1")
+                
+                if (types != null && companies != null && dates != null && hours != null)
                 {
-                    if (types != null && companies != null && date != null && hour != null)
+                    List<Goodness> goodnessList = new List<Goodness>();
+
+                    for (int i = 0; i < types.Length; i++)
                     {
-                        List<Goodness> goodnessList = new List<Goodness>();
-
-                        for (int i = 0; i < types.Length; i++)
+                        Goodness goodness = new Goodness
                         {
-                            Goodness goodness = new Goodness
-                            {
-                                Type = types[i],
-                                Company = companies[i],
-                                Date = dates[i],
-                                Hour = hours[i],
-                                Desc = descs[i]
-                            };
+                            Type = types[i],
+                            Company = companies[i],
+                            Date = dates[i],
+                            Hour = hours[i],
+                            Desc = descs[i]
+                        };
 
-                            goodnessList.Add(goodness);
-                        }
+                        goodnessList.Add(goodness);
+                    }
 
-                        foreach (var id in userIds)
-                        {
-                            app.InsertGoodnessById(goodnessList, id, Year);
-                        }
+                    foreach (var id in userIds)
+                    {
+                        app.InsertGoodnessById(goodnessList, id, Year);
                     }
                 }
-                else if(caseVal == "2")
-                {
-                    app.UpdateGoodness(good);
-                }
+                
                 return RedirectToAction("Goodness", "Home", new { year = Year });
             }
             else
@@ -1497,7 +1518,27 @@ namespace myApp.Controllers
             }
 
         }
+        [HttpPost]
+        public ActionResult EditGoodness(string TypeEdit, string CompanyEdit, int GDId, string DescEdit, string DateEdit, string HourEdit)
+         {
+            Goodness goodness = new Goodness();
+            goodness.GDId = GDId;
+            goodness.Type = TypeEdit;
+            goodness.Company = CompanyEdit;
+            goodness.Desc = DescEdit;
+            goodness.Date = DateEdit;
+            goodness.Hour = HourEdit;
 
+            app.UpdateGoodness(goodness);
+
+            return null;
+        }
+        [HttpPost]
+        public ActionResult DeleteGoodness(int GDId)
+        {
+            app.DeleteGoodness(GDId);
+            return null;
+        }
 
         //DOWNLOAD
         public ActionResult Download()

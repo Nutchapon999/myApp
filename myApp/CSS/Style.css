@@ -1,8 +1,6 @@
-﻿
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Thai&display=swap');
-
-body {
-    font-family: 'Noto Serif Thai', serif;
+﻿body {
+    font-family: 'Sarabun', sans-serif;
+    /*font-family: Arial, sans-serif;*/
 }
 
 .dataTables_length, .dataTables_filter {

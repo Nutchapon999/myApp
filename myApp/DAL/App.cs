@@ -3703,6 +3703,43 @@ namespace myApp.DAL
 
             return user;
         }
+        public void UpdateGoodness(Goodness goodness)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "UPDATE IDP_GOODNESS SET TYPE = @Type, DESCRIPTION = @Desc, DATE = @Date, HOUR = @Hour, COMPANY = @Company " +
+                            "WHERE GD_ID = @GDId";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    // Assign values to parameters
+                    command.Parameters.AddWithValue("@GDId", (object)goodness.GDId ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@Type", (object)goodness.Type ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@Desc", (object)goodness.Desc ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@Date", (object)goodness.Date ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@Hour", (object)goodness.Hour ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@Company", (object)goodness.Company ?? DBNull.Value);
+
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        public void DeleteGoodness(int gdid)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "DELETE FROM IDP_GOODNESS WHERE GD_ID = @GDId";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@GDId", gdid);
+
+                    connection.Open();
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
 
 
         //REMARK

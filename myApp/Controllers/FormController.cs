@@ -36,11 +36,11 @@ namespace myApp.Controllers
             // Cookie
             if (ConfigurationManager.AppSettings["IsDev"].ToString().ToLower() == "true")
             {
-                //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "suchada.t"); // GM 1050100
+                System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "suchada.t"); // GM 1050100
                 //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Pond.Popza"); // User 2000000
                 //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "pissamai.t"); //User 1050100
                 //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "rattanaporn.p"); //User 1050100
-                System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Ong-Ard.sin"); // Admin & GM 1050100
+                //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Ong-Ard.sin"); // Admin & GM 1050100
                 HttpContext.Response.Cookies.Add(UserCookie);
                 username = UserCookie.Value;
 

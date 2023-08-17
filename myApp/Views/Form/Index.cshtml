@@ -71,14 +71,14 @@
         </div>
     </div>
 </div>
-<div class="container">
+<div class="container topic-title">
     <div class="row">
         <div class="col-3">
             <a href="@Url.Action("Goodness", "Form", new { year = ViewBag.Year })" class="btn btn-lg active-link-good">
                 <i class="fa-solid fa-star" aria-hidden="true"></i> <strong class="gradient-text-good">บันทึกความดี</strong>
             </a>
         </div>
-        <div class="col-6 text-center topic-title">
+        <div class="col-6 text-center fw-bold">
             <h1>เลือกแบบประเมิน</h1>
         </div>
         <div class="col-3 text-end">
@@ -277,11 +277,11 @@
         if (listView.style.display === 'none') {
             listView.style.display = 'block';
             cardView.style.display = 'none';
-            toggleBtn.innerHTML = '<i class="fa-solid fa-list-ul"></i>'; 
+            toggleBtn.innerHTML = '<i class="fa-solid fa-list-ul"></i>';
         } else {
             listView.style.display = 'none';
             cardView.style.display = 'block';
-            toggleBtn.innerHTML = '<i class="fa-solid fa-grip"></i>'; 
+            toggleBtn.innerHTML = '<i class="fa-solid fa-grip"></i>';
         }
     }
 
@@ -291,6 +291,7 @@
 
 
 <style>
+
     #myTable {
         border-radius: 10px;
         overflow: hidden;
@@ -302,34 +303,38 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
+
     .gradient-text-good {
         background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(225deg 58% 38%) 11%, hsl(218deg 65% 39%) 22%, hsl(213deg 74% 40%) 33%, hsl(208deg 85% 40%) 44%, hsl(204deg 100% 39%) 56%, hsl(202deg 100% 41%) 67%, hsl(200deg 100% 43%) 78%, hsl(198deg 100% 45%) 89%, hsl(196deg 100% 47%) 100% );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
+
     p {
         margin-bottom: 0;
     }
 
-    
+
     .active-link-form {
         border: none;
         background-color: white;
     }
 
-    .active-link-form:hover {
-        background-color: white;
-        border-bottom: 2px solid #FBB040;
-    }
+        .active-link-form:hover {
+            background-color: white;
+            border-bottom: 2px solid #FBB040;
+        }
+
     .active-link-good:hover {
         transform: scale(.95);
         background-color: white;
         border: 2px solid #2d388a;
     }
-    
+
     .active-link-form:hover i {
         transform: scale(1.2);
     }
+
     .fa-star,
     .gradient-icon-form {
         background-image: linear-gradient( 0deg, hsl(36deg 96% 62%) 0%, hsl(38deg 96% 61%) 11%, hsl(40deg 96% 61%) 22%, hsl(43deg 95% 61%) 33%, hsl(45deg 95% 60%) 44%, hsl(47deg 95% 60%) 56%, hsl(50deg 95% 60%) 67%, hsl(52deg 95% 59%) 78%, hsl(54deg 94% 59%) 89%, hsl(56deg 94% 59%) 100% );
@@ -364,10 +369,10 @@
         color: #053a2f;
     }
 
-    .year:hover {
-        color: #053a2f;
-        text-decoration: underline;
-    }
+        .year:hover {
+            color: #053a2f;
+            text-decoration: underline;
+        }
 
     .sticky-header-breadcrumb {
         position: sticky;
@@ -410,29 +415,31 @@
         font-weight: bold;
     }
 
-    .topic-title h1 {
-        font-weight: bold;
-    }
+        .topic-title h1 {
+            font-weight: bold;
+        }
 
     .active-link-back,
     .card {
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     }
 
-    .active-link-back:hover {
-        transform: scale(.95);
-        border: 2px solid #9B0008;
-    }
+        .active-link-back:hover {
+            transform: scale(.95);
+            border: 2px solid #9B0008;
+        }
 
     .gradient-icon-back {
         background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
+
     .active-link-good {
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
         background-color: white;
     }
+
     .active-link-info {
         border: none;
         background-color: white;
