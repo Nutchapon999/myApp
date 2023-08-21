@@ -61,19 +61,18 @@
                     </div>
 
                     <div class="col-4 text-end">
-                        @if (ViewBag.CanAdd)
-                        {
-                            
-                        }
-                        else
+                        @if (!ViewBag.CanAdd)
                         {
                             <a href="@Url.Action("SelectCompetency", new { idpGroupId = ViewBag.IDPGroupId })" class="btn mb-2 me-2 btn-lg active-link-add">
                                 <i class="fa fa-plus gradient-icon-add" aria-hidden="true"></i> <strong class="gradient-icon-add"> เพิ่ม</strong>
                             </a>
                         }
-                        <button type="submit" class="btn btn-lg active-link-submit mb-2">
-                            <i class="fa-solid fa-save gradient-icon-submit" aria-hidden="true"></i> <strong class="gradient-icon-submit"> บันทึก</strong>
-                        </button>
+                        @if(ViewBag.Count > 0)
+                        {
+                            <button type="submit" class="btn btn-lg active-link-submit mb-2">
+                                <i class="fa-solid fa-save gradient-icon-submit" aria-hidden="true"></i> <strong class="gradient-icon-submit"> บันทึก</strong>
+                            </button>
+                        }
                     </div>
                 </div>
                 if (TempData["ErrorMessage"] != null)
@@ -90,7 +89,7 @@
                             <th width="10%" class="text-center">รหัส Competency</th>
                             <th width="60%" class="text-center">ชื่อ Competency</th>
                             <th width="10%" class="text-center">Pl</th>
-                            <th width="10%" class="text-center">จุดเน้น</th>
+                            <th width="10%" class="text-center">Critical</th>
                             <th width="5%" class="text-center"></th>
                         </tr>
                     </thead>
@@ -123,16 +122,17 @@
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h1 class="modal-title fs-4">ต้องการที่จะลบรายวิชานี้หรือไม่?</h1>
+                                                    <h1 class="modal-title fs-3 fw-bold">
+                                                        <i class="fa-solid fa-trash-can gradient-text-delete"></i> ลบ Competency ออกจาก @ViewBag.IDPGroupId
+                                                    </h1>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <h5>รหัส Competency: @idpItm.IDPGroupItemId</h5>
+                                                    <h5><i class="fa-solid fa-key"></i> Competency: @idpItm.CompetencyId</h5>
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-                                                    <a href="@Url.Action("DeleteIDPGroupItem", new { idpGroupItem = idpItm.IDPGroupItemId })" class="btn btn-danger">ยืนยัน</a>
-                                                </div>
+                                                    <button class="btn btn-danger" onclick="deleteIDPGroupItem('@idpItm.IDPGroupItemId')">ยืนยัน</button>                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -144,14 +144,9 @@
 
                 <div class="row mt-3">
                     <div class="col-auto me-auto">
-                        <a href="@Url.Action("IDPGroup")" class="btn btn-lg active-link-back shadow-sm">
+                        <a href="@Url.Action("IDPGroup")" class="btn btn-lg active-link-back mb-2">
                             <i class="fa fa-arrow-left gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back"> กลับ</strong>
                         </a>
-                    </div>
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-lg active-link-submit shadow-sm mb-2">
-                            <i class="fa-solid fa-save gradient-icon-submit" style="aria-hidden=" true"></i> <strong class="gradient-icon-submit"> บักทึก</strong>
-                        </button>
                     </div>
                 </div>
             }
@@ -188,6 +183,20 @@
             }
         });
     });
+
+    function deleteIDPGroupItem(idpGroupItemId, ) {
+    $.ajax({
+        url: '@Url.Action("DeleteIDPGroupItem","Home")',
+        type: 'POST',
+        data: { idpGroupItem: idpGroupItemId },
+        success: function (response) {
+            window.location.href = '@Url.Action("AddCompetency", "Home", new { idpGroupId = ViewBag.IDPGroupId })';
+        },
+        error: function (error) {
+            console.log(error)
+        }
+    });
+}
 </script>
 
 
@@ -314,7 +323,9 @@
         overflow: hidden;
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     }
-
+    .active-link-back {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
     .active-link-back:hover {
         transform: scale(.95);
         border: 2px solid #9B0008;

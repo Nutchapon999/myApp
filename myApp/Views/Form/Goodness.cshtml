@@ -36,7 +36,7 @@
                 <button type="button" id="addRowBtn" onclick="addRow()" class="btn btn-lg active-link-add me-2 mt-2">
                     <i class="fa-solid fa-plus gradient-icon-add"></i><strong class="gradient-icon-add"> เพิ่ม</strong>
                 </button>
-                <button type="submit" class="btn btn-lg active-link-submit me-2 mt-2" id="liveToastBtn">
+                <button type="button" class="btn btn-lg active-link-submit me-2 mt-2" id="liveToastBtn">
                     <i class="fa-solid fa-save gradient-icon-submit"></i><strong class="gradient-icon-submit"> บันทึก</strong>
                 </button>
             </div>
@@ -54,90 +54,56 @@
                     </tr>
                 </thead>
                 <tbody id="tableBody">
+                    @*@for (int i = 0; i < Model.Count(); i++)
+                    {
+                        var good = Model.ElementAt(i);
+                        <tr id="row-@(i+1)">
+                            <td>@good.Type</td>
+                            <td>@good.Company</td>
+                            <td>@good.Desc</td>
+                            <td>@good.Date</td>
+                            <td>@good.Hour</td>
+                            <td>
+                                <a href="#">@good.FileID</a>
+                            </td>
+                        </tr>
+                    }*@
                     @foreach (var good in Model)
                     {
                         <tr>
                             <td>@good.Type</td>
                             <td>@good.Company</td>
                             <td>@good.Desc</td>
-                            <td>@good.Date</td>
-                            <td>@good.Hour</td>
-                            <td></td>
+                            <td align="center">@good.Date</td>
+                            <td align="center">@good.Hour</td>
+
+                            <td align="center">
+                                @if (!string.IsNullOrEmpty(good.FileID))
+                                {
+                                    <button type='button' class='btn btn-primary btn-xs addfile' value='@good.FileID' title='แนบไฟลล์'><i class='fa fa-file'></i></button>
+                                }
+                            </td>
+
                         </tr>
                     }
-                        <tr class="new-row">
-                            <td class="text-center">
-                                <select class="form-select" aria-label="Default select example" name="Type" onchange="toggleInput(this)">
-                                    <option value="@good1">การแบ่งปันความรู้ให้กับผู้มีส่วนได้เสียของบริษัท</option>
-                                    <option value="@good2">กิจกรรม Lean Kaizen Suggestion</option>
-                                    <option value="@good3">บริจาคเลือดและอวัยวะ</option>
-                                    <option value="@good4">การบำเพ็ญประโยชน์เพื่อสังคม</option>
-                                    <option value="__other__">อื่น ๆ</option>
-                                </select>
-                                <input type="text" class="form-control mt-2" name="Type" style="display: none;" placeholder="ประเภทความดีอื่น ๆ" />
-                            </td>
-
-                            <td class="text-center">
-                                <textarea class="form-control" name="Company" style="min-width: 100%" required></textarea>
-                            </td>
-                            <td class="text-center">
-                                <textarea class="form-control" name="Desc" style="min-width: 100%" required></textarea>
-                            </td>
-                            <td class="text-center">
-                                <input type="date" class="form-control" name="Date" required />
-                            </td>
-                            <td class="text-center">
-                                <input type="number" class="form-control" name="Hour" required />
-                            </td>
-                            <td class="text-center">
-                                <input type="file" class="form-control" />
-                            </td>
-                        </tr>
-
                 </tbody>
             </table>
+            <input type="hidden" class="form-control" id="txtGoodnessYear" value="@ViewBag.Year" />
         </div>
         <a href="@Url.Action("Index", "Form", new { year = ViewBag.Year })" class="btn btn-lg active-link-back ms-2 mb-2">
             <i class="fa fa-arrow-left gradient-icon-back"></i><strong class="gradient-icon-back"> ออก</strong>
         </a>
     </div>
 </form>
-
-<script src="~/Scripts/jquery-3.4.1.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
-<script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<script src="~/JS/code.jquery.com_jquery-3.6.0.min.js"></script>
 <script type="text/javascript">
-    var js = jQuery.noConflict(true);
-    js(document).ready(function () {
-        js('#myTable').DataTable({
-            info: false,
-            scrollX: true,
-            paging: false,
-            searching: false,
-            ordering: false,
-            language: {
-                search: '',
-                searchPlaceholder: 'ค้นหา',
-                lengthMenu: '_MENU_',
-                paginate: {
-                    next: 'ถัดไป <i class="fa fa-angle-right"></i>',
-                    previous: '<i class="fa fa-angle-left"></i> ก่อนหน้า'
-                },
-                info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
-            },
-
-            initComplete: function () {
-                js('#myTable_length label').addClass('entries-label');
-            }
-        });
-    });
-
+    //var lastRowIndex = $('#tableBody tr').length;
+    var rowCounter = 0;
     function addRow() {
+        rowCounter++;
+
         var newRow = `
-            <tr class="new-row">
+            <tr class="new-row" id="row-${rowCounter}">
                 <td class="text-center">
                     <select class="form-select" aria-label="Default select example" name="Type" onchange="toggleInput(this)">
                         <option value="@good1">การแบ่งปันความรู้ให้กับผู้มีส่วนได้เสียของบริษัท</option>
@@ -160,14 +126,16 @@
                 <td class="text-center">
                     <input type="number" class="form-control" name="Hour" required/>
                 </td>
-                 <td class="text-center">
-                    <input type="file" class="form-control" name="file" required/>
+                    <td class="text-center">
+                    <input type="file" class="form-control" name="File_${rowCounter}"/>
                 </td>
             </tr>
         `;
 
         $('#tableBody').append(newRow);
+        
     }
+
 
     function toggleInput(selectElement) {
         var inputElement = selectElement.parentElement.querySelector('input[name="Type"]');
@@ -187,23 +155,39 @@
         }
     }
 
-    function submitFormAjax() {
-        var formData = $('#myForm').serialize();
-        $.ajax({
-            type: 'POST',
-            url: $('#myForm').attr('action'),
-            data: formData,
-            success: function (data) {
-                window.location.href = '@Url.Action("Goodness", "Form", new { year = ViewBag.Year })';
-            },
-            error: function (xhr, status, error) {
-                
-            }
+    $('#liveToastBtn').click(function () {
+        var formData = new FormData();
+
+        $('.new-row').each(function (index, element) {
+            var typeInput = $(element).find('[name="Type"]');
+            var type = typeInput.val() || typeInput.next().val();
+            var company = $(element).find('[name="Company"]').val();
+            var desc = $(element).find('[name="Desc"]').val();
+            var date = $(element).find('[name="Date"]').val();
+            var hour = $(element).find('[name="Hour"]').val();
+            var file = $(element).find('[name^="File"]').prop('files')[0];
+            var year = $('#txtGoodnessYear').val();
+
+            formData.append(`Type_${index}`, type);
+            formData.append(`Company_${index}`, company);
+            formData.append(`Desc_${index}`, desc);
+            formData.append(`Date_${index}`, date);
+            formData.append(`Hour_${index}`, hour);
+            formData.append(`File_${index}`, file);
+            formData.append(`Year_${index}`, year);
         });
-    }
-    $(document).ready(function () {
-        $('#liveToastBtn').click(function () {
-            submitFormAjax();
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("InsertGoodness","Form")',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                window.location.reload();
+            },
+            error: function (error) {
+            }
         });
     });
 </script>

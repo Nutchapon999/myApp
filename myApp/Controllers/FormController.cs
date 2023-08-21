@@ -1,7 +1,9 @@
 ﻿using DocumentFormat.OpenXml.Bibliography;
+using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Presentation;
 using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.Extensions.Logging;
 using myApp.DAL;
 using myApp.Models;
 using somboonCL;
@@ -10,6 +12,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data.OleDb;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -28,7 +31,7 @@ namespace myApp.Controllers
         SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyConnection"].ConnectionString);
         OleDbConnection Econ;
 
-        //Index
+        #region Index
         public ActionResult Index(string Year)
         {
             var username = "";
@@ -36,11 +39,9 @@ namespace myApp.Controllers
             // Cookie
             if (ConfigurationManager.AppSettings["IsDev"].ToString().ToLower() == "true")
             {
-                System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "suchada.t"); // GM 1050100
-                //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Pond.Popza"); // User 2000000
-                //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "pissamai.t"); //User 1050100
-                //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "rattanaporn.p"); //User 1050100
-                //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Ong-Ard.sin"); // Admin & GM 1050100
+                //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "suchada.t"); // Goodness
+                //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "rattanaporn.p"); //User 
+                System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Ong-Ard.sin"); // Admin 
                 HttpContext.Response.Cookies.Add(UserCookie);
                 username = UserCookie.Value;
 
@@ -69,6 +70,9 @@ namespace myApp.Controllers
             List<Enrollment> enrollments = app.GetEnrollEachYearByUsername(username, Year);
             return View(enrollments);
         }
+        #endregion
+
+        #region FORM    
         public ActionResult Form(string idpGroupId, string guid)
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
@@ -130,19 +134,169 @@ namespace myApp.Controllers
             }
             
         }
+        //[HttpPost]
+        //public ActionResult SaveResultDetails(int enrollId, Dictionary<string, ResultItem> forms, bool isChecked, string remark, string Guid)
+        //{
+        //    string username = Request.Cookies["username"].Value;
+        //    string IDPGroup = app.GetIDPGroupIdByEnrollment(enrollId);
+        //    string Id = app.GetIdByEnrollment(enrollId);
+        //    string Year = app.GetYearByEnrolled(enrollId);
+        //    bool isFormSubmitted = app.IsFormSubmitted(Id, IDPGroup);
+        //    string joblevel = app.GetJoblevelByCookie(username);
+        //    string position = app.GetPositionByCookie(username);
+        //    string status = app.GetStatus(Id, IDPGroup);
+        //    int count = app.GetCountCompetencyThisId(IDPGroup);
+        //    string user = app.GetUserLoginByEnrollId(enrollId);
+
+        //    List<ResultItem> actual1NotNullItems = new List<ResultItem>();
+        //    List<ResultItem> actual1NullItems = new List<ResultItem>();
+
+        //    List<ResultItem> actual2NotNullItems = new List<ResultItem>();
+        //    List<ResultItem> actual2NullItems = new List<ResultItem>();
+
+        //    foreach (var resultItem in forms.Values)
+        //    {
+        //        if(resultItem.Actual1 != 0)
+        //        {
+        //            actual1NotNullItems.Add(resultItem);
+        //        }
+        //        else
+        //        {
+        //            actual1NullItems.Add(resultItem);
+        //        }
+
+        //        if(resultItem.Actual2 != 0)
+        //        {
+        //            actual2NotNullItems.Add(resultItem);
+        //        }
+        //        else
+        //        {
+        //            actual2NullItems.Add(resultItem);
+                    
+        //        }
+        //    }
+        //    if (actual1NotNullItems.Count > 0 || actual2NotNullItems.Count > 0)
+        //    {
+        //        //INSERT AND UPDATE RESULTITEMS
+        //        if (isFormSubmitted)
+        //        {
+        //            //LOG DATA
+        //            List<ResultItem> resultItemsBefore = app.GetResultItemByGuidBeforeUpdate(Guid);
+        //            //UPDATE RESULTITEMS
+        //            app.UpdateResultDetails(forms.Values, Guid);
+
+        //            //REMARK
+        //            if (status == "1st Evaluating" || (status == "2nd Evaluating" && actual2NullItems.Count == 0))
+        //            {
+        //                app.InsertRemark(remark, username, joblevel, Guid);
+        //            }
+        //            //LOG DATA
+        //            List<ResultItem> resultItemsAfter = app.GetResultItemByGuidAfterUpdate(Guid);
+        //            List<int> resultItemIds = app.GetResultItemIdByGuid(Guid);
+        //            app.InsertLogOnUpdateResultItems(resultItemIds, username, resultItemsBefore, resultItemsAfter, status, Guid);
+        //        }
+        //        else
+        //        {
+        //            //INSERT RESULTITEMS
+        //            //app.InsertResultDetails(forms.Values, Guid, count);
+        //            //LOG DATA
+        //            //List<int> resultItemIds = app.GetResultItemIdByGuid(Guid);
+        //            //List<ResultItem> resultItems = app.GetResultItemByGuidOnInsert(Guid);
+        //            //app.InsertLogOnInsertResultItems(resultItemIds, username, resultItems, Guid);
+        //        }
+        //    }
+        //    if (actual1NullItems.Count > 0)
+        //    {
+        //        TempData["ErrorMessage"] = "มี Actual1 บางแถวที่ยังไม่ได้เลือก";
+        //        return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroup, guid = Guid });
+        //    }
+        //    if(status == "2nd Evaluating")
+        //    {
+        //        if (actual2NullItems.Count > 0)
+        //        {
+        //            TempData["ErrorMessage"] = "มี Actual2 บางแถวที่ยังไม่ได้เลือก";
+        //            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroup, guid = Guid });
+        //        }
+        //    }
+
+
+
+        //    //UPDATE STATUS(SUBMIT)
+        //    if (!isChecked)
+        //    {
+        //        //WORKFLOW UPDATE
+        //        if (status == "1st Evaluating" || status == "2nd Evaluating")
+        //        {
+        //            RemarkHS remarkId = app.GetDescRemarkId(Guid);
+        //            app.InsertWorkflowHS2(position, username, status, remarkId);
+        //        }
+        //        else
+        //        {
+        //            app.InsertWorkflowHS1(position, username, status);
+        //        }
+
+        //        bool is1stEvaluated = app.is1stEvaluated(enrollId);
+        //        bool isDeveloped = app.isDeveloped(enrollId);
+        //        bool is2ndEvaluated = app.is2ndEvaluated(enrollId);
+        //        if (is1stEvaluated)
+        //        {
+        //            app.UpdateEnrollmentStatus_3(Id, IDPGroup); //DEVELOPING
+        //        }
+        //        else if (isDeveloped)
+        //        {
+        //            app.UpdateEnrollmentStatus_4(Id, IDPGroup); //2ND EVALUATING
+        //        }
+        //        else if (is2ndEvaluated)
+        //        {
+        //            app.UpdateEnrollmentStatus_5(Id, IDPGroup); //SUCCESS
+        //        }
+        //        else
+        //        {
+        //            app.UpdateEnrollmentStatus_2(Id, IDPGroup); //1ST EVALUATING
+        //        }
+                
+        //        app.UpdateApprover(username, Guid);
+        //    }
+
+        //    int all = app.GetCompetencyAllByGuid(Guid);
+        //    int pass = app.GetCompetencyPassByGuid(Guid);
+
+        //    //CALCULATE VALUES FOR RESULT
+        //    float per = (float)pass / all * 100;
+        //    string rank;
+
+        //    switch (per)
+        //    {
+        //        case var p when p >= 100:
+        //            rank = "M";
+        //            break;
+        //        case var p when p < 100 && p >= 70:
+        //            rank = "C";
+        //            break;
+        //        default:
+        //            rank = "L";
+        //            break;
+        //    }
+
+        //    app.UpdateResult(Guid, pass, per, rank);
+
+        //    return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroup, guid = Guid});
+            
+        //}
+
         [HttpPost]
-        public ActionResult SaveResultDetails(int enrollId, Dictionary<string, ResultItem> forms, bool isChecked, string remark, string Guid)
+        public ActionResult SaveForm(int enrollId, string Guid, string IDPGroupId, bool isSave, string remark)
         {
+            string fileUploadPath = ConfigurationManager.AppSettings["FileUploadPath"].ToString();
             string username = Request.Cookies["username"].Value;
-            string IDPGroup = app.GetIDPGroupIdByEnrollment(enrollId);
             string Id = app.GetIdByEnrollment(enrollId);
-            string Year = app.GetYearByEnrolled(enrollId);
-            bool isFormSubmitted = app.IsFormSubmitted(Id, IDPGroup);
+            var form = HttpContext.Request.Form;
+            List<ResultItem> resultItems = new List<ResultItem>();
+            string status = app.GetStatus(Id, IDPGroupId);
             string joblevel = app.GetJoblevelByCookie(username);
             string position = app.GetPositionByCookie(username);
-            string status = app.GetStatus(Id, IDPGroup);
-            int count = app.GetCountCompetencyThisId(IDPGroup);
-            string user = app.GetUserLoginByEnrollId(enrollId);
+
+            int count = app.GetCompetencyAllByGuid(Guid);
 
             List<ResultItem> actual1NotNullItems = new List<ResultItem>();
             List<ResultItem> actual1NullItems = new List<ResultItem>();
@@ -150,9 +304,104 @@ namespace myApp.Controllers
             List<ResultItem> actual2NotNullItems = new List<ResultItem>();
             List<ResultItem> actual2NullItems = new List<ResultItem>();
 
-            foreach (var resultItem in forms.Values)
+            List<ResultItem> criticalRes = new List<ResultItem>();
+
+            for (var i = 0; i < count; i++)
             {
-                if(resultItem.Actual1 != 0)
+                var criticalKey = "Critical_" + i;
+                var requireKey = "Requirement_" + i;
+                var actual1Key = "Actual1_" + i;
+                var priorityKey = "Priority_" + i;
+                var typeKey = "TypePlan_" + i;
+                var devPlanKey = "DevPlan_" + i;
+                var Q1key = "Q1_" + i;
+                var Q2Key = "Q2_" + i;
+                var Q3Key = "Q3_" + i;
+                var Q4Key = "Q4_" + i;
+                var devRstKey = "DevRst_" + i;
+                var fileKey = "File_" + i;
+                var fileEditKey = "FileEdit_" + i;
+                var actual2Key = "Actual2_" + i;
+
+                var criticalValue = form[criticalKey];
+
+                var requireValue = form[requireKey];
+                var actual1Value = form[actual1Key];
+                var priorityValue = form[priorityKey];
+                var typeValue = form[typeKey];
+                var devPlanValue = string.IsNullOrEmpty(form[devPlanKey]) ? null : form[devPlanKey];
+                var Q1Value = form[Q1key];
+                var Q2Value = form[Q2Key];
+                var Q3Value = form[Q3Key];
+                var Q4Value = form[Q4Key];
+                var devRstValue = form[devRstKey];
+                var actual2Value = form[actual2Key];
+                var fileValue = Request.Files[fileKey];
+                var fileEditValue = form[fileEditKey];
+                var fileId = "";
+                {
+                    if (fileValue != null && fileValue.ContentLength > 0)
+                    {
+                        HttpPostedFileBase f = fileValue;
+                        string fname;
+                        if (f.FileName.Contains("\\"))
+                        {
+                            string[] testfiles = f.FileName.Split(new char[] { '\\' });
+                            fname = testfiles[testfiles.Length - 1];
+                        }
+                        else
+                        {
+                            fname = f.FileName;
+                        }
+                        string Type = string.Empty;
+                        var splitName = fname.Split('.');
+                        Type = splitName[splitName.Length - 1];
+
+                        int j = i + 1;
+
+                        var user = username.Replace(".", "-");
+                        var filenameGuid = "IDP_" + Guid + "_" + j;
+                        fileId = filenameGuid;
+
+                        //string filePath = Path.Combine(fileUploadPath, fileId);
+                        //f.SaveAs(filePath);
+                    }
+                    else if(fileEditValue != "")
+                    {
+                        fileId = fileEditValue;
+                    }
+                    else
+                    {
+                        fileId = null;
+                    }
+                }
+
+                int parsedRequire = Convert.ToInt32(requireValue);
+                int parsedActual1 = Convert.ToInt32(actual1Value);
+                int parsedActual2 = Convert.ToInt32(actual2Value);
+
+                bool parsedCritical;
+                bool.TryParse(criticalValue, out parsedCritical);
+
+                ResultItem resultItem = new ResultItem
+                {
+                    Critical = parsedCritical,
+                    Requirement = parsedRequire,
+                    Actual1 = parsedActual1,
+                    Priority = priorityValue,
+                    TypePlan = typeValue,
+                    DevPlan = devPlanValue,
+                    Q1 = Q1Value,
+                    Q2 = Q2Value,
+                    Q3 = Q3Value,
+                    Q4 = Q4Value,
+                    DevRst = devRstValue,
+                    FileId = fileId,
+                    Actual2 = parsedActual2
+
+                };
+
+                if (resultItem.Actual1 != 0)
                 {
                     actual1NotNullItems.Add(resultItem);
                 }
@@ -161,95 +410,95 @@ namespace myApp.Controllers
                     actual1NullItems.Add(resultItem);
                 }
 
-                if(resultItem.Actual2 != 0)
+                if (resultItem.Actual2 != 0)
                 {
                     actual2NotNullItems.Add(resultItem);
                 }
                 else
                 {
                     actual2NullItems.Add(resultItem);
+
                 }
+
+                if(resultItem.Critical == true)
+                {
+                    criticalRes.Add(resultItem);
+                }
+
+                resultItems.Add(resultItem);
+
             }
+
             if (actual1NotNullItems.Count > 0 || actual2NotNullItems.Count > 0)
             {
-                //INSERT AND UPDATE RESULTITEMS
-                if (isFormSubmitted)
-                {
-                    //LOG DATA
-                    List<ResultItem> resultItemsBefore = app.GetResultItemByGuidBeforeUpdate(Guid);
-                    //UPDATE RESULTITEMS
-                    app.UpdateResultDetails(forms.Values, Guid);
+                //LOG DATA
+                List<ResultItem> resultItemsBefore = app.GetResultItemByGuidBeforeUpdate(Guid);
+                //UPDATE RESULTITEMS
+                app.UpdateForm(resultItems, Guid);
 
-                    //REMARK
-                    if (status == "1st Evaluating" || (status == "2nd Evaluating" && actual2NullItems.Count == 0))
+                //REMARK
+                if (status == "1st Evaluating" || (status == "2nd Evaluating" && actual2NullItems.Count == 0))
+                {
+                    app.InsertRemark(remark, username, joblevel, Guid);
+                }
+                //LOG DATA
+                List<ResultItem> resultItemsAfter = app.GetResultItemByGuidAfterUpdate(Guid);
+                List<int> resultItemIds = app.GetResultItemIdByGuid(Guid);
+                app.InsertLogOnUpdateResultItems(resultItemIds, username, resultItemsBefore, resultItemsAfter, status, Guid);
+            }
+
+            if (!isSave)
+            {
+
+                if (actual1NullItems.Count > 0)
+                {
+                    TempData["ErrorMessage"] = "มี Actual1 บางแถวที่ยังไม่ได้เลือก";
+                    return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                }
+                if (status == "2nd Evaluating")
+                {
+                    if (actual2NullItems.Count > 0)
                     {
-                        app.InsertRemark(remark, username, joblevel, Guid);
+                        TempData["ErrorMessage"] = "มี Actual2 บางแถวที่ยังไม่ได้เลือก";
+                        return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
-                    //LOG DATA
-                    List<ResultItem> resultItemsAfter = app.GetResultItemByGuidAfterUpdate(Guid);
-                    List<int> resultItemIds = app.GetResultItemIdByGuid(Guid);
-                    app.InsertLogOnUpdateResultItems(resultItemIds, username, resultItemsBefore, resultItemsAfter, status, Guid);
                 }
-                else
+                foreach (var criticalResultItem in criticalRes)
                 {
-                    //INSERT RESULTITEMS
-                    //app.InsertResultDetails(forms.Values, Guid, count);
-                    //LOG DATA
-                    //List<int> resultItemIds = app.GetResultItemIdByGuid(Guid);
-                    //List<ResultItem> resultItems = app.GetResultItemByGuidOnInsert(Guid);
-                    //app.InsertLogOnInsertResultItems(resultItemIds, username, resultItems, Guid);
+                    if (string.IsNullOrEmpty(criticalResultItem.DevPlan))
+                    {
+                        TempData["ErrorMessage"] = "มีแถวที่มี Critical เป็น true และ DevPlan ว่างเปล่า";
+                        return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                    }
+                    else if(string.IsNullOrEmpty(criticalResultItem.Q1) &&
+                            string.IsNullOrEmpty(criticalResultItem.Q2) &&
+                            string.IsNullOrEmpty(criticalResultItem.Q3) &&
+                            string.IsNullOrEmpty(criticalResultItem.Q4))
+                    {
+                        TempData["ErrorMessage"] = "มีแถวที่มี Critical เป็น true และ Q ว่างเปล่า";
+                        return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                    }
                 }
-            }
-            if (actual1NullItems.Count > 0)
-            {
-                TempData["ErrorMessage"] = "มี Actual1 บางแถวที่ยังไม่ได้เลือก";
-                return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroup, guid = Guid });
-            }
-            if(status == "2nd Evaluating")
-            {
-                if (actual2NullItems.Count > 0)
-                {
-                    TempData["ErrorMessage"] = "มี Actual2 บางแถวที่ยังไม่ได้เลือก";
-                    return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroup, guid = Guid });
-                }
-            }
-
-
-
-            //UPDATE STATUS(SUBMIT)
-            if (!isChecked)
-            {
-                //WORKFLOW UPDATE
-                if (status == "1st Evaluating" || status == "2nd Evaluating")
-                {
-                    RemarkHS remarkId = app.GetDescRemarkId(Guid);
-                    app.InsertWorkflowHS2(position, username, status, remarkId);
-                }
-                else
-                {
-                    app.InsertWorkflowHS1(position, username, status);
-                }
-
                 bool is1stEvaluated = app.is1stEvaluated(enrollId);
                 bool isDeveloped = app.isDeveloped(enrollId);
                 bool is2ndEvaluated = app.is2ndEvaluated(enrollId);
                 if (is1stEvaluated)
                 {
-                    app.UpdateEnrollmentStatus_3(Id, IDPGroup); //DEVELOPING
+                    app.UpdateEnrollmentStatus_3(Id, IDPGroupId); //DEVELOPING
                 }
                 else if (isDeveloped)
                 {
-                    app.UpdateEnrollmentStatus_4(Id, IDPGroup); //2ND EVALUATING
+                    app.UpdateEnrollmentStatus_4(Id, IDPGroupId); //2ND EVALUATING
                 }
                 else if (is2ndEvaluated)
                 {
-                    app.UpdateEnrollmentStatus_5(Id, IDPGroup); //SUCCESS
+                    app.UpdateEnrollmentStatus_5(Id, IDPGroupId); //SUCCESS
                 }
                 else
                 {
-                    app.UpdateEnrollmentStatus_2(Id, IDPGroup); //1ST EVALUATING
+                    app.UpdateEnrollmentStatus_2(Id, IDPGroupId); //1ST EVALUATING
                 }
-                
+
                 app.UpdateApprover(username, Guid);
             }
 
@@ -275,9 +524,14 @@ namespace myApp.Controllers
 
             app.UpdateResult(Guid, pass, per, rank);
 
-            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroup, guid = Guid});
-            
+            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
         }
+
+
+        #endregion
+
+        #region GOODNESS
+
         public ActionResult Goodness(string Year)
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
@@ -298,8 +552,8 @@ namespace myApp.Controllers
                 return RedirectToAction("Index", "Form");
             }
         }
-        [HttpPost]
-        public ActionResult InsertGoodness(string Year)
+        /*[HttpPost]
+        public ActionResult InsertGoodness()
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
             if (usernameCookie != null)
@@ -322,7 +576,6 @@ namespace myApp.Controllers
                         Goodness goodness = new Goodness
                         {
                             Type = types[i],
-                            //Type = otherTypes[i],
                             Company = companies[i],
                             Date = date[i],
                             Hour = hour[i],
@@ -341,55 +594,136 @@ namespace myApp.Controllers
             {
                 return RedirectToAction("Index", "Form");
             }
-            
-        }
+        }*/
+        [HttpPost]
+        public ActionResult InsertGoodness()
+        {
+            //ConnectToData cd = new ConnectToData();
+            System.Web.HttpCookie usernameCookie = Request.Cookies["username"];
+            string username = usernameCookie.Value;
 
+            string fileUploadPath = ConfigurationManager.AppSettings["FileUploadPath"].ToString();
+
+            int count = app.GetCountGoodness(username) + 1;
+            
+            int index = 0;
+            while (true)
+            {
+                var typeKey = $"Type_{index}";
+                if (Request.Form.AllKeys.Contains(typeKey))
+                {
+                    var type = Request.Form[$"Type_{index}"];
+                    var company = Request.Form[$"Company_{index}"];
+                    var desc = Request.Form[$"Desc_{index}"];
+                    var date = Request.Form[$"Date_{index}"];
+                    var hour = Request.Form[$"Hour_{index}"];
+                    var year = Request.Form[$"Year_{index}"];
+
+                    var file = Request.Files[$"File_{index}"];
+                    var fileId = "";
+                    if (file != null && file.ContentLength > 0)
+                    {
+                        HttpPostedFileBase f = file;
+                        string fname;
+                        if (f.FileName.Contains("\\"))
+                        {
+                            string[] testfiles = f.FileName.Split(new char[] { '\\' });
+                            fname = testfiles[testfiles.Length - 1];
+                        }
+                        else
+                        {
+                            fname = f.FileName;
+                        }
+                        string Type = string.Empty;
+                        var splitName = fname.Split('.');
+                        Type = splitName[splitName.Length - 1];
+
+                        var user = username.Replace(".", "-");
+                        var filenameGuid = "Goodness_" + year + "_" + user + "_" + count;
+                        fileId = filenameGuid;
+
+                        //string filePath = Path.Combine(fileUploadPath, filenameGuid);
+                        //f.SaveAs(filePath);
+                    }
+
+                    if ((type != null && type != "") && (company != null && company != "") && (date != null && date != "") && (hour != null && hour != ""))
+                    {
+                        List<Goodness> goodnessList = new List<Goodness>();
+                        Goodness goodness = new Goodness
+                        {
+                            Type = type,
+                            Company = company,
+                            Date = date,
+                            Hour = hour,
+                            Desc = desc,
+                            FileID = fileId,
+                        };
+                        goodnessList.Add(goodness);
+                        app.InsertGoodness(goodnessList, username, year);
+                    }
+
+                    index++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            return Json(new { success = true });
+        }
+        #endregion
+
+        #region INFO
 
         //INFO
         public ActionResult Info(string idpGroupId, string guid)
+    {
+        HttpCookie usernameCookie = Request.Cookies["username"];
+        if (usernameCookie != null)
         {
-            HttpCookie usernameCookie = Request.Cookies["username"];
-            if (usernameCookie != null)
+            string username = usernameCookie.Value;
+            List<UserFormAuth> auths = app.GetUserFormAuths();
+            bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
+            ViewBag.isAdmin = isAdmin;
+            ViewBag.Username = username;
+            string year = app.GetYearByGuid(guid);
+            string idpGroupName = app.GetIDPGroupNameByIDPGroupId(idpGroupId);
+
+            string id = app.GetIdByCookie(username);
+            int count = app.GetCountEnrollmentById(id);
+            User user = app.GetUserByCookie(username);
+            if (user != null)
             {
-                string username = usernameCookie.Value;
-                List<UserFormAuth> auths = app.GetUserFormAuths();
-                bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
-                ViewBag.isAdmin = isAdmin;
-                ViewBag.Username = username;
-                string year = app.GetYearByGuid(guid);
-                string idpGroupName = app.GetIDPGroupNameByIDPGroupId(idpGroupId);
-
-                string id = app.GetIdByCookie(username);
-                int count = app.GetCountEnrollmentById(id);
-                User user = app.GetUserByCookie(username);
-                if (user != null)
-                {
-                    ViewBag.Prefix = user.Prefix;
-                    ViewBag.FirstName = user.FirstNameTH;
-                    ViewBag.LastName = user.LastNameTH;
-                    ViewBag.Company = user.Company;
-                    ViewBag.Joblevel = user.JobLevel;
-                    ViewBag.Department = user.Department;
-                    ViewBag.Position = user.Position;
-                }
-                ViewBag.Count = count;
-                ViewBag.Id = id;
-                ViewBag.IDPGroupID = idpGroupId;
-                ViewBag.IDPGroupName = idpGroupName;
-                ViewBag.Guid = guid;
-                string status = app.GetStatus(id, idpGroupId);
-                ViewBag.Status = status;
-
-                ViewBag.Year = year;
-
-                List<Result> results = app.GetInfoEmployeeByGuid(guid);
-
-                return View(results);
+                ViewBag.Prefix = user.Prefix;
+                ViewBag.FirstName = user.FirstNameTH;
+                ViewBag.LastName = user.LastNameTH;
+                ViewBag.Company = user.Company;
+                ViewBag.Joblevel = user.JobLevel;
+                ViewBag.Department = user.Department;
+                ViewBag.Position = user.Position;
             }
-            else
-            {
-                return RedirectToAction("Index", "Form");
-            }
+            ViewBag.Count = count;
+            ViewBag.Id = id;
+            ViewBag.IDPGroupID = idpGroupId;
+            ViewBag.IDPGroupName = idpGroupName;
+            ViewBag.Guid = guid;
+            string status = app.GetStatus(id, idpGroupId);
+            ViewBag.Status = status;
+
+            ViewBag.Year = year;
+
+            List<Result> results = app.GetInfoEmployeeByGuid(guid);
+            List<RemarkHS> remarkHs = app.GetRemark(guid);    
+
+            ViewBag.Remark = remarkHs;
+
+            return View(results);
         }
+        else
+        {
+            return RedirectToAction("Index", "Form");
+        }
+    }
+    #endregion
     }
 }

@@ -16,7 +16,7 @@
                 </a>
             </li>
             <li class="breadcrumb-item">
-                <a class="link-body-emphasis fw-semibold text-decoration-none" style="color: #C8E8FF " href="@Url.Action("DetailIDPGroup", new { id = ViewBag.IDPGroupId })">รายละเอียด</a>
+                <a class="link-body-emphasis fw-semibold text-decoration-none" style="color: #C8E8FF " href="@Url.Action("DetailIDPGroup", new { id = ViewBag.IDPGroupId })">รายละเอียด (@ViewBag.IDPGroupId)</a>
             </li>
         </ol>
     </nav>
@@ -109,10 +109,10 @@
                     <tr>
                         <th width="5%" class="text-center">รหัส</th>
                         <th width="20%" class="text-center">ชื่อพนักงาน</th>
-                        <th width="10%" class="text-center">ตำแหน่ง</th>
+                        <th width="20%" class="text-center">ตำแหน่ง</th>
                         <th width="20%" class="text-center">ชื่อแผนก</th>
                         <th width="10%" class="text-center">ตำแหน่งขั้น</th>
-                        <th width="10%" class="text-center">บริษัท</th>
+                        <th width="5%" class="text-center">บริษัท</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -121,8 +121,8 @@
                         <tr>
                             <th scope="row" class="text-center">@enroll.Id</th>
                             <td>@enroll.User.Prefix @enroll.User.FirstNameTH @enroll.User.LastNameTH</td>
-                            <td class="text-center">@enroll.User.Position</td>
-                            <td class="text-center">@enroll.User.DepartmentName</td>
+                            <td>@enroll.User.Position</td>
+                            <td>@enroll.User.DepartmentName</td>
                             <td class="text-center">@enroll.User.JobLevel</td>
                             <td class="text-center">@enroll.User.Company</td>
                         </tr>
@@ -141,7 +141,10 @@
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
 <link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
 <script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
+<script src="~/JS/unpkg_exceljs.min.js"></script>
 <script type="text/javascript">
+    console.log(idpGroupItem);
+
     var js = jQuery.noConflict(true);
     js(document).ready(function () {
         js('#competencyTB').DataTable({
@@ -188,9 +191,7 @@
 
 
     });
-</script>
-<script src="https://unpkg.com/exceljs/dist/exceljs.min.js"></script>
-<script type="text/javascript">
+
     function exportTableToExcel(tableId) {
         var table = document.getElementById(tableId);
         var workbook = new ExcelJS.Workbook();
@@ -205,7 +206,7 @@
                 var cellData = cell.innerText;
 
                 if (cell.classList.contains("text-center") && cell.querySelector("img") !== null) {
-                    cellData = "1"; // Change the content to "1" for images in the 'Critical' column
+                    cellData = "1"; 
                 }
 
                 rowData.push(cellData);
@@ -218,13 +219,11 @@
 
             var link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'table_data.xlsx';
+            link.download = '@ViewBag.IDPGroupId' + '-Detail.xlsx';
             link.click();
         });
     }
 
-</script>
-<script type="text/javascript">
     function printTable(tableId) {
         var printContents = document.getElementById(tableId).outerHTML;
         var originalContents = document.body.innerHTML;
@@ -250,9 +249,8 @@
         printDocument.write('<h5>ปี: <code>@ViewBag.Year</code></h5>');
         printDocument.write('<h5>จำนวนคน: <code>@ViewBag.Member</code> | จำนวน Competency: <code>@ViewBag.Competency</code></h5>');
         printDocument.write('<h5>วันที่พิมพ์: <code>' + new Date().toLocaleDateString() + '</code></h5>');
-        //printDocument.write('<table class="table">');
         printDocument.write(printContents);
-        //printDocument.write('</table>');
+
 
         printDocument.write('<table class="table table-hover table-striped mt-5">');
         printDocument.write('<thead style="background-color: #2D4686; color: #C8E8FF">');

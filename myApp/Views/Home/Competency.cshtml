@@ -97,77 +97,14 @@
                                             @using (Html.BeginForm("EditCompetency", "Home", FormMethod.Post))
                                             {
                                                 <input type="hidden" name="CompetencyId" value="@cmpty.CompetencyId" />
-                                                <div class="modal-body text-center" style="background-color: #eeeeee60; border-top-left-radius: 6px; border-top-right-radius: 6px">
-                                                    <i class="fa fa-stack-overflow" aria-hidden="true" style="color: #dc3545;font-size: 50px"></i>
-                                                    <h3><strong>แก้ไข Competency:</strong> <code>@cmpty.CompetencyId</code></h3>
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5 fw-bold" id="CreateIDPGroupLabel">
+                                                        <i class="fa-solid fa-layer-group gradient-icon-add fs-3"></i> แก้ไข Competency
+                                                    </h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <div class="row">
-                                                        <div class="col-md-5 col-lg-5">
-                                                            <div class="col">
-                                                                <label for="createType" class="form-label form-label-id p-1">ชนิด</label>
-                                                                <select class="form-select" id="createType" name="Type">
-                                                                    <option value="CC" @(cmpty.Type == "CC" ? "selected" : "")>CC</option>
-                                                                    <option value="FC" @(cmpty.Type == "FC" ? "selected" : "")>FC</option>
-                                                                    <option value="MC" @(cmpty.Type == "MC" ? "selected" : "")>MC</option>
-                                                                    <option value="TC" @(cmpty.Type == "TC" ? "selected" : "")>TC</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="col">
-                                                                <label for="createCompetencyNameTH" class="form-label form-label-detail p-1">ชื่อภาษาไทย</label>
-                                                                <input type="text" class="form-control" id="createCompetencyNameTH" name="CompetencyNameTH" value="@cmpty.CompetencyNameTH" style="min-width: 100%;">
-                                                            </div>
-                                                            <div class="col">
-                                                                <label for="createCompetencyNameEN" class="form-label form-label-detail p-1">ชื่อภาษาอังกฤษ</label>
-                                                                <input type="text" class="form-control" id="createCompetencyNameEN" name="CompetencyNameEN" value="@cmpty.CompetencyNameEN" style="min-width: 100%;">
-                                                            </div>
-                                                            <div class="col">
-                                                                <label for="createCompentencyDesc" class="form-label form-label-detail p-1">Definition</label>
-                                                                <textarea class="form-control" id="createCompentencyDesc" name="CompetencyDesc" style="min-width: 100%; height:7px">@cmpty.CompetencyDesc</textarea>
-                                                            </div>
-                                                            <hr />
-                                                            <div class="mt-3 list-group">
-                                                                <div class="input-group-text form-label-id">
-                                                                    <div>ใช้ Competency นี้?</div>
-                                                                </div>
-                                                                <div class="input-group mt-2">
-                                                                    <div class="input-group-text">
-                                                                        <input class="form-check-input mt-0" type="radio" value="true" @(cmpty.Active == true ? "checked" : "") name="Active" aria-label="Radio button for following text input">
-                                                                    </div>
-                                                                    <div class="form-control">ใช้</div>
-                                                                </div>
-                                                                <div class="input-group mt-2">
-                                                                    <div class="input-group-text">
-                                                                        <input class="form-check-input mt-0" type="radio" value="false" @(cmpty.Active == false ? "checked" : "") name="Active" aria-label="Radio button for following text input">
-                                                                    </div>
-                                                                    <div class="form-control">ไม่ใช้</div>
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-                                                        <div class="col-md-7 col-lg-7">
-                                                            <div>
-                                                                <label for="createPl1" class="form-label form-label-pl p-1">PL1</label>
-                                                                <textarea class="form-control" id="createPl1" name="Pl1" style="min-width: 100%; height:7px">@cmpty.Pl1</textarea>
-                                                            </div>
-                                                            <div>
-                                                                <label for="createPl2" class="form-label form-label-pl p-1">PL2</label>
-                                                                <textarea class="form-control" id="createPl2" name="Pl2" style="min-width: 100%; height:7px">@cmpty.Pl2</textarea>
-                                                            </div>
-                                                            <div>
-                                                                <label for="createPl3" class="form-label form-label-pl p-1">PL3</label>
-                                                                <textarea class="form-control" id="createPl3" name="Pl3" style="min-width: 100%; height:7px">@cmpty.Pl3</textarea>
-                                                            </div>
-                                                            <div>
-                                                                <label for="createPl4" class="form-label form-label-pl p-1">PL4</label>
-                                                                <textarea class="form-control" id="createPl4" name="Pl4" style="min-width: 100%; height:7px">@cmpty.Pl4</textarea>
-                                                            </div>
-                                                            <div>
-                                                                <label for="createPl5" class="form-label form-label-pl p-1">PL5</label>
-                                                                <textarea class="form-control" id="createPl5" name="Pl5" style="min-width: 100%; height:7px">@cmpty.Pl5</textarea>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    
                                                 </div>
                                                 <div class="modal-footer flex-nowrap p-0">
                                                     <button type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 py-3 rounded-0 m-0 " style="background-color: #f8d7da;" data-bs-dismiss="modal">No thanks</button>
@@ -230,8 +167,7 @@
             }
         });
     });
-</script>
-<script>
+
     document.addEventListener('DOMContentLoaded', function () {
         const filterSelect = document.getElementById('selectType');
         const tableRows = document.querySelectorAll('#myTable tbody tr');

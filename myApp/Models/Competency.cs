@@ -34,6 +34,7 @@ namespace myApp.Models
   
         [DisplayName("ใช้งานอยู่")]
         public bool Active { get; set; }
+        public bool Delete { get; set; }
         public virtual IDPGroupItem IDPGroupItem { get; set; }
     }
 }

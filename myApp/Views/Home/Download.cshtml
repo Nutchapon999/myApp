@@ -108,7 +108,7 @@
 
                         foreach (var resultItem in nestedGroupedUser.Select(u => u.ResultItem))
                         {
-                            <tr data-company="@user.Company" data-year="@user.Result.Year" data-costcenter="@user.CostCenter" data-idpgroup="@user.ResultItem.IDPGroupId">
+                            <tr data-company="@user.Company" data-year="@user.Result.Year" data-costcenter="@user.CostCenter" data-idpgroup="@user.ResultItem.IDPGroupId" id="list" style="display:none">
                                 @if (resultItem == user.ResultItem)
                                 {
                                     <td>@resultItem.IDPGroupId</td>
@@ -184,7 +184,6 @@
         </table>
     </div>
 </main>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!--<script type="text/javascript">
     var js = jQuery.noConflict(true);
     js(document).ready(function () {
@@ -209,7 +208,7 @@
         });
     });
 </script>-->
-<script src="https://unpkg.com/exceljs/dist/exceljs.min.js"></script>
+<script src="~/JS/unpkg_exceljs.min.js"></script>
 <script type="text/javascript">
     $(document).ready(function () {
         $("#selectYear, #selectIDPGroup, #selectCompany, #selectCostCenter").change(function () {

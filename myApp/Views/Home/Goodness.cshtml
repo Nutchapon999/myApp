@@ -171,7 +171,7 @@
                                                     <span class="input-group-text">
                                                         <i class="fa-solid fa-file fs-4" aria-hidden="true"></i>
                                                     </span>
-                                                    <input type="file" class="form-control justify-content-center " name="FileEdit" id="FileEdit-@good.GDId" value="@good.file">
+                                                    <input type="file" class="form-control justify-content-center " name="FileEdit" id="FileEdit-@good.GDId" value="@good.FileID">
                                                 </div>
                                             </div>
                                             <div class="modal-footer flex-nowrap p-0">
@@ -193,12 +193,13 @@
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
-                                                
-                                            <div class="modal-footer flex-nowrap p-0">
-                                                <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" data-bs-dismiss="modal"><i class="fa-solid fa-ban gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ยกเลิก</strong></button>
-                                                <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" onclick="DeleteGoodness('@good.GDId')">
-                                                    <i class="fa-solid fa-save gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">บันทึก</strong>
-                                                </button>
+
+                                                <div class="modal-footer flex-nowrap p-0">
+                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" data-bs-dismiss="modal"><i class="fa-solid fa-ban gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ยกเลิก</strong></button>
+                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" onclick="DeleteGoodness('@good.GDId')">
+                                                        <i class="fa-solid fa-save gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">บันทึก</strong>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -410,14 +411,14 @@
         //console.log(file);
 
         if (type === "__other__") {
-            type = $("#OtherTypeEdit-" + gdId).val(); // Get the value from the textarea
+            type = $("#OtherTypeEdit-" + gdId).val(); 
         }
 
         var data = {
             GDId: gdId,
             TypeEdit: type,
             CompanyEdit: company,
-            DescEdit: desc,
+            DescEdit: desc, 
             DateEdit: date,
             HourEdit: hour,
             //FileEdit: file,
@@ -454,35 +455,6 @@
             }
         });
     }
-
-
-</script>
-<script>
-
-    function submitFormAjax(caseVal) {
-        // กำหนดค่า caseVal ให้กับฟิลด์ input ที่มีชื่อเป็น "caseVal" ในฟอร์ม
-        $('#caseValInput').val(caseVal);
-
-        var formData = $('#myForm').serialize();
-        $.ajax({
-            type: 'POST',
-            url: $('#myForm').attr('action'),
-            data: formData,
-            success: function (data) {
-                if (caseVal === "1") {
-                    window.location.href = '@Url.Action("Goodness", "Home", new { year = ViewBag.Year })';
-                }
-                else if (caseVal === "2") {
-                    window.location.href = '@Url.Action("Index", "Form")';
-                }
-
-            },
-            error: function (xhr, status, error) {
-                console.warn("Error");
-            }
-        });
-    }
-
 
     function toggleInput(selectElement) {
         var inputElement = selectElement.parentElement.querySelector('input[name="Type"]');

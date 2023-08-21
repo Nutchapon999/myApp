@@ -67,8 +67,8 @@
                                             <div class="modal-body">
                                                 <div class="alert alert-info alert-dismissible fade show text-center mt-3" role="alert">
                                                     <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-                                                    <strong>ข้อควรระวัง:</strong> รหัส IDP Group นั้นหากสร้างแล้วไม่อาจแก้ไขได้ โปรดตรวจสอบให้แน่ใจก่อนทำการ <strong>"บันทึก"</strong>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                                    <strong>ข้อควรระวัง:</strong> รหัส IDP Group นั้นหาก<strong>บันทึก</strong>แล้วไม่อาจแก้ไขได้ โปรดตรวจสอบให้แน่ใจก่อนทำการ<strong>บันทึก</strong>
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                                 </div>
 
                                                 <div class="input-group input-group-lg mt-3 d-flex justify-content-center">
@@ -145,7 +145,7 @@
                     {
                         <tr>
                             <td class="text-center">@idp.IDPGroupId</td>
-                            <td class="text-center">@idp.IDPGroupName</td>
+                            <td class="text-start">@idp.IDPGroupName</td>
                             <td class="text-end">@idp.EmployeeEnrollmentCount</td>
                             <td class="text-end">@idp.EmployeeCompetencyCount</td>
                             <td class="text-center">@idp.Year</td>
@@ -173,6 +173,12 @@
                                 <div class="modal fade" id="copyModal-@idp.IDPGroupId" tabindex="-1" aria-labelledby="copyModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-4 fw-bold">
+                                                    <i class="fa-solid fa-clone"></i> คัดลอก IDP Group (@idp.IDPGroupId)
+                                                </h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
                                             @using (Html.BeginForm("CopyIDPGroup", "Home", FormMethod.Post))
                                             {
                                                 <input type="hidden" name="IDPGroupIdCopy" value="@idp.IDPGroupId" />
@@ -201,6 +207,7 @@
                                                             }
                                                         </select>
                                                     </div>
+                                                    <hr />
                                                     <div class="input-group mt-3 d-flex justify-content-center">
                                                         <div class="input-group-text">
                                                             <input class="form-check-input mt-0" type="checkbox" name="Emp" value="true" aria-label="Checkbox for following text input">
@@ -226,7 +233,7 @@
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h1 class="modal-title fs-5 fw-bold" id="staticBackdropLabel">
+                                                <h1 class="modal-title fs-3 fw-bold" id="staticBackdropLabel">
                                                     <i class="fa-solid fa-pencil gradient-text-edit"></i> แก้ไข IDP Group
                                                 </h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -258,8 +265,12 @@
                                                 </div>
 
                                                 <div class="modal-footer flex-nowrap p-0">
-                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" data-bs-dismiss="modal"><i class="fa-solid fa-ban gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ยกเลิก</strong></button>
-                                                    <button type="submit" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit"><i class="fa-solid fa-save gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">บันทึก</strong></button>
+                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" data-bs-dismiss="modal">
+                                                        <i class="fa-solid fa-ban gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ยกเลิก</strong>
+                                                    </button>
+                                                    <button type="submit" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit">
+                                                        <i class="fa-solid fa-save gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">บันทึก</strong>
+                                                    </button>
                                                 </div>
                                             }
                                         </div>
@@ -267,22 +278,30 @@
                                 </div>
                                 <div class="modal fade" id="deleteModal-@idp.IDPGroupId" aria-labelledby="deleteModalLabel" aria-hidden="true">
                                     <div class="modal-dialog modal-dialog-centered">
-                                        @using (Html.BeginForm("DeleteIDPGroup", "Home", FormMethod.Post, new { id = "myForm" }))
-                                        {
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-4">ต้องการที่จะลบรายวิชานี้หรือไม่?</h1>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <h5>รหัส Competency: @idp.IDPGroupId</h5>
-                                                </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-                                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="deleteForm('@idp.IDPGroupId')">ลบ</button>
-                                                </div>
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-3 fw-bold">
+                                                    <i class="fa-solid fa-trash-can gradient-text-delete"></i> ลบ IDP Group
+                                                </h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
-                                        }
+                                            @using (Html.BeginForm("DeleteIDPGroup", "Home", FormMethod.Post, new { id = "myForm" }))
+                                            {
+                                                <div class="modal-body">
+                                                    <h5>
+                                                        คุณต้องการที่จะ<strong class="gradient-text-delete">ลบ</strong> IDP Group: <strong>@idp.IDPGroupId</strong> นี้หรือไม่?
+                                                    </h5>
+                                                </div>
+                                                <div class="modal-footer flex-nowrap p-0">
+                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" data-bs-dismiss="modal">
+                                                        <i class="fa-solid fa-ban gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">ยกเลิก</strong>
+                                                    </button>
+                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" onclick="deleteForm('@idp.IDPGroupId')">
+                                                        <i class="fa-solid fa-trash-can gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ลบ</strong>
+                                                    </button>
+                                                </div>
+                                            }
+                                        </div>
                                     </div>
                                 </div>
                             </td>
@@ -337,7 +356,7 @@
                 window.location.href = '@Url.Action("IDPGroup", "Home")';
             },
             error: function (xhr, status, error) {
-                // Handle error
+                console.log(error);
             }
         });
     }
@@ -366,7 +385,6 @@
         filterTableByType();
     });
 </script>
-
 <style>
 
     main {

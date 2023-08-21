@@ -25,6 +25,7 @@ namespace myApp.Models
         public string Q3 { get; set; }
         public string Q4 { get; set; }
         public string DevRst { get; set;}
+        public string FileId { get; set; }
         [Required]
         public int Actual2 { get; set; }
         public int Gap2 { get; set; }
@@ -40,6 +41,7 @@ namespace myApp.Models
         public string OriginalQ3 { get; set; }
         public string OriginalQ4 { get; set; }
         public string OriginalDevRst { get; set; }
+        public string OriginalFileID { get; set; }
         public int OriginalActual2 { get; set; }
         public int OriginalGap2 { get; set; }
 

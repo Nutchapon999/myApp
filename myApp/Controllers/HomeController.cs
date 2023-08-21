@@ -36,7 +36,7 @@ namespace myApp.Controllers
         OleDbConnection Econ;
 
 
-        //COMPETENCY
+        #region COMPETENCY
         public ActionResult Competency()
         {
             
@@ -125,15 +125,14 @@ namespace myApp.Controllers
             }
             return RedirectToAction("Competency", "Home");
         }
-        
         public ActionResult DeleteCompetency(string id)
         {
             app.DeleteCompetency(id);
-            return RedirectToAction("Index");
+            return RedirectToAction("Competency", "Home");
         }
+        #endregion
 
-
-        //IDP GROUP
+        #region IDP GROUP
         public ActionResult IDPGroup()
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
@@ -317,9 +316,9 @@ namespace myApp.Controllers
                 return RedirectToAction("Index", "Form");
             }
         }
-       
+        #endregion
 
-        //USER
+        #region USER
         public ActionResult Employee()
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
@@ -515,32 +514,34 @@ namespace myApp.Controllers
             return RedirectToAction("AddIDPGroup", new { id = id });
 
         }
+        #endregion
 
-
-        //IDP GROUP ITEM
+        #region IDP GROUP ITEM
         public ActionResult AddCompetency(string idpGroupId)
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
             if (usernameCookie != null)
             {
-                
-                    string username = usernameCookie.Value;
-                    List<UserFormAuth> auths = app.GetUserFormAuths();
-                    bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
-                    bool canAdd = app.CheckIfIDPGroupIsDraft(idpGroupId);
+                string username = usernameCookie.Value;
+                List<UserFormAuth> auths = app.GetUserFormAuths();
+                bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
+                bool canAdd = app.CheckIfIDPGroupIsDraft(idpGroupId);
 
-                    ViewBag.isAdmin = isAdmin;
-                    ViewBag.Username = username;
-                    ViewBag.CanAdd = canAdd;
-                    ViewBag.Massage = "IDP Group นี้ใช้งานแล้วและไม่สามารถเพิ่มได้";
+                ViewBag.isAdmin = isAdmin;
+                ViewBag.Username = username;
+                ViewBag.CanAdd = canAdd;
+                ViewBag.Massage = "IDP Group นี้ใช้งานแล้วและไม่สามารถเพิ่มได้";
 
-                    string idpGroupName = app.GetIDPGroupNameByIDPGroupId(idpGroupId);
-                    string year = app.GetYearById(idpGroupId);
-                    List<IDPGroupItem> competencyItems = app.GetIDPGroupItems(idpGroupId);
-                    ViewBag.IDPGroupId = idpGroupId;
-                    ViewBag.IDPGroupName = idpGroupName;
-                    ViewBag.Year = year;
-                    return View(competencyItems);
+                int count = app.GetCountCompetency(idpGroupId);
+
+                string idpGroupName = app.GetIDPGroupNameByIDPGroupId(idpGroupId);
+                string year = app.GetYearById(idpGroupId);
+                List<IDPGroupItem> competencyItems = app.GetIDPGroupItems(idpGroupId);
+                ViewBag.IDPGroupId = idpGroupId;
+                ViewBag.IDPGroupName = idpGroupName;
+                ViewBag.Year = year;
+                ViewBag.Count = count;
+                return View(competencyItems);
                 
             }
             else
@@ -653,11 +654,11 @@ namespace myApp.Controllers
                 TempData["ErrorMessage"] = ex.Message;
             }
 
-            return RedirectToAction("AddCompetency", new { idpGroupId = idpGroupId });
+            return null;
         }
+        #endregion
 
-
-        //USER ENROLL
+        #region USER ENROLL
         public ActionResult AddEmployee(string idpGroupId)
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
@@ -824,9 +825,9 @@ namespace myApp.Controllers
 
             return RedirectToAction("AddEmployee", new { idpGroupId = idpGroupId });
         }
+        #endregion
 
-
-        //UPLOAD COMPETENCY
+        #region UPLOAD COMPETENCY
         public ActionResult UploadCompetency()
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
@@ -894,8 +895,8 @@ namespace myApp.Controllers
                 {
                     con.Open();
                     SqlCommand checkExistCommand = new SqlCommand("SELECT COMPETENCY_ID FROM IDP_COMPTY WHERE COMPETENCY_ID = @CompetencyId", con);
-                    SqlCommand insertCommand = new SqlCommand("INSERT INTO IDP_COMPTY (COMPETENCY_ID, COMPETENCY_NAME_TH, COMPETENCY_NAME_EN, COMPETENCY_DESC, PL1, PL2, PL3, PL4, PL5, ACTIVE, TYPE) " +
-                                                             "VALUES (@CompetencyId, @CompetencyNameTH, @CompetencyNameEN, @CompetencyDesc, @Pl1, @Pl2, @Pl3, @Pl4, @Pl5, @Active, @Type)", con);
+                    SqlCommand insertCommand = new SqlCommand("INSERT INTO IDP_COMPTY (COMPETENCY_ID, COMPETENCY_NAME_TH, COMPETENCY_NAME_EN, COMPETENCY_DESC, PL1, PL2, PL3, PL4, PL5, ACTIVE, TYPE, DELETED) " +
+                                                             "VALUES (@CompetencyId, @CompetencyNameTH, @CompetencyNameEN, @CompetencyDesc, @Pl1, @Pl2, @Pl3, @Pl4, @Pl5, @Active, @Type, @Delete)", con);
 
                     foreach (DataRow row in dt.Rows)
                     {
@@ -918,13 +919,14 @@ namespace myApp.Controllers
                             insertCommand.Parameters.AddWithValue("@Pl5", row["PL5"]);
                             insertCommand.Parameters.AddWithValue("@Active", row["ACTIVE"]);
                             insertCommand.Parameters.AddWithValue("@Type", row["TYPE"]);
+                            insertCommand.Parameters.AddWithValue("@Delete", row["DELETED"]);
 
                             insertCommand.ExecuteNonQuery();
                         }
                         else
                         {
                             SqlCommand updateCommand = new SqlCommand("UPDATE IDP_COMPTY SET COMPETENCY_NAME_TH = @CompetencyNameTH, COMPETENCY_NAME_EN = @CompetencyNameEN, COMPETENCY_DESC = @CompetencyDesc, " +
-                                "Pl1 = @Pl1, Pl2 = @Pl2, Pl3 = @Pl3, Pl4 = @Pl4, Pl5 = @Pl5, Active = @Active, Type = @Type WHERE COMPETENCY_ID = @CompetencyId", con);
+                                "PL1 = @Pl1, PL2 = @P2, PL3 = @Pl3, PL4 = @Pl4, PL5 = @Pl5, Active = @Active, TYPE = @Type, DELETED = @Delete WHERE COMPETENCY_ID = @CompetencyId", con);
 
                             updateCommand.Parameters.AddWithValue("@CompetencyId", competencyId);
                             updateCommand.Parameters.AddWithValue("@CompetencyNameTH", row["COMPETENCY_NAME_TH"]);
@@ -937,7 +939,7 @@ namespace myApp.Controllers
                             updateCommand.Parameters.AddWithValue("@Pl5", row["PL5"]);
                             updateCommand.Parameters.AddWithValue("@Active", row["ACTIVE"]);
                             updateCommand.Parameters.AddWithValue("@Type", row["TYPE"]);
-                           
+                            updateCommand.Parameters.AddWithValue("@Delete", row["DELETED"]);
 
                             updateCommand.ExecuteNonQuery();
                         }
@@ -950,145 +952,9 @@ namespace myApp.Controllers
                 TempData["UploadError"] = "เกิดข้อผิดพลาดในการอัปโหลด: " + ex.Message;
             }
         }
+        #endregion
 
-
-        //UPLOAD EMPLOYEE
-        public ActionResult UploadEmployee()
-        {
-            ViewBag.Username = Request.Cookies["username"].Value;
-            return View();
-        }
-        [HttpPost]
-        public ActionResult UploadEmployee(HttpPostedFileBase file)
-        {
-            ViewBag.Username = Request.Cookies["username"].Value;
-
-            if (file != null && file.ContentLength > 0)
-            {
-                string filename = Guid.NewGuid() + Path.GetExtension(file.FileName);
-                string filepath = "/Excel/" + filename;
-                file.SaveAs(Server.MapPath(filepath));
-                InsertExceldata2(filepath, filename);
-                TempData["UploadSuccess"] = true;
-
-            }
-
-            return RedirectToAction("UploadEmployee");
-        }
-        private void InsertExceldata2(string FilePath, string FileName)
-        {
-            string fullpath = Server.MapPath("/Excel/") + FileName;
-            ExcelConn(fullpath);
-            String query = string.Format("select * from [{0}]", "Sheet1$");
-
-            try
-            {
-                OleDbCommand Ecom = new OleDbCommand(query, Econ);
-                Econ.Open();
-
-                DataSet ds = new DataSet();
-                OleDbDataAdapter oda = new OleDbDataAdapter(query, Econ);
-                Econ.Close();
-                oda.Fill(ds);
-
-                DataTable dt = ds.Tables[0];
-
-                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyConnection"].ConnectionString))
-                {
-                    con.Open();
-                    SqlCommand checkExistCommand = new SqlCommand("SELECT ID FROM MAS_USER_HR WHERE ID = @Id", con);
-                    SqlCommand insertCommand = new SqlCommand("INSERT INTO MAS_USER_HR (ID, PREFIX, FIRSTNAME_TH, LASTNAME_TH, FIRSTNAME_EN, LASTNAME_EN, STATUS, STATUS_DATE, COMPANY" +
-                        "                                       , LOCATION, POSITION, JOBLEVEL, COSTCENTER, DEPARTMENT, DEPARTMENT_NAME, EMAIL, USER_LOGIN, Enabled, SHIFTWORK" +
-                        "                                       , WORK_CENTER, HRPositionCode, JobRole, WorkAge, StartWorkDate) " +
-                                                             "VALUES (@Id, @Prefix, @FirstNameTH, @LastNameTH, @FirstNameEN, @LastNameEN, @Status, @StatusDate, @Company, " +
-                                                             "@Location, @Position, @JobLevel, @CostCenter, @Department, @DepartmentName, @Email, @UserLogin, @Enabled, @ShiftWork, " +
-                                                             "@WorkCenter, @HRPositionCode, @JobRole, @WorkAge, @StartWorkDate)", con);
-
-                    foreach (DataRow row in dt.Rows)
-                    {
-                        string Id = row["ID"].ToString();
-                        checkExistCommand.Parameters.Clear();
-                        checkExistCommand.Parameters.AddWithValue("@Id", Id);
-
-                        object existingCode = checkExistCommand.ExecuteScalar();
-                        if (existingCode == null)
-                        {
-                            insertCommand.Parameters.Clear();
-                            insertCommand.Parameters.AddWithValue("@Id", Id);
-                            insertCommand.Parameters.AddWithValue("@Prefix", row["PREFIX"]);
-                            insertCommand.Parameters.AddWithValue("@FirstNameTH", row["FIRSTNAME_TH"]);
-                            insertCommand.Parameters.AddWithValue("@LastNameTH", row["LASTNAME_TH"]);
-                            insertCommand.Parameters.AddWithValue("@FirstNameEN", row["FIRSTNAME_EN"]);
-                            insertCommand.Parameters.AddWithValue("@LastNameEN", row["LASTNAME_EN"]);
-                            insertCommand.Parameters.AddWithValue("@Status", row["STATUS"]);
-                            insertCommand.Parameters.AddWithValue("@StatusDate", row["STATUS_DATE"]);
-                            insertCommand.Parameters.AddWithValue("@Company", row["COMPANY"]);
-                            insertCommand.Parameters.AddWithValue("@Location", row["LOCATION"]);
-                            insertCommand.Parameters.AddWithValue("@Position", row["POSITION"]);
-                            insertCommand.Parameters.AddWithValue("@JobLevel", row["JOBLEVEL"]);
-                            insertCommand.Parameters.AddWithValue("@CostCenter", row["COSTCENTER"]);
-                            insertCommand.Parameters.AddWithValue("@Department", row["DEPARTMENT"].ToString());
-                            insertCommand.Parameters.AddWithValue("@DepartmentName", row["DEPARTMENT_NAME"]);
-                            insertCommand.Parameters.AddWithValue("@Email", row["EMAIL"]);
-                            insertCommand.Parameters.AddWithValue("@UserLogin", row["USER_LOGIN"]);
-                            insertCommand.Parameters.AddWithValue("@Enabled", row["Enabled"]);
-                            insertCommand.Parameters.AddWithValue("@ShiftWork", row["SHIFTWORK"]);
-                            insertCommand.Parameters.AddWithValue("@WorkCenter", row["WORK_CENTER"]);
-                            insertCommand.Parameters.AddWithValue("@HRPositionCode", row["HRPositionCode"]);
-                            insertCommand.Parameters.AddWithValue("@JobRole", row["JobRole"]);
-                            insertCommand.Parameters.AddWithValue("@WorkAge", row["WorkAge"]);
-                            insertCommand.Parameters.AddWithValue("@StartWorkDate", row["StartWorkDate"]);
-                                    
-                            insertCommand.ExecuteNonQuery();
-                        }
-                        else
-                        {
-                            SqlCommand updateCommand = new SqlCommand("UPDATE MAS_USER_HR SET PREFIX = @Prefix, FIRSTNAME_TH = @FirstNameTH, LASTNAME_TH = @LastNameTH, " +
-                                "FIRSTNAME_EN = @FirstNameEN, LASTNAME_EN = @LastNameEN, STATUS = @Status, STATUS_DATE = @StatusDate, COMPANY = @Company, LOCATION = @Location, " +
-                                "POSITION = @Position, JOBLEVEL = @JobLevel, COSTCENTER = @CostCenter, DEPARTMENT = @Department, DEPARTMENT_NAME = @DepartmentName, EMAIL = @Email, " +
-                                "USER_LOGIN = @UserLogin, Enabled = @Enabled, SHIFTWORK = @ShiftWork, WORK_CENTER = @WorkCenter, HRPositionCode = @HRPositionCode, JobRole = @JobRole, " +
-                                "WorkAge = @WorkAge, StartWorkDate = @StartWorkDate WHERE Id = @Id", con);
-
-                            updateCommand.Parameters.AddWithValue("@Id", Id);
-                            updateCommand.Parameters.AddWithValue("@Prefix", row["PREFIX"]);
-                            updateCommand.Parameters.AddWithValue("@FirstNameTH", row["FIRSTNAME_TH"]);
-                            updateCommand.Parameters.AddWithValue("@LastNameTH", row["LASTNAME_TH"]);
-                            updateCommand.Parameters.AddWithValue("@FirstNameEN", row["FIRSTNAME_EN"]);
-                            updateCommand.Parameters.AddWithValue("@LastNameEN", row["LASTNAME_EN"]);
-                            updateCommand.Parameters.AddWithValue("@Status", row["STATUS"]);
-                            updateCommand.Parameters.AddWithValue("@StatusDate", row["STATUS_DATE"]);
-                            updateCommand.Parameters.AddWithValue("@Company", row["COMPANY"]);
-                            updateCommand.Parameters.AddWithValue("@Location", row["LOCATION"]);
-                            updateCommand.Parameters.AddWithValue("@Position", row["POSITION"]);
-                            updateCommand.Parameters.AddWithValue("@JobLevel", row["JOBLEVEL"]);
-                            updateCommand.Parameters.AddWithValue("@CostCenter", row["COSTCENTER"]);
-                            updateCommand.Parameters.AddWithValue("@Department", row["DEPARTMENT"].ToString());
-                            updateCommand.Parameters.AddWithValue("@DepartmentName", row["DEPARTMENT_NAME"]);
-                            updateCommand.Parameters.AddWithValue("@Email", row["EMAIL"]);
-                            updateCommand.Parameters.AddWithValue("@UserLogin", row["USER_LOGIN"]);
-                            updateCommand.Parameters.AddWithValue("@Enabled", row["Enabled"]);
-                            updateCommand.Parameters.AddWithValue("@ShiftWork", row["SHIFTWORK"]);
-                            updateCommand.Parameters.AddWithValue("@WorkCenter", row["WORK_CENTER"]);
-                            updateCommand.Parameters.AddWithValue("@HRPositionCode", row["HRPositionCode"]);
-                            updateCommand.Parameters.AddWithValue("@JobRole", row["JobRole"]);
-                            updateCommand.Parameters.AddWithValue("@WorkAge", row["WorkAge"]);
-                            updateCommand.Parameters.AddWithValue("@StartWorkDate", row["StartWorkDate"]);
-                          
-
-                            updateCommand.ExecuteNonQuery();
-                        }
-
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                TempData["UploadError"] = "เกิดข้อผิดพลาดในการอัปโหลด: " + ex.Message;
-            }
-        }
-
-
-        //UPLOAD IDP GROUP
+        #region UPLOAD IDP GROUP
         public ActionResult UploadIDPGroup()
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
@@ -1190,9 +1056,9 @@ namespace myApp.Controllers
                 TempData["UploadError"] = "เกิดข้อผิดพลาดในการอัปโหลด: " + ex.Message;
             }
         }
+        #endregion
 
-
-        //EMAIL
+        #region EMAIL
         public ActionResult SendEmail()
         {
             List<IDPGroup> competencyForms = app.SelectIDPGroup();
@@ -1245,9 +1111,9 @@ namespace myApp.Controllers
 
             return RedirectToAction("SendEmail");
         }
+        #endregion
 
-
-        //FORM
+        #region FORM
         public ActionResult SelectForm(string user, string year)
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
@@ -1393,9 +1259,9 @@ namespace myApp.Controllers
             return RedirectToAction("Form", "Home", new { user = user, idpGroupId = IDPGroup, guid = Guid });
 
         }
+        #endregion
 
-
-        //INFO
+        #region INFO
         public ActionResult Info(string user, string idpGroupId, string guid)
         {
 
@@ -1441,8 +1307,9 @@ namespace myApp.Controllers
                 return RedirectToAction("Index", "Form");
             }
         }
+        #endregion
 
-        //GOODNESS
+        #region GOODNESS
         public ActionResult Goodness(string year) 
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
@@ -1539,8 +1406,9 @@ namespace myApp.Controllers
             app.DeleteGoodness(GDId);
             return null;
         }
+        #endregion
 
-        //DOWNLOAD
+        #region DOWNLOAD
         public ActionResult Download()
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
@@ -1565,5 +1433,6 @@ namespace myApp.Controllers
                 return RedirectToAction("Index", "Form");
             }
         }
+        #endregion
     }
 }

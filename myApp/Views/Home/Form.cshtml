@@ -298,7 +298,7 @@
                             </td>
                             <td class="text-center">
                                 <span id="priority-@i">
-                                    @if(enroll.ResultItem.Priority != null)
+                                    @if (enroll.ResultItem.Priority != null)
                                     {
                                         <select class="form-select" name="forms[@i].Priority" id="prioritySelect-row-@i">
                                             <option value="A" @(enroll.ResultItem.Priority == "A" ? "selected" : "")>A</option>
@@ -1463,14 +1463,11 @@
     }
 
 </script>
-    
+
 
 <script src="~/Scripts/jquery-3.4.1.min.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css" />
-<link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.dataTables.min.css" />
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js"></script>
-<script src="https://cdn.datatables.net/fixedcolumns/4.2.2/js/dataTables.fixedColumns.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.4.1/js/dataTables.responsive.min.js"></script>
+<link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
+<script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
 <script type="text/javascript">
     var js = jQuery.noConflict(true);
     js(document).ready(function () {

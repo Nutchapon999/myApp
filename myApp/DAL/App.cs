@@ -24,14 +24,15 @@ namespace myApp.DAL
         }
 
         public string ConnectionString;
-        //COMPETENCY
+
+        #region COMPETENCY
         public List<Competency> GetCompetencies()
         {
             List<Competency> competencies = new List<Competency>();
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = "SELECT * FROM IDP_COMPTY";
+                string query = "SELECT * FROM IDP_COMPTY WHERE DELETED = 1";
 
                 SqlCommand command = new SqlCommand(query, connection);
 
@@ -152,7 +153,7 @@ namespace myApp.DAL
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                string query = @"UPDATE IDP_COMPTY SET TYPE = @Type, COMPETENCY_NAME_TH = @TH, COMPETENCY_NAME_EN = @EN, COMPETENCY_DESC = @Desc, " +
+                string query = "UPDATE IDP_COMPTY SET TYPE = @Type, COMPETENCY_NAME_TH = @TH, COMPETENCY_NAME_EN = @EN, COMPETENCY_DESC = @Desc, " +
                             "PL1 = @Pl1, PL2 = @Pl2, PL3 = @Pl3, PL4 = @Pl4, PL5 = @Pl5, ACTIVE = @Active, UPDATE_BY = @UpdateBy, UPDATE_ON = GETDATE() " +
                             "WHERE COMPETENCY_ID = @Id";
 
@@ -183,9 +184,9 @@ namespace myApp.DAL
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
 
-                DeleteCompetencyItemByCompetencyId(competencyId);
+                //DeleteCompetencyItemByCompetencyId(competencyId);
 
-                string query = "DELETE FROM IDP_COMPTY WHERE COMPETENCY_ID = @CompetencyId";
+                string query = "UPDATE IDP_COMPTY SET DELETED = 0 WHERE COMPETENCY_ID = @CompetencyId";
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
@@ -258,9 +259,9 @@ namespace myApp.DAL
 
             return type;
         }
+        #endregion
 
-
-        //IDP GROUP
+        #region IDP GROUP
         public List<IDPGroup> GetIDPGroups()
         {
             List<IDPGroup> iDPGroups = new List<IDPGroup>();
@@ -314,34 +315,6 @@ namespace myApp.DAL
                     command.ExecuteNonQuery();
                 }
             }
-        }
-        public IDPGroup EditIDPGroup(string idpGroupId, string username)
-        {
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                string query = "SELECT * FROM IDP_GROUP WHERE IDP_GROUP_ID = @IDPGroupId";
-
-                using (SqlCommand command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
-
-                    connection.Open();
-
-                    using (SqlDataReader reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            IDPGroup iDPGroup = new IDPGroup();
-                            iDPGroup.IDPGroupId = (string)reader["IDP_GROUP_ID"];
-                            iDPGroup.IDPGroupName = reader.IsDBNull(reader.GetOrdinal("IDP_GROUP_NAME")) ? null : (string)reader["IDP_GROUP_NAME"];
-                            iDPGroup.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
-
-                            return iDPGroup;
-                        }
-                    }
-                }
-            }
-            return null;
         }
         public void UpdateIDPGroup(IDPGroup idpGroup, string username)
         {
@@ -510,70 +483,6 @@ namespace myApp.DAL
 
             return year;
         }
-        public List<IDPGroup> GetDetails(string idpGroupId)
-        {
-            List<IDPGroup> iDPGroups = new List<IDPGroup>();
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-               
-                string query = "SELECT G.IDP_GROUP_ID, G.IDP_GROUP_NAME, G.YEAR, I.COMPETENCY_ID, C.COMPETENCY_NAME_TH ,I.PL, I.CRITICAL , EN.ID, HR.PREFIX, HR.FIRSTNAME_TH, HR.LASTNAME_TH, HR.JOBLEVEL, HR.POSITION, HR.DEPARTMENT_NAME, HR.COMPANY " +
-                    "FROM IDP_GROUP G " +
-                    "LEFT JOIN IDP_GROUP_ITEM I ON G.IDP_GROUP_ID = I.IDP_GROUP_ID " +
-                    "LEFT JOIN IDP_COMPTY C ON C.COMPETENCY_ID = I.COMPETENCY_ID " +
-                    "LEFT JOIN IDP_USER_ENROLL EN ON EN.IDP_GROUP_ID = G.IDP_GROUP_ID " +
-                    "LEFT JOIN MAS_USER_HR HR ON EN.ID = HR.ID " +
-                    "WHERE G.IDP_GROUP_ID = @IDPGroupId";
-
-                SqlCommand command = new SqlCommand(query, connection);
-
-                command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
-
-                connection.Open();
-
-                SqlDataReader reader = command.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    IDPGroup iDPGroup = new IDPGroup();
-
-                    iDPGroup.IDPGroupId = (string)reader["IDP_GROUP_ID"];
-                    iDPGroup.IDPGroupName = reader.IsDBNull(reader.GetOrdinal("IDP_GROUP_NAME")) ? null : (string)reader["IDP_GROUP_NAME"];
-                    iDPGroup.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
-
-                    IDPGroupItem idpGroupItem = new IDPGroupItem();
-                    idpGroupItem.CompetencyId = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_ID")) ? null : (string)reader["COMPETENCY_ID"];
-                    idpGroupItem.Pl = reader.IsDBNull(reader.GetOrdinal("PL")) ? null : (string)reader["PL"];
-                    idpGroupItem.Critical = reader.IsDBNull(reader.GetOrdinal("CRITICAL")) ? false : (bool)reader["CRITICAL"];
-
-                    Competency competency = new Competency();
-                    competency.CompetencyNameTH = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_NAME_TH")) ? null : (string)reader["COMPETENCY_NAME_TH"];
-
-                    Enrollment enrollment = new Enrollment();
-                    enrollment.Id = reader.IsDBNull(reader.GetOrdinal("ID")) ? null : (string)reader["ID"];
-
-                    User user = new User();
-                    user.Prefix = reader.IsDBNull(reader.GetOrdinal("PREFIX")) ? null : (string)reader["PREFIX"];
-                    user.FirstNameTH = reader.IsDBNull(reader.GetOrdinal("FIRSTNAME_TH")) ? null : (string)reader["FIRSTNAME_TH"];
-                    user.LastNameTH = reader.IsDBNull(reader.GetOrdinal("LASTNAME_TH")) ? null : (string)reader["LASTNAME_TH"];
-                    user.Company = reader.IsDBNull(reader.GetOrdinal("COMPANY")) ? null : (string)reader["COMPANY"];
-                    user.Position = reader.IsDBNull(reader.GetOrdinal("POSITION")) ? null : (string)reader["POSITION"];
-                    user.JobLevel = reader.IsDBNull(reader.GetOrdinal("JOBLEVEL")) ? null : (string)reader["JOBLEVEL"];
-                    user.DepartmentName = reader.IsDBNull(reader.GetOrdinal("DEPARTMENT_NAME")) ? null : (string)reader["DEPARTMENT_NAME"];
-
-
-                    iDPGroup.Competency = competency;
-                    iDPGroup.IDPGroupItem = idpGroupItem;
-                    iDPGroup.User = user;
-                    iDPGroup.Enrollment = enrollment;
-
-                    iDPGroups.Add(iDPGroup);
-                }
-                reader.Close();
-            }
-
-            return iDPGroups;
-        }
         public int GetCountCompetency(string idpGroupId)
         {
             int count = 0;
@@ -636,9 +545,9 @@ namespace myApp.DAL
                 }
             }
         }
+        #endregion
 
-
-        //IDP GROUP ITEM
+        #region IDP GROUP ITEM
         public List<IDPGroupItem> GetIDPGroupItems(string idpGroupId)
         {
             List<IDPGroupItem> competencyItems = new List<IDPGroupItem>();
@@ -811,6 +720,11 @@ namespace myApp.DAL
         }
         public void UpdateIDPGroupItems(Dictionary<string, IDPGroupItem> idpGroupItems, string idpGroupId)
         {
+            if (idpGroupItems.Count == 0)
+            {
+                return; 
+            }
+
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
@@ -897,37 +811,9 @@ namespace myApp.DAL
 
             return count;
         }
-        public int GetCountCompetencyOtherId(string idpGroupId, string year, string id)
-        {
+        #endregion
 
-            int count = 0;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                string query = "SELECT COUNT(*) AS OTHER " +
-                               "FROM IDP_USER_ENROLL EN " +
-                               "JOIN IDP_GROUP G ON EN.IDP_GROUP_ID = G.IDP_GROUP_ID " +
-                               "JOIN IDP_GROUP_ITEM GI ON G.IDP_GROUP_ID = GI.IDP_GROUP_ID " +
-                               "WHERE EN.ID = @id AND G.YEAR = @Year AND EN.IDP_GROUP_ID != @IDPGroupId " +
-                               "GROUP BY EN.ID";
-
-                SqlCommand command = new SqlCommand(query, connection);
-
-                command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
-                command.Parameters.AddWithValue("@Year", year);
-                command.Parameters.AddWithValue("@Id", id);
-
-                connection.Open();
-
-                count = (int)command.ExecuteScalar();
-            }
-
-            return count;
-            
-        }
-       
-
-        //EMPLOYEE
+        #region EMPLOYEE
         public List<User> GetUsers()
         {
             List<User> users = new List<User>();
@@ -1137,9 +1023,9 @@ namespace myApp.DAL
                 }
             }
         }
+        #endregion
 
-
-        //FORM
+        #region FORM
         public List<IDPGroup> SelectIDPGroup()
         {
             List<IDPGroup> iDPGroups = new List<IDPGroup>();
@@ -1240,7 +1126,7 @@ namespace myApp.DAL
             {
                 command.Connection = connection;
                 command.CommandText = "SELECT EN.ENROLL_ID, H.ID, HR.PREFIX, HR.FIRSTNAME_TH, HR.LASTNAME_TH, EN.IDP_GROUP_ID, G.IDP_GROUP_NAME, G.YEAR, I.COMPETENCY_ID, C.COMPETENCY_NAME_TH, I.PL, " +
-                                        "I.CRITICAL, F.GUID, F.RESULT_ITEM, F.REQUIREMENT, F.ACTUAL1, F.GAP1, F.PRIORITY, F.TYPE_PLAN, F.DEV_PLAN, F.Q1, F.Q2, F.Q3, F.Q4, F.DEV_RST, F.ACTUAL2, F.GAP2, " +
+                                        "I.CRITICAL, F.GUID, F.RESULT_ITEM, F.REQUIREMENT, F.ACTUAL1, F.GAP1, F.PRIORITY, F.TYPE_PLAN, F.DEV_PLAN, F.Q1, F.Q2, F.Q3, F.Q4, F.DEV_RST, F.ACTUAL2, F.GAP2, F.FILE_ID, " +
                                         "C.PL1, C.PL2, C.PL3, C.PL4, C.PL5 " +
                                         "FROM IDP_USER_ENROLL EN " +
                                         "LEFT JOIN MAS_USER_HR HR ON EN.ID = HR.ID " +
@@ -1303,6 +1189,7 @@ namespace myApp.DAL
                         resultItem.DevRst = reader.IsDBNull(reader.GetOrdinal("DEV_RST")) ? null : (string)reader["DEV_RST"];
                         resultItem.Actual2 = reader.IsDBNull(reader.GetOrdinal("ACTUAL2")) ? 0 : (int)reader["ACTUAL2"];
                         resultItem.Gap2 = reader.IsDBNull(reader.GetOrdinal("GAP2")) ? 0 : (int)reader["GAP2"];
+                        resultItem.FileId = reader.IsDBNull(reader.GetOrdinal("FILE_ID")) ? null : (string)reader["FILE_ID"];
 
                         /*RemarkHS remark = new RemarkHS();
                         remark.Name = reader.IsDBNull(reader.GetOrdinal("NAME")) ? null : (string)reader["NAME"];
@@ -1367,6 +1254,7 @@ namespace myApp.DAL
         }
         public void UpdateResultDetails(IEnumerable<ResultItem> resultItems, string guid)
         {
+
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
@@ -1379,6 +1267,7 @@ namespace myApp.DAL
                 {
                     foreach (ResultItem resultItem in resultItems)
                     {
+
                         updateCommand.Parameters.Clear();
                         updateCommand.Parameters.AddWithValue("@Guid", guid);
                         updateCommand.Parameters.AddWithValue("@CompetencyId", resultItem.CompetencyId);
@@ -1404,6 +1293,46 @@ namespace myApp.DAL
                 }
             }
         }
+        public void UpdateForm(List<ResultItem> resultItems, string guid)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string updateQuery = "UPDATE IDP_RESULT_ITEM SET ACTUAL1 = @Actual1, GAP1 = @Gap1, PRIORITY = @Priority, TYPE_PLAN = @Type, DEV_PLAN = @DevPlan, " +
+                                    "Q1 = @Q1, Q2 = @Q2, Q3 = @Q3, Q4 = @Q4, DEV_RST = @DevRst, ACTUAL2 = @Actual2, GAP2 = @Gap2, FILE_ID = @FileId " +
+                                    "WHERE GUID = @Guid AND RESULT_ITEM = @ResultItem";
+
+                using (SqlCommand updateCommand = new SqlCommand(updateQuery, connection))
+                {
+                    for (int i = 0; i < resultItems.Count; i++)
+                    {
+                        ResultItem resultItem = resultItems[i];
+
+                        updateCommand.Parameters.AddWithValue("@Guid", guid);
+                        updateCommand.Parameters.AddWithValue("@Actual1", (object)resultItem.Actual1 ?? DBNull.Value);
+                        updateCommand.Parameters.AddWithValue("@Gap1", resultItem.Actual1 - resultItem.Requirement);
+                        updateCommand.Parameters.AddWithValue("@Priority", resultItem.Priority ?? (object)DBNull.Value);
+                        updateCommand.Parameters.AddWithValue("@Type", (object)resultItem.TypePlan ?? DBNull.Value);
+                        updateCommand.Parameters.AddWithValue("@DevPlan", (object)resultItem.DevPlan ?? DBNull.Value);
+                        updateCommand.Parameters.AddWithValue("@Q1", (object)resultItem.Q1 ?? DBNull.Value);
+                        updateCommand.Parameters.AddWithValue("@Q2", (object)resultItem.Q2 ?? DBNull.Value);
+                        updateCommand.Parameters.AddWithValue("@Q3", (object)resultItem.Q3 ?? DBNull.Value);
+                        updateCommand.Parameters.AddWithValue("@Q4", (object)resultItem.Q4 ?? DBNull.Value);
+                        updateCommand.Parameters.AddWithValue("@DevRst", (object)resultItem.DevRst ?? DBNull.Value);
+                        updateCommand.Parameters.AddWithValue("@FileId", (object)resultItem.FileId ?? DBNull.Value);
+                        updateCommand.Parameters.AddWithValue("@Actual2", (object)resultItem.Actual2 ?? DBNull.Value);
+                        updateCommand.Parameters.AddWithValue("@Gap2", resultItem.Actual2 - resultItem.Requirement);
+                        updateCommand.Parameters.AddWithValue("@ResultItem", i + 1); 
+
+                        updateCommand.ExecuteNonQuery();
+
+                        updateCommand.Parameters.Clear();
+                    }
+                }
+            }
+        }
+
         public bool IsFormSubmitted(string Id, string idpGroupId)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -1543,47 +1472,6 @@ namespace myApp.DAL
 
             return resultItems;
         }
-        public List<ResultItem> GetResultItemByGuidOnInsert(string guid)
-        {
-            List<ResultItem> resultItems = new List<ResultItem>();
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            using (SqlCommand command = new SqlCommand())
-            {
-                command.Connection = connection;
-                command.CommandText = "SELECT * " +
-                                    "FROM IDP_RESULT_ITEM " +
-                                    "WHERE GUID = @Guid";
-
-                command.Parameters.AddWithValue("@Guid", guid);
-
-                connection.Open();
-
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        ResultItem resultItem = new ResultItem();
-                        resultItem.ResultItemId = reader.IsDBNull(reader.GetOrdinal("RESULT_ITEM")) ? 0 : (int)reader["RESULT_ITEM"];
-                        resultItem.Requirement = reader.IsDBNull(reader.GetOrdinal("REQUIREMENT")) ? 0 : (int)reader["REQUIREMENT"];
-                        resultItem.Actual1 = reader.IsDBNull(reader.GetOrdinal("ACTUAL1")) ? 0 : (int)reader["ACTUAL1"];
-                        resultItem.Gap1 = reader.IsDBNull(reader.GetOrdinal("GAP1")) ? 0 : (int)reader["GAP1"];
-                        resultItem.Priority = reader.IsDBNull(reader.GetOrdinal("PRIORITY")) ? null : (string)reader["PRIORITY"];
-                        resultItem.TypePlan = reader.IsDBNull(reader.GetOrdinal("TYPE_PLAN")) ? null : (string)reader["TYPE_PLAN"];
-                        resultItem.DevPlan = reader.IsDBNull(reader.GetOrdinal("DEV_PLAN")) ? null : (string)reader["DEV_PLAN"];
-                        resultItem.Q1 = reader.IsDBNull(reader.GetOrdinal("Q1")) ? null : (string)reader["Q1"];
-                        resultItem.Q2 = reader.IsDBNull(reader.GetOrdinal("Q2")) ? null : (string)reader["Q2"];
-                        resultItem.Q3 = reader.IsDBNull(reader.GetOrdinal("Q3")) ? null : (string)reader["Q3"];
-                        resultItem.Q4 = reader.IsDBNull(reader.GetOrdinal("Q4")) ? null : (string)reader["Q4"];
-                        resultItem.DevRst = reader.IsDBNull(reader.GetOrdinal("DEV_RST")) ? null : (string)reader["DEV_RST"];
-
-                        resultItems.Add(resultItem);
-                    }
-                }
-            }
-
-            return resultItems;
-        }
         public List<ResultItem> GetResultItemByGuidBeforeUpdate(string guid)
         {
             List<ResultItem> resultItems = new List<ResultItem>();
@@ -1669,115 +1557,6 @@ namespace myApp.DAL
             }
 
             return resultItems;
-        }
-        public void InsertLogOnInsertResultItems(List<int> resultItemIds, string username, List<ResultItem> resultItems, string guid)
-        {
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-
-                foreach (int resultItemId in resultItemIds)
-                {
-                    ResultItem resultItem = resultItems.Find(item => item.ResultItemId == resultItemId);
-
-                    if (resultItem != null)
-                    {
-                        string query = "INSERT INTO IDP_LOG (GUID, ITEM, UPDATED_BY, UPDATED_ON, COLUMN_UPDATED, OLD_VALUE, NEW_VALUE) " +
-                                       "VALUES (@Guid, @ResultItemId, @Username, GETDATE(), @ColumnUpdated, NULL, @NewValue)";
-
-                        using (SqlCommand command = new SqlCommand(query, connection))
-                        {
-                            if (resultItem.Actual1 == 0)
-                                continue;
-                            command.Parameters.AddWithValue("@Guid", guid);
-                            command.Parameters.AddWithValue("@ResultItemId", resultItemId);
-                            command.Parameters.AddWithValue("@Username", username);
-                            command.Parameters.AddWithValue("@ColumnUpdated", "Actual1");
-                            command.Parameters.AddWithValue("@NewValue", resultItem.Actual1.ToString());
-
-                            command.ExecuteNonQuery();
-                            
-                            if(resultItem.Gap1 < 0)
-                            {
-                                command.Parameters.Clear();
-                                command.Parameters.AddWithValue("@Guid", guid);
-                                command.Parameters.AddWithValue("@ResultItemId", resultItemId);
-                                command.Parameters.AddWithValue("@Username", username);
-                                command.Parameters.AddWithValue("@ColumnUpdated", "Priority");
-                                command.Parameters.AddWithValue("@NewValue", (object)resultItem.Priority ?? DBNull.Value);
-
-                                command.ExecuteNonQuery();
-
-                                command.Parameters.Clear();
-                                command.Parameters.AddWithValue("@Guid", guid);
-                                command.Parameters.AddWithValue("@ResultItemId", resultItemId);
-                                command.Parameters.AddWithValue("@Username", username);
-                                command.Parameters.AddWithValue("@ColumnUpdated", "TypePlan");
-                                command.Parameters.AddWithValue("@NewValue", (object)resultItem.TypePlan ?? DBNull.Value);
-
-                                command.ExecuteNonQuery();
-
-                                command.Parameters.Clear();
-                                command.Parameters.AddWithValue("@Guid", guid);
-                                command.Parameters.AddWithValue("@ResultItemId", resultItemId);
-                                command.Parameters.AddWithValue("@Username", username);
-                                command.Parameters.AddWithValue("@ColumnUpdated", "DevPlan");
-                                command.Parameters.AddWithValue("@NewValue", (object)resultItem.DevPlan ?? DBNull.Value);
-
-                                command.ExecuteNonQuery();
-                                
-                                if (resultItem.Q1 == "1")
-                                {
-                                    command.Parameters.Clear();
-                                    command.Parameters.AddWithValue("@Guid", guid);
-                                    command.Parameters.AddWithValue("@ResultItemId", resultItemId);
-                                    command.Parameters.AddWithValue("@Username", username);
-                                    command.Parameters.AddWithValue("@ColumnUpdated", "Q1");
-                                    command.Parameters.AddWithValue("@NewValue", (object)resultItem.Q1 ?? DBNull.Value);
-
-                                    command.ExecuteNonQuery();
-                                }
-
-                                if (resultItem.Q2 == "1")
-                                {
-                                    command.Parameters.Clear();
-                                    command.Parameters.AddWithValue("@Guid", guid);
-                                    command.Parameters.AddWithValue("@ResultItemId", resultItemId);
-                                    command.Parameters.AddWithValue("@Username", username);
-                                    command.Parameters.AddWithValue("@ColumnUpdated", "Q2");
-                                    command.Parameters.AddWithValue("@NewValue", (object)resultItem.Q2 ?? DBNull.Value);
-
-                                    command.ExecuteNonQuery();
-                                }
-
-                                if (resultItem.Q3 == "1")
-                                {
-                                    command.Parameters.Clear();
-                                    command.Parameters.AddWithValue("@Guid", guid);
-                                    command.Parameters.AddWithValue("@ResultItemId", resultItemId);
-                                    command.Parameters.AddWithValue("@Username", username);
-                                    command.Parameters.AddWithValue("@ColumnUpdated", "Q3");
-                                    command.Parameters.AddWithValue("@NewValue", (object)resultItem.Q3 ?? DBNull.Value);
-
-                                    command.ExecuteNonQuery();
-                                }
-
-                                if (resultItem.Q4 == "1")
-                                {
-                                    command.Parameters.Clear();
-                                    command.Parameters.AddWithValue("@Guid", guid);
-                                    command.Parameters.AddWithValue("@ResultItemId", resultItemId);
-                                    command.Parameters.AddWithValue("@Username", username);
-                                    command.Parameters.AddWithValue("@ColumnUpdated", "Q4");
-                                    command.Parameters.AddWithValue("@NewValue", (object)resultItem.Q4 ?? DBNull.Value);
-
-                                    command.ExecuteNonQuery();
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
         public void InsertLogOnUpdateResultItems(List<int> resultItemIds, string username, List<ResultItem> resultItemsBefore, List<ResultItem> resultItemsAfter, string status, string guid)
         {
@@ -2282,9 +2061,9 @@ namespace myApp.DAL
 
             return resultItems;
         }
+        #endregion
 
-
-        //ENROLLMENT
+        #region ENROLLMENT
         public List<Enrollment> GetEnrollments(string idpGroupId)
         {
             List<Enrollment> enrollments = new List<Enrollment>();
@@ -2426,28 +2205,6 @@ namespace myApp.DAL
                 }
             }
         }
-        public int GetCompetencyAllById(string id, string year)
-        {
-            int all = 0;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            using (SqlCommand command = new SqlCommand("SELECT COUNT(*) " +
-                                                        "FROM IDP_GROUP_ITEM I " +
-                                                        "JOIN IDP_GROUP G ON G.IDP_GROUP_ID = I.IDP_GROUP_ID " +
-                                                        "JOIN IDP_USER_ENROLL EN ON G.IDP_GROUP_ID = EN.IDP_GROUP_ID " +
-                                                        "WHERE EN.ID = @Id AND YEAR = @Year", connection))
-            {
-
-                command.Parameters.AddWithValue("@Id", id);
-                command.Parameters.AddWithValue("@Year", year);
-
-                connection.Open();
-
-                all = (int)command.ExecuteScalar();
-            }
-
-            return all;
-        }
         public int GetCompetencyAll(string id, string idpGroupId)
         {
             int all = 0;
@@ -2470,28 +2227,6 @@ namespace myApp.DAL
 
             return all;
         }
-        public int GetCompetencyAllByStatus(string id, string year)
-        {
-            int all = 0;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            using (SqlCommand command = new SqlCommand("SELECT COUNT(*) " +
-                                                        "FROM IDP_GROUP_ITEM I " +
-                                                        "JOIN IDP_GROUP G ON G.IDP_GROUP_ID = I.IDP_GROUP_ID " +
-                                                        "JOIN IDP_USER_ENROLL EN ON G.IDP_GROUP_ID = EN.IDP_GROUP_ID " +
-                                                        "WHERE EN.ID = @Id AND YEAR = @Year AND EN.STATUS IN ('Evaluating','Checking','Waiting','Success','Decline')", connection))
-            {
-
-                command.Parameters.AddWithValue("@Id", id);
-                command.Parameters.AddWithValue("@Year", year);
-
-                connection.Open();
-
-                all = (int)command.ExecuteScalar();
-            }
-
-            return all;
-        }
         public int GetCompetencyAllByGuid(string guid)
         {
             int all = 0;
@@ -2501,28 +2236,6 @@ namespace myApp.DAL
             {
 
                 command.Parameters.AddWithValue("@GUID", guid);
-
-                connection.Open();
-
-                all = (int)command.ExecuteScalar();
-            }
-
-            return all;
-        }
-        public int GetCompetencyAllByIdAfterDelete(string id, string year)
-        {
-            int all = 0;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            using (SqlCommand command = new SqlCommand("SELECT COUNT(*) " +
-                                                        "FROM IDP_GROUP_ITEM I " +
-                                                        "JOIN IDP_GROUP G ON G.IDP_GROUP_ID = I.IDP_GROUP_ID " +
-                                                        "JOIN IDP_USER_ENROLL EN ON G.IDP_GROUP_ID = EN.IDP_GROUP_ID " +
-                                                        "WHERE EN.ID = @Id AND YEAR = @Year", connection))
-            {
-
-                command.Parameters.AddWithValue("@Id", id);
-                command.Parameters.AddWithValue("@Year", year);
 
                 connection.Open();
 
@@ -2654,50 +2367,6 @@ namespace myApp.DAL
 
             return users;
         }
-        public void UpdateResultEmployees(List<User> selectedUsers, string year)
-        {
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-
-                foreach (User user in selectedUsers)
-                {
-                    int competencyAll = GetCompetencyAllById(user.Id, year); // Get updated competencyAll for each user
-
-                    string updateQuery = "UPDATE IDP_RESULT SET COMPETENCY_ALL = @All WHERE ID = @Id AND YEAR = @Year";
-
-                    using (SqlCommand updateCommand = new SqlCommand(updateQuery, connection))
-                    {
-                        updateCommand.Parameters.AddWithValue("@All", competencyAll);
-                        updateCommand.Parameters.AddWithValue("@Id", user.Id);
-                        updateCommand.Parameters.AddWithValue("@Year", year);
-
-                        updateCommand.ExecuteNonQuery();
-                    }
-                }
-            }
-        }
-        public void UpdateResultEmployeeAfterDelete(string id, string year)
-        {
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                connection.Open();
-
-                int all = GetCompetencyAllByIdAfterDelete(id, year);
-
-                string updateQuery = "UPDATE IDP_RESULT SET COMPETENCY_ALL = @All WHERE ID = @Id AND YEAR = @Year";
-
-                using (SqlCommand updateCommand = new SqlCommand(updateQuery, connection))
-                {
-                    updateCommand.Parameters.AddWithValue("@All", all);
-                    updateCommand.Parameters.AddWithValue("@Id", id);
-                    updateCommand.Parameters.AddWithValue("@Year", year);
-
-                    updateCommand.ExecuteNonQuery();
-                }
-                
-            }
-        }
         public void UpdateResultEmployeeAfterDeleteFromAddCompetency(int thisGroup, List<string> ids, string idpGroupId)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -2706,10 +2375,10 @@ namespace myApp.DAL
 
                 foreach (string id in ids)
                 {
-                    //int otherGroup = 0;
-                    //if (GetCountIDPGroup(idpGroupId, year, id) > 0)
+                    //int othergroup = 0;
+                    //if (getcountidpgroup(idpgroupid, year, id) > 0)
                     //{
-                    //    otherGroup = GetCountCompetencyOtherId(idpGroupId, year, id); 
+                    //    othergroup = getcountcompetencyotherid(idpgroupid, year, id);
                     //}
                     string updateQuery = "UPDATE IDP_RESULT SET COMPETENCY_ALL = @ThisGroup WHERE ID = @Id AND IDP_GROUP_ID = @IDPGroupId";
 
@@ -2724,29 +2393,6 @@ namespace myApp.DAL
                     }
                 }
             }
-        }
-        public int GetCountIDPGroup(string idpGroupId, string year, string id)
-        {
-            int count = 0;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                string query = "SELECT COUNT(*) AS OTHER " +
-                    "FROM IDP_USER_ENROLL EN " +
-                    "JOIN IDP_GROUP G ON EN.IDP_GROUP_ID = G.IDP_GROUP_ID " +
-                    "WHERE EN.ID = '11702' AND G.YEAR = '2566' AND EN.IDP_GROUP_ID != 'MC-Gp3'";
-
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
-                command.Parameters.AddWithValue("@Id", id);
-                command.Parameters.AddWithValue("@Year", year);
-
-                connection.Open();
-
-                count = (int)command.ExecuteScalar();
-            }
-
-            return count;
         }
         public int GetCountEmployee(string idpGroupId)
         {
@@ -3069,31 +2715,6 @@ namespace myApp.DAL
 
             return year;
         }
-        public string GetGuidByIdAndYear(string id, string year)
-        {
-            string guid = string.Empty;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            using (SqlCommand command = new SqlCommand())
-            {
-                command.Connection = connection;
-                command.CommandText = "SELECT H.GUID " +
-                                        "FROM IDP_RESULT H " +
-                                        "WHERE H.ID = @Id AND H.YEAR = @Year";
-                command.Parameters.AddWithValue("@Id", id);
-                command.Parameters.AddWithValue("@Year", year);
-
-                connection.Open();
-
-                object result = command.ExecuteScalar();
-                if (result != null)
-                {
-                    guid = result.ToString();
-                }
-            }
-
-            return guid;
-        }
         public string GetYearByGuid(string guid)
         {
             string year = string.Empty;
@@ -3184,24 +2805,6 @@ namespace myApp.DAL
 
             return status;
         }
-        public int GetCountCompetencyDid(string guid)
-        {
-            int did = 0;
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            {
-                string query = "SELECT COMPETENCY_DID FROM IDP_RESULT WHERE GUID = @Guid";
-
-                SqlCommand command = new SqlCommand(query, connection);
-                command.Parameters.AddWithValue("@Guid", guid);
-
-                connection.Open();
-
-                did = (int)command.ExecuteScalar();
-            }
-
-            return did;
-        }
         public string GetGuidById_IDPGroupId(string id, string idpGroupId)
         {
             string guid = string.Empty;
@@ -3225,9 +2828,9 @@ namespace myApp.DAL
 
             return guid;
         }
+        #endregion
 
-
-        //AUTH
+        #region AUTH
         public List<UserFormAuth> GetUserFormAuths()
         {
             List<UserFormAuth> userFormAuths = new List<UserFormAuth>();
@@ -3260,9 +2863,9 @@ namespace myApp.DAL
 
             return userFormAuths;
         }
+        #endregion
 
-
-        //CLIENT
+        #region CLIENT
         public User GetUserByCookie(string username)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -3334,106 +2937,6 @@ namespace myApp.DAL
             }
 
             return id;
-        }
-        public List<Enrollment> GetInfoEmployeeByCookie(string username, string year)
-        {
-            List<Enrollment> enrollments = new List<Enrollment>();
-
-            using (SqlConnection connection = new SqlConnection(connectionString))
-            using (SqlCommand command = new SqlCommand())
-            {
-                command.Connection = connection;
-                command.CommandText = "SELECT EN.ENROLL_ID, EN.ID, EN.IDP_GROUP_ID, G.IDP_GROUP_NAME, H.YEAR, I.COMPETENCY_ID, C.COMPETENCY_NAME_TH, I.PL, " +
-                    "I.CRITICAL, F.RESULT_ITEM AS ENROLL_DETAIL, F.REQUIREMENT, F.GUID, F.ACTUAL1, F.GAP1, F.PRIORITY, F.TYPE_PLAN, F.DEV_PLAN, " +
-                    "F.Q1, F.Q2, F.Q3, F.Q4, F.DEV_RST, EN.STATUS, H.COMPETENCY_ALL, H.COMPETENCY_PASS, H.COMPETENCY_PER, H.RANK, " +
-                    "HR.PREFIX, HR.FIRSTNAME_TH, HR.LASTNAME_TH, HR.POSITION, HR.COMPANY, HR.JOBLEVEL, HR.DEPARTMENT, HR.DEPARTMENT_NAME " +
-                    "FROM IDP_USER_ENROLL EN " +
-                    "LEFT JOIN MAS_USER_HR HR ON EN.ID = HR.ID " +
-                    "LEFT JOIN IDP_GROUP G ON EN.IDP_GROUP_ID = G.IDP_GROUP_ID " +
-                    "LEFT JOIN IDP_GROUP_ITEM I ON I.IDP_GROUP_ID = G.IDP_GROUP_ID " +
-                    "LEFT JOIN IDP_COMPTY C ON I.COMPETENCY_ID = C.COMPETENCY_ID " +
-                    "LEFT JOIN IDP_RESULT H ON H.ID = EN.ID " +
-                    "LEFT JOIN IDP_RESULT_ITEM F ON C.COMPETENCY_ID = F.COMPETENCY_ID AND H.GUID = F.GUID " +
-                    "WHERE HR.USER_LOGIN = @Username AND H.YEAR = @Year";
-
-                command.Parameters.AddWithValue("@Username", username);
-                command.Parameters.AddWithValue("@Year", year);
-
-                connection.Open();
-
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        Enrollment enrollment = new Enrollment();
-                        enrollment.EnrollId = (int)reader["ENROLL_ID"];
-                        enrollment.IDPGroupId = (string)reader["IDP_GROUP_ID"];
-                        enrollment.Id = (string)reader["ID"];
-                        enrollment.Status = (string)reader["STATUS"];
-
-                        IDPGroup iDPGroup = new IDPGroup();
-                        iDPGroup.IDPGroupName = (string)reader["IDP_GROUP_NAME"];
-                        iDPGroup.Year = (string)reader["YEAR"];
-
-                        IDPGroupItem idpGroupItem = new IDPGroupItem();
-                        idpGroupItem.CompetencyId = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_ID")) ? null : (string)reader["COMPETENCY_ID"];
-                        idpGroupItem.Pl = reader.IsDBNull(reader.GetOrdinal("PL")) ? null : (string)reader["PL"];
-                        idpGroupItem.Critical = reader.IsDBNull(reader.GetOrdinal("CRITICAL")) ? false : (bool)reader["CRITICAL"];
-
-                        Competency competency = new Competency();
-                        competency.CompetencyNameTH = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_NAME_TH")) ? null : (string)reader["COMPETENCY_NAME_TH"];
-
-                        ResultItem resultItem = new ResultItem();
-                        resultItem.Requirement = reader.IsDBNull(reader.GetOrdinal("REQUIREMENT")) ? 0 : (int)reader["REQUIREMENT"];
-                        resultItem.Actual1 = reader.IsDBNull(reader.GetOrdinal("ACTUAL1")) ? 0 : (int)reader["ACTUAL1"];
-                        resultItem.Gap1 = reader.IsDBNull(reader.GetOrdinal("GAP1")) ? 0 : (int)reader["GAP1"];
-                        resultItem.Priority = reader.IsDBNull(reader.GetOrdinal("PRIORITY")) ? null : (string)reader["PRIORITY"];
-                        resultItem.TypePlan = reader.IsDBNull(reader.GetOrdinal("TYPE_PLAN")) ? null : (string)reader["TYPE_PLAN"];
-                        resultItem.DevPlan = reader.IsDBNull(reader.GetOrdinal("DEV_PLAN")) ? null : (string)reader["DEV_PLAN"];
-                        resultItem.Q1 = reader.IsDBNull(reader.GetOrdinal("Q1")) ? null : (string)reader["Q1"];
-                        resultItem.Q2 = reader.IsDBNull(reader.GetOrdinal("Q2")) ? null : (string)reader["Q2"];
-                        resultItem.Q3 = reader.IsDBNull(reader.GetOrdinal("Q3")) ? null : (string)reader["Q3"];
-                        resultItem.Q4 = reader.IsDBNull(reader.GetOrdinal("Q4")) ? null : (string)reader["Q4"];
-                        resultItem.DevRst = reader.IsDBNull(reader.GetOrdinal("DEV_RST")) ? null : (string)reader["DEV_RST"];
-
-                        Result result = new Result();
-                        result.CompetencyAll = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_ALL")) ? 0 : (int)reader["COMPETENCY_ALL"];
-                        result.CompetencyPass = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_PASS")) ? 0 : (int)reader["COMPETENCY_PASS"];
-                        if (reader.IsDBNull(reader.GetOrdinal("COMPETENCY_PER")))
-                        {
-                            result.CompetencyPer = 0;
-                        }
-                        else if (float.TryParse(reader["COMPETENCY_PER"].ToString(), out float competencyPer))
-                        {
-                            result.CompetencyPer = competencyPer;
-                        }
-                        result.Rank = reader.IsDBNull(reader.GetOrdinal("RANK")) ? null : (string)reader["RANK"];
-                        result.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
-
-                        User user = new User();
-                        user.Id = (string)reader["ID"];
-                        user.Prefix = reader.IsDBNull(reader.GetOrdinal("PREFIX")) ? null : (string)reader["PREFIX"];
-                        user.FirstNameTH = reader.IsDBNull(reader.GetOrdinal("FIRSTNAME_TH")) ? null : (string)reader["FIRSTNAME_TH"];
-                        user.LastNameTH = reader.IsDBNull(reader.GetOrdinal("LASTNAME_TH")) ? null : (string)reader["LASTNAME_TH"];
-                        user.Company = reader.IsDBNull(reader.GetOrdinal("COMPANY")) ? null : (string)reader["COMPANY"];
-                        user.Position = reader.IsDBNull(reader.GetOrdinal("POSITION")) ? null : (string)reader["POSITION"];
-                        user.JobLevel = reader.IsDBNull(reader.GetOrdinal("JOBLEVEL")) ? null : (string)reader["JOBLEVEL"];
-                        user.Department = reader.IsDBNull(reader.GetOrdinal("DEPARTMENT")) ? null : (string)reader["DEPARTMENT"];
-                        user.DepartmentName = reader.IsDBNull(reader.GetOrdinal("DEPARTMENT_NAME")) ? null : (string)reader["DEPARTMENT_NAME"];
-
-                        enrollment.IDPGroup = iDPGroup;
-                        enrollment.IDPGroupItem = idpGroupItem;
-                        enrollment.Competency = competency;
-                        enrollment.ResultItem = resultItem;
-                        enrollment.Result = result;
-                        enrollment.User = user;
-
-                        enrollments.Add(enrollment);
-                    }
-                }
-            }
-
-            return enrollments;
         }
         public bool is1stEvaluated(int enrollId)
         {
@@ -3548,9 +3051,9 @@ namespace myApp.DAL
 
             return position;
         }
+        #endregion
 
-
-        //GOODNESS
+        #region GOODNESS
         public List<Goodness> GetGoodness(string year)
         {
             List<Goodness> goodnesses = new List<Goodness>();
@@ -3619,6 +3122,7 @@ namespace myApp.DAL
                         goodness.Desc = reader.IsDBNull(reader.GetOrdinal("DESCRIPTION")) ? null : (string)reader["DESCRIPTION"];
                         goodness.Date = (string)reader["DATE"];
                         goodness.Hour = (string)reader["HOUR"];
+                        goodness.FileID = (string)reader["FILE_ID"];
                         goodnesses.Add(goodness);
                     }
                 }
@@ -3634,8 +3138,8 @@ namespace myApp.DAL
 
                 foreach (Goodness goodness in goodnessList)
                 {
-                    string query = "INSERT INTO IDP_GOODNESS (NAME, TYPE, COMPANY, DATE, HOUR, DESCRIPTION, YEAR) " +
-                                   "VALUES (@User, @Type, @Company, @Date, @Hour, @Desc, @Year)";
+                    string query = "INSERT INTO IDP_GOODNESS (NAME, TYPE, COMPANY, DATE, HOUR, DESCRIPTION, YEAR, FILE_ID) " +
+                                   "VALUES (@User, @Type, @Company, @Date, @Hour, @Desc, @Year, @File)";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
@@ -3646,6 +3150,7 @@ namespace myApp.DAL
                         command.Parameters.AddWithValue("@User", user);
                         command.Parameters.AddWithValue("@Desc", (object)goodness.Desc ?? DBNull.Value);
                         command.Parameters.AddWithValue("@Year", year);
+                        command.Parameters.AddWithValue("@File", goodness.FileID);
 
                         command.ExecuteNonQuery();
                     }
@@ -3740,9 +3245,27 @@ namespace myApp.DAL
                 }
             }
         }
+        public int GetCountGoodness(string username)
+        {
+            int count = 0;
 
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT COUNT(*) FROM IDP_GOODNESS WHERE NAME = @Username";
 
-        //REMARK
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@Username", username);
+
+                connection.Open();
+
+                count = (int)command.ExecuteScalar();
+            }
+
+            return count;
+        }
+        #endregion
+
+        #region REMARK
         public List<RemarkHS> GetRemark(string guid)
         {
             List<RemarkHS> remarks = new List<RemarkHS>();
@@ -3751,7 +3274,7 @@ namespace myApp.DAL
             using (SqlCommand command = new SqlCommand())
             {
                 command.Connection = connection;
-                command.CommandText = "SELECT * FROM REMARK_HISTORY WHERE FORM_GUID = @Guid";
+                command.CommandText = "SELECT * FROM REMARK_HISTORY WHERE FORM_GUID = @Guid ORDER BY REMARK_DATE ASC";
 
                 command.Parameters.AddWithValue("@Guid", guid);
 
@@ -3800,9 +3323,9 @@ namespace myApp.DAL
             }
             return null;
         }
+        #endregion
 
-
-        //WORKFLOW HISTORY
+        #region WORKFLOW HISTORY
         public void InsertWorkflowHS1(string position, string username, string status)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -3842,9 +3365,9 @@ namespace myApp.DAL
                 }
             }
         }
+        #endregion
 
-
-        //DOWNLOAD
+        #region DOWNLOAD
         public List<User> GetListDownload()
         {
             List<User> users = new List<User>();
@@ -3925,8 +3448,9 @@ namespace myApp.DAL
 
             return users;
         }
+        #endregion
 
-        //INFO
+        #region INFO
         public List<Result> GetInfoEmployeeByGuid(string guid)
         {
             List<Result> results = new List<Result>();
@@ -3959,7 +3483,7 @@ namespace myApp.DAL
                         }
                         else if (float.TryParse(reader["COMPETENCY_PER"].ToString(), out float competencyPer))
                         {
-                            result.CompetencyPer = competencyPer;
+                            result.CompetencyPer = (float)Math.Round(competencyPer, 2);
                         }
                         result.Rank = reader.IsDBNull(reader.GetOrdinal("RANK")) ? null : (string)reader["RANK"];
                         result.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
@@ -3997,5 +3521,6 @@ namespace myApp.DAL
 
             return results;
         }
+        #endregion
     }
 }

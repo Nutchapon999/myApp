@@ -13,7 +13,7 @@ namespace myApp.Models
         public string Date { get; set; }
         public string Hour { get; set; }
         public string Desc { get; set; }
-        public byte file { get; set; }
+        public string FileID { get; set; }
 
         public virtual User User { get; set; }
     }
