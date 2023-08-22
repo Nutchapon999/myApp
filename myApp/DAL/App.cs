@@ -1332,7 +1332,6 @@ namespace myApp.DAL
                 }
             }
         }
-
         public bool IsFormSubmitted(string Id, string idpGroupId)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -1558,7 +1557,7 @@ namespace myApp.DAL
 
             return resultItems;
         }
-        public void InsertLogOnUpdateResultItems(List<int> resultItemIds, string username, List<ResultItem> resultItemsBefore, List<ResultItem> resultItemsAfter, string status, string guid)
+        public void InsertLogUser (List<int> resultItemIds, string username, List<ResultItem> resultItemsBefore, List<ResultItem> resultItemsAfter, string status, string guid)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -1814,6 +1813,241 @@ namespace myApp.DAL
                 }
             }
         }
+        public void InsertLogAdmin(List<int> resultItemIds, string username, List<ResultItem> resultItemsBefore, List<ResultItem> resultItemsAfter, string guid)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                foreach (int resultItemId in resultItemIds)
+                {
+                    ResultItem resultItemBefore = resultItemsBefore.Find(item => item.ResultItemId == resultItemId);
+                    ResultItem resultItemAfter = resultItemsAfter.Find(item => item.ResultItemId == resultItemId);
+
+                    if (resultItemAfter != null && resultItemBefore != null)
+                    {
+                        string query = "INSERT INTO IDP_LOG (GUID, ITEM, UPDATED_BY, UPDATED_ON, COLUMN_UPDATED, OLD_VALUE, NEW_VALUE) " +
+                                       "VALUES (@Guid, @ResultItemId, @Username, GETDATE(), @ColumnUpdated, @OldValue, @NewValue)";
+
+                        using (SqlCommand command = new SqlCommand(query, connection))
+                        {
+
+                            if (resultItemBefore.OriginalActual1 != resultItemAfter.Actual1)
+                            {
+                                command.Parameters.AddWithValue("@Guid", guid);
+                                command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                command.Parameters.AddWithValue("@Username", username);
+                                command.Parameters.AddWithValue("@ColumnUpdated", "Actual1");
+                                command.Parameters.AddWithValue("@OldValue", resultItemBefore.OriginalActual1.ToString());
+                                command.Parameters.AddWithValue("@NewValue", resultItemAfter.Actual1.ToString());
+
+                                command.ExecuteNonQuery();
+                                if (resultItemAfter.Actual1 >= resultItemAfter.Requirement && resultItemBefore.Actual1 != 0)
+                                {
+                                    command.Parameters.Clear();
+                                    command.Parameters.AddWithValue("@Guid", guid);
+                                    command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                    command.Parameters.AddWithValue("@Username", username);
+                                    command.Parameters.AddWithValue("@ColumnUpdated", "Priority");
+                                    command.Parameters.AddWithValue("@OldValue", (object)resultItemBefore.OriginalPriority ?? DBNull.Value);
+                                    command.Parameters.AddWithValue("@NewValue", (object)resultItemAfter.Priority ?? DBNull.Value);
+
+                                    command.ExecuteNonQuery();
+
+                                    command.Parameters.Clear();
+                                    command.Parameters.AddWithValue("@Guid", guid);
+                                    command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                    command.Parameters.AddWithValue("@Username", username);
+                                    command.Parameters.AddWithValue("@ColumnUpdated", "TypePlan");
+                                    command.Parameters.AddWithValue("@OldValue", (object)resultItemBefore.OriginalType ?? DBNull.Value);
+                                    command.Parameters.AddWithValue("@NewValue", (object)resultItemAfter.TypePlan ?? DBNull.Value);
+
+                                    command.ExecuteNonQuery();
+
+                                    command.Parameters.Clear();
+                                    command.Parameters.AddWithValue("@Guid", guid);
+                                    command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                    command.Parameters.AddWithValue("@Username", username);
+                                    command.Parameters.AddWithValue("@ColumnUpdated", "DevPlan");
+                                    command.Parameters.AddWithValue("@OldValue", (object)resultItemBefore.OriginalDevPlan ?? DBNull.Value);
+                                    command.Parameters.AddWithValue("@NewValue", (object)resultItemAfter.DevPlan ?? DBNull.Value);
+
+                                    command.ExecuteNonQuery();
+
+                                    if (resultItemBefore.OriginalQ1 == "1")
+                                    {
+                                        command.Parameters.Clear();
+                                        command.Parameters.AddWithValue("@Guid", guid);
+                                        command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                        command.Parameters.AddWithValue("@Username", username);
+                                        command.Parameters.AddWithValue("@ColumnUpdated", "Q1");
+                                        command.Parameters.AddWithValue("@OldValue", (object)resultItemBefore.OriginalQ1 ?? DBNull.Value);
+                                        command.Parameters.AddWithValue("@NewValue", (object)resultItemAfter.Q1 ?? DBNull.Value);
+
+                                        command.ExecuteNonQuery();
+                                    }
+
+                                    if (resultItemBefore.OriginalQ2 == "1")
+                                    {
+                                        command.Parameters.Clear();
+                                        command.Parameters.AddWithValue("@Guid", guid);
+                                        command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                        command.Parameters.AddWithValue("@Username", username);
+                                        command.Parameters.AddWithValue("@ColumnUpdated", "Q2");
+                                        command.Parameters.AddWithValue("@OldValue", (object)resultItemBefore.OriginalQ2 ?? DBNull.Value);
+                                        command.Parameters.AddWithValue("@NewValue", (object)resultItemAfter.Q2 ?? DBNull.Value);
+
+                                        command.ExecuteNonQuery();
+                                    }
+
+                                    if (resultItemBefore.OriginalQ3 == "1")
+                                    {
+                                        command.Parameters.Clear();
+                                        command.Parameters.AddWithValue("@Guid", guid);
+                                        command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                        command.Parameters.AddWithValue("@Username", username);
+                                        command.Parameters.AddWithValue("@ColumnUpdated", "Q3");
+                                        command.Parameters.AddWithValue("@OldValue", (object)resultItemBefore.OriginalQ3 ?? DBNull.Value);
+                                        command.Parameters.AddWithValue("@NewValue", (object)resultItemAfter.Q3 ?? DBNull.Value);
+
+                                        command.ExecuteNonQuery();
+                                    }
+
+                                    if (resultItemBefore.OriginalQ4 == "1")
+                                    {
+                                        command.Parameters.Clear();
+                                        command.Parameters.AddWithValue("@Guid", guid);
+                                        command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                        command.Parameters.AddWithValue("@Username", username);
+                                        command.Parameters.AddWithValue("@ColumnUpdated", "Q4");
+                                        command.Parameters.AddWithValue("@OldValue", (object)resultItemBefore.OriginalQ4 ?? DBNull.Value);
+                                        command.Parameters.AddWithValue("@NewValue", (object)resultItemAfter.Q4 ?? DBNull.Value);
+
+                                        command.ExecuteNonQuery();
+                                    }
+
+                                    continue;
+                                }
+
+                            }
+                            if (resultItemBefore.OriginalPriority != resultItemAfter.Priority)
+                            {
+                                command.Parameters.Clear();
+                                command.Parameters.AddWithValue("@Guid", guid);
+                                command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                command.Parameters.AddWithValue("@Username", username);
+                                command.Parameters.AddWithValue("@ColumnUpdated", "Priority");
+                                command.Parameters.AddWithValue("@OldValue", (object)resultItemBefore.OriginalPriority ?? DBNull.Value);
+                                command.Parameters.AddWithValue("@NewValue", (object)resultItemAfter.Priority ?? DBNull.Value);
+
+                                command.ExecuteNonQuery();
+
+                            }
+                            if (resultItemBefore.OriginalType != resultItemAfter.TypePlan)
+                            {
+                                command.Parameters.Clear();
+                                command.Parameters.AddWithValue("@Guid", guid);
+                                command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                command.Parameters.AddWithValue("@Username", username);
+                                command.Parameters.AddWithValue("@ColumnUpdated", "TypePlan");
+                                command.Parameters.AddWithValue("@OldValue", (object)resultItemBefore.OriginalType ?? DBNull.Value);
+                                command.Parameters.AddWithValue("@NewValue", (object)resultItemAfter.TypePlan ?? DBNull.Value);
+
+                                command.ExecuteNonQuery();
+
+                            }
+                            if (resultItemBefore.OriginalDevPlan != resultItemAfter.DevPlan)
+                            {
+                                command.Parameters.Clear();
+                                command.Parameters.AddWithValue("@Guid", guid);
+                                command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                command.Parameters.AddWithValue("@Username", username);
+                                command.Parameters.AddWithValue("@ColumnUpdated", "DevPlan");
+                                command.Parameters.AddWithValue("@OldValue", (object)resultItemBefore.OriginalDevPlan ?? DBNull.Value);
+                                command.Parameters.AddWithValue("@NewValue", (object)resultItemAfter.DevPlan ?? DBNull.Value);
+
+                                command.ExecuteNonQuery();
+
+                            }
+                            if (resultItemBefore.OriginalQ1 != resultItemAfter.Q1)
+                            {
+                                command.Parameters.Clear();
+                                command.Parameters.AddWithValue("@Guid", guid);
+                                command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                command.Parameters.AddWithValue("@Username", username);
+                                command.Parameters.AddWithValue("@ColumnUpdated", "Q1");
+                                command.Parameters.AddWithValue("@OldValue", (object)resultItemBefore.OriginalQ1 ?? DBNull.Value);
+                                command.Parameters.AddWithValue("@NewValue", (object)resultItemAfter.Q1 ?? DBNull.Value);
+
+                                command.ExecuteNonQuery();
+                            }
+                            if (resultItemBefore.OriginalQ2 != resultItemAfter.Q2)
+                            {
+                                command.Parameters.Clear();
+                                command.Parameters.AddWithValue("@Guid", guid);
+                                command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                command.Parameters.AddWithValue("@Username", username);
+                                command.Parameters.AddWithValue("@ColumnUpdated", "Q2");
+                                command.Parameters.AddWithValue("@OldValue", (object)resultItemBefore.OriginalQ2 ?? DBNull.Value);
+                                command.Parameters.AddWithValue("@NewValue", (object)resultItemAfter.Q2 ?? DBNull.Value);
+
+                                command.ExecuteNonQuery();
+                            }
+                            if (resultItemBefore.OriginalQ3 != resultItemAfter.Q3)
+                            {
+                                command.Parameters.Clear();
+                                command.Parameters.AddWithValue("@Guid", guid);
+                                command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                command.Parameters.AddWithValue("@Username", username);
+                                command.Parameters.AddWithValue("@ColumnUpdated", "Q3");
+                                command.Parameters.AddWithValue("@OldValue", (object)resultItemBefore.OriginalQ3 ?? DBNull.Value);
+                                command.Parameters.AddWithValue("@NewValue", (object)resultItemAfter.Q3 ?? DBNull.Value);
+
+                                command.ExecuteNonQuery();
+                            }
+                            if (resultItemBefore.OriginalQ4 != resultItemAfter.Q4)
+                            {
+                                command.Parameters.Clear();
+                                command.Parameters.AddWithValue("@Guid", guid);
+                                command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                command.Parameters.AddWithValue("@Username", username);
+                                command.Parameters.AddWithValue("@ColumnUpdated", "Q4");
+                                command.Parameters.AddWithValue("@OldValue", (object)resultItemBefore.OriginalQ4 ?? DBNull.Value);
+                                command.Parameters.AddWithValue("@NewValue", (object)resultItemAfter.Q4 ?? DBNull.Value);
+
+                                command.ExecuteNonQuery();
+                            }
+                            if (resultItemBefore.OriginalDevRst != resultItemAfter.DevRst)
+                            {
+                                command.Parameters.Clear();
+                                command.Parameters.AddWithValue("@Guid", guid);
+                                command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                command.Parameters.AddWithValue("@Username", username);
+                                command.Parameters.AddWithValue("@ColumnUpdated", "DevRst");
+                                command.Parameters.AddWithValue("@OldValue", (object)resultItemBefore.OriginalDevRst ?? DBNull.Value);
+                                command.Parameters.AddWithValue("@NewValue", (object)resultItemAfter.DevRst ?? DBNull.Value);
+
+                                command.ExecuteNonQuery();
+                            }
+                            if (resultItemBefore.OriginalActual2 != resultItemAfter.Actual2)
+                            {
+                                command.Parameters.Clear();
+                                command.Parameters.AddWithValue("@Guid", guid);
+                                command.Parameters.AddWithValue("@ResultItemId", resultItemId);
+                                command.Parameters.AddWithValue("@Username", username);
+                                command.Parameters.AddWithValue("@ColumnUpdated", "Actaul2");
+                                command.Parameters.AddWithValue("@OldValue", resultItemBefore.OriginalActual2.ToString());
+                                command.Parameters.AddWithValue("@NewValue", resultItemAfter.Actual2.ToString());
+
+                                command.ExecuteNonQuery();
+                            }
+
+
+                        }
+                    }
+                }
+            }
+        }
         public void InsertRemark(string remark, string username, string position, string guid)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -2061,6 +2295,23 @@ namespace myApp.DAL
 
             return resultItems;
         }
+        public void UpdateWorkflowCompelete(string guid)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string updateQuery = "UPDATE IDP_RESULT SET COMPELETED_ON = GETDATE() WHERE GUID = @Guid";
+
+                using (SqlCommand updateCommand = new SqlCommand(updateQuery, connection))
+                {
+                    updateCommand.Parameters.AddWithValue("@Guid", guid);
+
+                    updateCommand.ExecuteNonQuery();
+                }
+
+            }
+        }
         #endregion
 
         #region ENROLLMENT
@@ -2274,6 +2525,24 @@ namespace myApp.DAL
                         resultCommand.ExecuteNonQuery();
                     }
                 }
+            }
+        }
+        public void UpdateStartWorkFlow(string guid, string username)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                
+                string updateQuery = "UPDATE IDP_RESULT SET STARTEDWF_ON = GETDATE(), CURRENT_APPROVER = @Username WHERE GUID = @Guid";
+
+                using (SqlCommand updateCommand = new SqlCommand(updateQuery, connection))
+                {
+                    updateCommand.Parameters.AddWithValue("@Guid", guid);
+                    updateCommand.Parameters.AddWithValue("@Username", username);
+
+                    updateCommand.ExecuteNonQuery();
+                }
+                
             }
         }
         public void InsertResultEmployees2(List<IDPGroup> selectedIDPGroups, string username, string id)
@@ -3079,6 +3348,7 @@ namespace myApp.DAL
                         goodness.Desc = reader.IsDBNull(reader.GetOrdinal("DESCRIPTION")) ? null : (string)reader["DESCRIPTION"];
                         goodness.Date = (string)reader["DATE"];
                         goodness.Hour = (string)reader["HOUR"];
+                        goodness.FileID = reader["FILE_ID"] != DBNull.Value ? (string)reader["FILE_ID"] : null;
 
                         User user = new User();
                         user.Prefix = reader["PREFIX"] != DBNull.Value ? (string)reader["PREFIX"] : null;
@@ -3158,7 +3428,7 @@ namespace myApp.DAL
             }
 
         }
-        public void InsertGoodnessById(List<Goodness> goodnessList, string id, string year)
+        public void InsertGoodnessById(Goodness goodness, string id, string year)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -3166,24 +3436,25 @@ namespace myApp.DAL
 
                 string user = GetUserLoginById(id);
 
-                foreach (Goodness goodness in goodnessList)
+                
+                string query = "INSERT INTO IDP_GOODNESS (NAME, TYPE, COMPANY, DATE, HOUR, DESCRIPTION, YEAR, FILE_ID) " +
+                                "VALUES (@User, @Type, @Company, @Date, @Hour, @Desc, @Year, @FileId)";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    string query = "INSERT INTO IDP_GOODNESS (NAME, TYPE, COMPANY, DATE, HOUR, DESCRIPTION, YEAR) " +
-                                   "VALUES (@User, @Type, @Company, @Date, @Hour, @Desc, @Year)";
+                    command.Parameters.AddWithValue("@Type", goodness.Type);
+                    command.Parameters.AddWithValue("@Company", goodness.Company);
+                    command.Parameters.AddWithValue("@Date", goodness.Date);
+                    command.Parameters.AddWithValue("@Hour", goodness.Hour);
+                    command.Parameters.AddWithValue("@User", user);
+                    command.Parameters.AddWithValue("@Desc", (object)goodness.Desc ?? DBNull.Value);
+                    command.Parameters.AddWithValue("@Year", year);
+                    command.Parameters.AddWithValue("@FileID", goodness.FileID);
 
-                    using (SqlCommand command = new SqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@Type", goodness.Type);
-                        command.Parameters.AddWithValue("@Company", goodness.Company);
-                        command.Parameters.AddWithValue("@Date", goodness.Date);
-                        command.Parameters.AddWithValue("@Hour", goodness.Hour);
-                        command.Parameters.AddWithValue("@User", user);
-                        command.Parameters.AddWithValue("@Desc", (object)goodness.Desc ?? DBNull.Value);
-                        command.Parameters.AddWithValue("@Year", year);
 
-                        command.ExecuteNonQuery();
-                    }
+                    command.ExecuteNonQuery();
                 }
+                
             }
         }
         public string GetUserLoginById(string id)
@@ -3326,6 +3597,24 @@ namespace myApp.DAL
         #endregion
 
         #region WORKFLOW HISTORY
+        public void InsertWorkflowHS0(string position, string username)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "INSERT INTO WORKFLOW_HISTORY (ACTION_DATE, ACTIVITY_NAME, ACTION, ACTION_BY, ACTION_BY_FULLNAME, REMARK_ID) " +
+                                "VALUES (GETDATE(), 'Draft', 'Draft', @Username, @Fullname, NULL)";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Username", username);
+                    command.Parameters.AddWithValue("@Fullname", username + "/" + position);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
         public void InsertWorkflowHS1(string position, string username, string status)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -3360,6 +3649,24 @@ namespace myApp.DAL
                     command.Parameters.AddWithValue("@Fullname", username + "/" + position);
                     command.Parameters.AddWithValue("@Status", status);
                     command.Parameters.AddWithValue("@Remark", (long)remark.Id);
+
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        public void InsertWorkflowHS3(string position, string username)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "INSERT INTO WORKFLOW_HISTORY (ACTION_DATE, ACTIVITY_NAME, ACTION, ACTION_BY, ACTION_BY_FULLNAME, REMARK_ID) " +
+                                "VALUES (GETDATE(), 'Decline', 'Decline', @Username, @Fullname, NULL)";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Username", username);
+                    command.Parameters.AddWithValue("@Fullname", username + "/" + position);
 
                     command.ExecuteNonQuery();
                 }

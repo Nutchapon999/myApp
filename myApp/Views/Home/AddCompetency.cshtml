@@ -100,20 +100,108 @@
                                 <th scope="row" class="text-center">@idpItm.CompetencyId</th>
                                 <td>@idpItm.Competency.CompetencyNameTH</td>
                                 <td class="text-center">
-                                    <select class="form-select" name="idpGroupItems[@idpItm.IDPGroupItemId].Pl">
-                                        <option value="1" @(idpItm.Pl == "1" ? "selected" : "")>1</option>
-                                        <option value="2" @(idpItm.Pl == "2" ? "selected" : "")>2</option>
-                                        <option value="3" @(idpItm.Pl == "3" ? "selected" : "")>3</option>
-                                        <option value="4" @(idpItm.Pl == "4" ? "selected" : "")>4</option>
-                                        <option value="5" @(idpItm.Pl == "5" ? "selected" : "")>5</option>
-                                    </select>
+                                    <button id="plButton" onchange="EditPl(this)" type="button" class="btn btn-dark active-link-competency " data-bs-toggle="modal" data-bs-target="#DetailPl-@idpItm.CompetencyId">
+                                        <strong>@idpItm.Pl</strong>
+                                    </button>
+                                    <div class="modal fade modal-xl modal1" id="DetailPl-@idpItm.CompetencyId" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-scrollable">
+                                            <div class="modal-content">
+                                                <div class="modal-header text-center">
+                                                    <h6 class="modal-title fs-5">
+                                                        <i class="fa-solid fa-key fs-4"></i> รหัส: <strong>@idpItm.CompetencyId</strong>
+                                                        <br />
+                                                        <i class="fa-solid fa-signature fs-4"></i> ชื่อ: <strong>@idpItm.Competency.CompetencyNameTH</strong>
+                                                    </h6>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <h5 class="text-center">PL1</h5>
+                                                    @if (idpItm.Competency.Pl1 != null)
+                                                    {
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio1[@idpItm.IDPGroupItemId]" id="modalRadioButton1-@idpItm.IDPGroupItemId" value="1" @(idpItm.Pl == "1" ? "checked" : "") />
+                                                            <label class="form-check-label text-start" for="modalRadioButton1-@idpItm.IDPGroupItemId" style="cursor: pointer">
+                                                                @idpItm.Competency.Pl1
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5 class="text-center">ไม่มี PL1</h5>
+                                                    }
+                                                    <hr />
+                                                    <h5 class="text-center">PL2</h5>
+                                                    @if (idpItm.Competency.Pl2 != null)
+                                                    {
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio1[@idpItm.IDPGroupItemId]" id="modalRadioButton2-@idpItm.IDPGroupItemId" value="2" @(idpItm.Pl == "2" ? "checked" : "") />
+                                                            <label class="form-check-label text-start" for="modalRadioButton2-@idpItm.IDPGroupItemId" style="cursor: pointer">
+                                                                @idpItm.Competency.Pl2
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5 class="text-center">ไม่มี PL2</h5>
+                                                    }
+                                                    <hr />
+                                                    <h5 class="text-center">PL3</h5>
+                                                    @if (idpItm.Competency.Pl3 != null)
+                                                    {
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio1[@idpItm.IDPGroupItemId]" id="modalRadioButton3-@idpItm.IDPGroupItemId" value="3" @(idpItm.Pl == "3" ? "checked" : "") />
+                                                            <label class="form-check-label text-start" for="modalRadioButton3-@idpItm.IDPGroupItemId" style="cursor: pointer">
+                                                                @idpItm.Competency.Pl3
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5 class="text-center">ไม่มี PL3</h5>
+                                                    }
+                                                    <hr />
+                                                    <h5 class="text-center">PL4</h5>
+                                                    @if (idpItm.Competency.Pl4 != null)
+                                                    {
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio1[@idpItm.IDPGroupItemId]" id="modalRadioButton4-@idpItm.IDPGroupItemId" value="4" @(idpItm.Pl == "4" ? "checked" : "") />
+                                                            <label class="form-check-label text-start" for="modalRadioButton4-@idpItm.IDPGroupItemId" style="cursor: pointer">
+                                                                @idpItm.Competency.Pl4
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5 class="text-center">ไม่มี PL4</h5>
+                                                    }
+                                                    <hr />
+                                                    <h5 class="text-center">PL5</h5>
+                                                    @if (idpItm.Competency.Pl5 != null)
+                                                    {
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio1[@idpItm.IDPGroupItemId]" id="modalRadioButton5-@idpItm.IDPGroupItemId" value="5" @(idpItm.Pl == "5" ? "checked" : "") />
+                                                            <label class="form-check-label text-start" for="modalRadioButton5-@idpItm.IDPGroupItemId" style="cursor: pointer">
+                                                                @idpItm.Competency.Pl5
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5 class="text-center">ไม่มี PL5</h5>
+                                                    }
+
+                                                </div>
+                                                <div class="modal-footer flex-nowrap p-0">
+                                                    <button type="button" class="btn btn-lg col-12 text-decoration-none py-3 rounded-0 m-0 " style="background-color: #D893A3; color: #B30021" data-bs-dismiss="modal"><strong>ปิด</strong></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" name="idpGroupItems[@idpItm.IDPGroupItemId].Pl" value="@idpItm.Pl" />
                                 </td>
                                 <td class="text-center">
-                                    <select class="form-select" name="idpGroupItems[@idpItm.IDPGroupItemId].Critical">
-                                        <option value="false" @(idpItm.Critical == false ? "selected" : "")></option>
-                                        <option value="true" @(idpItm.Critical == true ? "selected" : "")>O</option>
-                                    </select>
+                                    <input class="form-check-input" type="checkbox" name="idpGroupItems[@idpItm.IDPGroupItemId].Critical" value="true" @(idpItm.Critical == true ? "checked" : "") />
                                 </td>
+
                                 <td class="text-center">
                                     <button id="link" type="button" class="btn  active-link-delete" data-bs-toggle="modal" data-bs-target="#deleteModal-@idpItm.IDPGroupItemId" title="ลบ @idpItm.CompetencyId">
                                         <i class="fa fa-trash gradient-text-delete" aria-hidden="true"></i>
@@ -132,7 +220,8 @@
                                                 </div>
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-                                                    <button class="btn btn-danger" onclick="deleteIDPGroupItem('@idpItm.IDPGroupItemId')">ยืนยัน</button>                                                </div>
+                                                    <button class="btn btn-danger" onclick="deleteIDPGroupItem('@idpItm.IDPGroupItemId')">ยืนยัน</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -153,7 +242,7 @@
         </div>
     </div>
 </main>
-<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
 <link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
 <script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
 <script type="text/javascript">
@@ -185,24 +274,71 @@
     });
 
     function deleteIDPGroupItem(idpGroupItemId, ) {
-    $.ajax({
-        url: '@Url.Action("DeleteIDPGroupItem","Home")',
-        type: 'POST',
-        data: { idpGroupItem: idpGroupItemId },
-        success: function (response) {
-            window.location.href = '@Url.Action("AddCompetency", "Home", new { idpGroupId = ViewBag.IDPGroupId })';
-        },
-        error: function (error) {
-            console.log(error)
+        $.ajax({
+            url: '@Url.Action("DeleteIDPGroupItem","Home")',
+            type: 'POST',
+            data: { idpGroupItem: idpGroupItemId },
+            success: function (response) {
+                window.location.href = '@Url.Action("AddCompetency", "Home", new { idpGroupId = ViewBag.IDPGroupId })';
+            },
+            error: function (error) {
+                console.log(error)
+            }
+        });
+    }
+
+    function handleButtonClick(button) {
+        var modalRadio = button.parentNode.querySelector('input[name^="modalRadio1"]:checked');
+        if (modalRadio) {
+            button.textContent = modalRadio.value;
+            calculateGap(button);
+
+            var row = button.closest('tr');
+            var selectedPl = parseFloat(modalRadio.value);
+            var plInput = row.querySelector('input[name^="idpGroupItems"][name$=".Pl"]');
+            plInput.value = selectedPl;
+
         }
+    }
+
+    var plButtons = document.querySelectorAll('button[id^="plButton"]');
+    plButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+            handleButtonClick(this);
+        });
     });
-}
+
+    var radioButtons = document.querySelectorAll('input[name^="modalRadio1"]');
+    radioButtons.forEach(function (radioButton) {
+        radioButton.addEventListener('change', function () {
+            var selectedValue = this.value;
+            var plButton = this.closest('.modal1').previousElementSibling;
+            if (plButton) {
+                plButton.textContent = selectedValue;
+                EditPl(plButton);
+            }
+        });
+    });
+
+    function EditPl(button) {
+        var row = button.closest('tr');
+
+        var pl = parseFloat(button.textContent);
+
+        var plInput = row.querySelector('input[name^="idpGroupItems"][name$=".Pl"]');
+        plInput.value = pl;
+    }
 </script>
 
 
 <style>
     main {
         margin-top: -50px;
+    }
+
+    .form-check-input[type="checkbox"] {
+        width: 25px;
+        height: 25px;
     }
 
     .background-container {

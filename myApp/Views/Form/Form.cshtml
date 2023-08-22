@@ -292,19 +292,19 @@
                                 </div>
                                 <input type="hidden" name="Actual1_@i" value="@enroll.ResultItem.Actual1" />
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @if (gap1 < 0)
                                 {
                                     @gap1
                                 }
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @if (gap1 >= 0)
                                 {
                                     @gap1
                                 }
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
                                     (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
                                 {
@@ -320,7 +320,7 @@
                                     </select>
                                 }
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
                                     (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
                                 {
@@ -352,7 +352,7 @@
                                     <textarea class="form-control" name="DevPlan_@i" id="devPlanSelect-row-@i" style="min-width: 100%;">@enroll.ResultItem.DevPlan</textarea>
                                 }
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
                                     (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
                                 {
@@ -367,7 +367,7 @@
                                     <input class="form-check-input" type="checkbox" name="Q1_@i" id="Q1select-row-@i" value="1" @(enroll.ResultItem.Q1 == "1" ? "checked" : "") />
                                 }
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
                                     (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
                                 {
@@ -382,7 +382,7 @@
                                     <input class="form-check-input" type="checkbox" name="Q2_@i" id="Q1select-row-@i" value="1" @(enroll.ResultItem.Q2 == "1" ? "checked" : "") />
                                 }
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
                                     (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
                                 {
@@ -397,7 +397,7 @@
                                     <input class="form-check-input" type="checkbox" name="Q3_@i" id="Q1select-row-@i" value="1" @(enroll.ResultItem.Q3 == "1" ? "checked" : "") />
                                 }
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
                                     (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
                                 {
@@ -422,7 +422,7 @@
                                     @enroll.ResultItem.DevRst
                                 }
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success")
                                 {
                                     if (@enroll.ResultItem.FileId != null && ViewBag.Approver == ViewBag.Username || (ViewBag.Status == "Success"))
@@ -449,7 +449,7 @@
                                 }
                                 <input type="hidden" name="FileEdit_@i" value="@enroll.ResultItem.FileId"/>
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @if (ViewBag.Status == "Self" || ViewBag.Status == "1st Evaluating" || ViewBag.Status == "Developing")
                                 {
                                     <button id="actual2Button" onchange="calculateGap2(this)" type="button" class="btn active-link-competency m-1 disabled" data-bs-toggle="modal" style="background-color: @backgroundColor2; color: @color2; width: auto; font-size: 20px;" data-bs-target="#Detail2Pl-@enroll.IDPGroupItem.CompetencyId">
@@ -569,7 +569,7 @@
                                 </div>
                                 <input type="hidden" name="Actual2_@i" value="@enroll.ResultItem.Actual2" />
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @if (gap2 < 0)
                                 {
                                     @gap2
@@ -579,7 +579,7 @@
 
                                 }
                             </td>
-                            <td>
+                            <td class="text-center">
                                 @if (gap2 >= 0)
                                 {
                                     @gap2

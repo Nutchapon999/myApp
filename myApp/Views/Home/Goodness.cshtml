@@ -30,11 +30,11 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-<form id="myForm" method="post" action="@Url.Action("InsertGoodness", "Home", new { Year = ViewBag.Year })">
+<form id="myForm" method="post" action="@Url.Action("InsertGoodness", "Home", new { Year = ViewBag.Year })" enctype="multipart/form-data">
     <div class="table-container m-4">
         <div class="row">
             <div class="col-auto mt-2 me-auto">
-                <h2 class="ms-2 mt-2 fw-bold">บันทึกความดี</h2>
+                <h2 class="ms-2 mt-2 fw-bold topic-title">บันทึกความดี</h2>
             </div>
             <div class="col-auto">
 
@@ -86,7 +86,12 @@
                             <td>@good.Desc</td>
                             <td class="text-center">@good.Date</td>
                             <td class="text-center">@good.Hour</td>
-                            <td class="text-center"></td>
+                            <td class="text-center">
+                                @if (!string.IsNullOrEmpty(good.FileID))
+                                {
+                                    <button type='button' class='btn btn-primary btn-xs addfile' value='@good.FileID' title='แนบไฟลล์'><i class='fa fa-file'></i></button>
+                                }
+                            </td>
                             <td class="text-center">
                                 <div class="btn-group me-2" role="group" aria-label="Second group">
                                     <button id="link" type="button" class="btn active-link-edit" title="แก้ไข" data-bs-toggle="modal" data-bs-target="#editModal-@good.GDId">
@@ -153,7 +158,7 @@
                                                     <span class="input-group-text">
                                                         รายละเอียด
                                                     </span>
-                                                    <textarea type="text" class="form-control justify-content-center " name="DescEdit" id="DescEdit-@good.GDId" placeholder="รายละเอียด">@good.Desc</textarea>
+                                                    <textarea type="text" class="form-control justify-content-center" name="DescEdit" id="DescEdit-@good.GDId" placeholder="รายละเอียด">@good.Desc</textarea>
                                                 </div>
                                                 <div class="input-group mt-3 d-flex justify-content-center">
                                                     <span class="input-group-text">
@@ -176,7 +181,7 @@
                                             </div>
                                             <div class="modal-footer flex-nowrap p-0">
                                                 <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" data-bs-dismiss="modal"><i class="fa-solid fa-ban gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ยกเลิก</strong></button>
-                                                <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" onclick="updateGoodnessViaAjax('@good.GDId')">
+                                                <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" onclick="updateGoodness('@good.GDId')">
                                                     <i class="fa-solid fa-save gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">บันทึก</strong>
                                                 </button>
                                             </div>
@@ -233,7 +238,7 @@
                             <input type="number" class="form-control" name="Hour" min="0" />
                         </td>
                         <td class="text-center">
-                            <input type="file" class="form-control" />
+                            <input type="file" class="form-control" name="File"/>
                         </td>
                         <td></td>
                     </tr>
@@ -360,10 +365,10 @@
             </div>
         </div>
     </div>
-    <input type="hidden" name="caseVal" id="caseValInput" value="">
+    <input type="hidden" name=""/>
 </form>
 
-<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
 <link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
 <script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
 <script type="text/javascript">
@@ -393,7 +398,7 @@
         });
     });
 
-    function updateGoodnessViaAjax(gdId) {
+    function updateGoodness(gdId) {
         var select = $("#TypeEdit-" + gdId);
         var type = select.val();
         var company = $("#CompanyEdit-" + gdId).val();
@@ -675,7 +680,6 @@
 
 
 </script>
-
 <style>
     #myInput {
         border: none;
@@ -823,5 +827,11 @@
         background-image: linear-gradient( 0deg, hsl(220deg 100% 47%) 0%, hsl(216deg 100% 47%) 6%, hsl(213deg 100% 48%) 14%, hsl(209deg 100% 48%) 22%, hsl(206deg 100% 48%) 32%, hsl(202deg 100% 49%) 43%, hsl(199deg 100% 49%) 56%, hsl(195deg 100% 49%) 70%, hsl(192deg 100% 50%) 85%, hsl(188deg 100% 50%) 100% );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+    }
+    .topic-title {
+        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-weight: bold;
     }
 </style>

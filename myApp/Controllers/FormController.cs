@@ -444,7 +444,7 @@ namespace myApp.Controllers
                 //LOG DATA
                 List<ResultItem> resultItemsAfter = app.GetResultItemByGuidAfterUpdate(Guid);
                 List<int> resultItemIds = app.GetResultItemIdByGuid(Guid);
-                app.InsertLogOnUpdateResultItems(resultItemIds, username, resultItemsBefore, resultItemsAfter, status, Guid);
+                app.InsertLogUser(resultItemIds, username, resultItemsBefore, resultItemsAfter, status, Guid);
             }
 
             if (!isSave)
@@ -467,18 +467,41 @@ namespace myApp.Controllers
                 {
                     if (string.IsNullOrEmpty(criticalResultItem.DevPlan))
                     {
-                        TempData["ErrorMessage"] = "มีแถวที่มี Critical เป็น true และ DevPlan ว่างเปล่า";
+                        TempData["ErrorMessage"] = "มี Competency ที่มี Critical แต่ยังไม่ได้ระบุ Development Plan";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
-                    else if(string.IsNullOrEmpty(criticalResultItem.Q1) &&
+                    else if (string.IsNullOrEmpty(criticalResultItem.Q1) &&
                             string.IsNullOrEmpty(criticalResultItem.Q2) &&
                             string.IsNullOrEmpty(criticalResultItem.Q3) &&
                             string.IsNullOrEmpty(criticalResultItem.Q4))
                     {
-                        TempData["ErrorMessage"] = "มีแถวที่มี Critical เป็น true และ Q ว่างเปล่า";
+                        TempData["ErrorMessage"] = "มี Competency ที่มี Critical แต่ยังไม่ได้ระบุ Quarter";
+                        return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                    }
+                    
+                    else if (string.IsNullOrEmpty(criticalResultItem.DevRst) && (status == "2nd Evaluating" || status == "Developing"))
+                    {
+                        TempData["ErrorMessage"] = "มี Competency ที่มี Critical แต่ยังไม่ได้ระบุ Development Result";
+                        return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                    }
+                    else if (string.IsNullOrEmpty(criticalResultItem.FileId) && (status == "2nd Evaluating" || status == "Developing"))
+                    {
+                        TempData["ErrorMessage"] = "มี Competency ที่มี Critical แต่ยังไม่ได้อัปโหลด File Attachment";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
                 }
+
+                //WORKFLOW UPDATE
+                if (status == "1st Evaluating" || status == "2nd Evaluating")
+                {
+                    RemarkHS remarkId = app.GetDescRemarkId(Guid);
+                    app.InsertWorkflowHS2(position, username, status, remarkId);
+                }
+                else
+                {
+                    app.InsertWorkflowHS1(position, username, status);
+                }
+
                 bool is1stEvaluated = app.is1stEvaluated(enrollId);
                 bool isDeveloped = app.isDeveloped(enrollId);
                 bool is2ndEvaluated = app.is2ndEvaluated(enrollId);
@@ -493,6 +516,7 @@ namespace myApp.Controllers
                 else if (is2ndEvaluated)
                 {
                     app.UpdateEnrollmentStatus_5(Id, IDPGroupId); //SUCCESS
+                    app.UpdateWorkflowCompelete(Guid);
                 }
                 else
                 {
@@ -677,53 +701,53 @@ namespace myApp.Controllers
 
         //INFO
         public ActionResult Info(string idpGroupId, string guid)
-    {
-        HttpCookie usernameCookie = Request.Cookies["username"];
-        if (usernameCookie != null)
         {
-            string username = usernameCookie.Value;
-            List<UserFormAuth> auths = app.GetUserFormAuths();
-            bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
-            ViewBag.isAdmin = isAdmin;
-            ViewBag.Username = username;
-            string year = app.GetYearByGuid(guid);
-            string idpGroupName = app.GetIDPGroupNameByIDPGroupId(idpGroupId);
-
-            string id = app.GetIdByCookie(username);
-            int count = app.GetCountEnrollmentById(id);
-            User user = app.GetUserByCookie(username);
-            if (user != null)
+            HttpCookie usernameCookie = Request.Cookies["username"];
+            if (usernameCookie != null)
             {
-                ViewBag.Prefix = user.Prefix;
-                ViewBag.FirstName = user.FirstNameTH;
-                ViewBag.LastName = user.LastNameTH;
-                ViewBag.Company = user.Company;
-                ViewBag.Joblevel = user.JobLevel;
-                ViewBag.Department = user.Department;
-                ViewBag.Position = user.Position;
+                string username = usernameCookie.Value;
+                List<UserFormAuth> auths = app.GetUserFormAuths();
+                bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
+                ViewBag.isAdmin = isAdmin;
+                ViewBag.Username = username;
+                string year = app.GetYearByGuid(guid);
+                string idpGroupName = app.GetIDPGroupNameByIDPGroupId(idpGroupId);
+
+                string id = app.GetIdByCookie(username);
+                int count = app.GetCountEnrollmentById(id);
+                User user = app.GetUserByCookie(username);
+                if (user != null)
+                {
+                    ViewBag.Prefix = user.Prefix;
+                    ViewBag.FirstName = user.FirstNameTH;
+                    ViewBag.LastName = user.LastNameTH;
+                    ViewBag.Company = user.Company;
+                    ViewBag.Joblevel = user.JobLevel;
+                    ViewBag.Department = user.Department;
+                    ViewBag.Position = user.Position;
+                }
+                ViewBag.Count = count;
+                ViewBag.Id = id;
+                ViewBag.IDPGroupID = idpGroupId;
+                ViewBag.IDPGroupName = idpGroupName;
+                ViewBag.Guid = guid;
+                string status = app.GetStatus(id, idpGroupId);
+                ViewBag.Status = status;
+
+                ViewBag.Year = year;
+
+                List<Result> results = app.GetInfoEmployeeByGuid(guid);
+                List<RemarkHS> remarkHs = app.GetRemark(guid);    
+
+                ViewBag.Remark = remarkHs;
+
+                return View(results);
             }
-            ViewBag.Count = count;
-            ViewBag.Id = id;
-            ViewBag.IDPGroupID = idpGroupId;
-            ViewBag.IDPGroupName = idpGroupName;
-            ViewBag.Guid = guid;
-            string status = app.GetStatus(id, idpGroupId);
-            ViewBag.Status = status;
-
-            ViewBag.Year = year;
-
-            List<Result> results = app.GetInfoEmployeeByGuid(guid);
-            List<RemarkHS> remarkHs = app.GetRemark(guid);    
-
-            ViewBag.Remark = remarkHs;
-
-            return View(results);
+            else
+            {
+                return RedirectToAction("Index", "Form");
+            }
         }
-        else
-        {
-            return RedirectToAction("Index", "Form");
-        }
-    }
-    #endregion
+        #endregion
     }
 }

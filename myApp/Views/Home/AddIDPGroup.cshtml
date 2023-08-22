@@ -31,15 +31,13 @@
             @using (Html.BeginForm("AddIDPGroup", "Home", new { id = ViewBag.Id, isChecked = false }, FormMethod.Post, new { id = "myForm" }))
             {
                 <div class="row">
-                    <div class="col-3 d-flex align-items-center ">
-                        <label for="selectType" class="form-label me-2 mt-2"> ปี:</label>
-                        <select class="form-select" id="selectType" style="width: 100px;">
-                            <option value="">ทั้งหมด</option>
-                            @foreach (var year in Model.Select(y => y.IDPGroup.Year).Distinct())
-                            {
-                                <option value="@year">@year</option>
-                            }
-                        </select>
+                    <div class="col-3">
+                        <button type="submit" class="btn btn-lg active-link-submit mb-2">
+                            <i class="fa fa-flag gradient-icon-start" aria-hidden="true"></i><strong class="gradient-icon-submit"> เริ่มประเมิน</strong>
+                        </button>
+                        <button type="button" class="btn btn-lg active-link-back mb-2" id="actionButton" data-bs-toggle="modal" data-bs-target="#declineModal" disabled>
+                            <i class="fa-solid fa-ban gradient-icon-decline" aria-hidden="true"></i><strong class="gradient-icon-decline"> ยกเลิก</strong>
+                        </button>
                     </div>
                     <div class="col-6 text-center topic-title">
                         <h2 class="mt-2 ">แก้ไข IDP Group</h2>
@@ -50,13 +48,15 @@
                     </div>
                 </div>
                 <div class="row justify-content-center mb-2">
-                    <div class="col-3 me-auto">
-                        <button type="submit" class="btn btn-lg active-link-submit mb-2">
-                            <i class="fa fa-flag gradient-icon-start" aria-hidden="true"></i><strong class="gradient-icon-submit"> เริ่มประเมิน</strong>
-                        </button>
-                        <button type="button" class="btn btn-lg active-link-back mb-2" id="actionButton" data-bs-toggle="modal" data-bs-target="#declineModal" disabled>
-                            <i class="fa-solid fa-ban gradient-icon-decline" aria-hidden="true"></i><strong class="gradient-icon-decline"> ยกเลิก</strong>
-                        </button>
+                    <div class="col-3 me-auto d-flex align-items-center">
+                        <label for="selectType" class="form-label me-2 mt-2"> ปี:</label>
+                        <select class="form-select" id="selectType" style="width: 100px;">
+                            <option value="">ทั้งหมด</option>
+                            @foreach (var year in Model.Select(y => y.IDPGroup.Year).Distinct())
+                            {
+                                <option value="@year">@year</option>
+                            }
+                        </select>
                     </div>
                     <div class="col-6 text-center">
                         <h6>
@@ -192,7 +192,7 @@
         </div>
     </div>
 </main>
-<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
 <link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
 <script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
 <script type="text/javascript">

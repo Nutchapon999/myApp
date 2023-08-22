@@ -55,7 +55,7 @@
                     <tr>
                         <th class="text-center" width="5%">ชนิด</th>
                         <th class="text-center" width="5%">รหัส</th>
-                        <th class="text-center" width="6%">ใช้งาน</th>
+                        <th class="text-center" width="5%">ใช้งาน</th>
                         <th class="text-center" width="10%">ชื่อภาษาไทย</th>
                         <th class="text-center" width="10%">ชื่อภาษาอังกฤษ</th>
                         <th class="text-center" width="10%">Definition</th>
@@ -76,7 +76,7 @@
                             <td style="@(cmpty.Active ? "background-color: #D5F2E3; color: #006f57;" : "background-color: #F8D7DA; color: #9B0008")">@(cmpty.Active ? "ใช้" : "ไม่ใช้")</td>
                             <td style="font-size: 14px">@cmpty.CompetencyNameTH</td>
                             <td style="font-size: 14px">@cmpty.CompetencyNameEN</td>
-                            <td style="font-size: 12px"> </td>
+                            <td style="font-size: 12px">@cmpty.CompetencyDesc</td>
                             <td style="font-size: 12px">@cmpty.Pl1</td>
                             <td style="font-size: 12px">@cmpty.Pl2</td>
                             <td style="font-size: 12px">@cmpty.Pl3</td>
@@ -92,23 +92,103 @@
                                     </button>
                                 </div>
                                 <div class="modal fade modal-xl" id="editModal-@cmpty.CompetencyId" aria-labelledby="editModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
+                                    <div class="modal-dialog  modal-dialog-centered">
                                         <div class="modal-content rounded-3 shadow">
                                             @using (Html.BeginForm("EditCompetency", "Home", FormMethod.Post))
                                             {
                                                 <input type="hidden" name="CompetencyId" value="@cmpty.CompetencyId" />
                                                 <div class="modal-header">
                                                     <h1 class="modal-title fs-5 fw-bold" id="CreateIDPGroupLabel">
-                                                        <i class="fa-solid fa-layer-group gradient-icon-add fs-3"></i> แก้ไข Competency
+                                                        <i class="fa-solid fa-layer-group gradient-icon-add fs-3"></i> แก้ไข Competency (@cmpty.CompetencyId)
                                                     </h1>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    
+                                                    <div class="row">
+                                                        <div class="col-5">
+                                                            <div class="input-group mt-3 d-flex justify-content-center">
+                                                                <span class="input-group-text">
+                                                                    <i class="fa-solid fa-tag fs-4" aria-hidden="true"></i>
+                                                                </span>
+                                                                <select class="form-select" id="createType" name="Type" style="min-width: 80%">
+                                                                    <option value="CC" @(cmpty.Type == "CC" ? "selected" : "")>CC</option>
+                                                                    <option value="FC" @(cmpty.Type == "FC" ? "selected" : "")>FC</option>
+                                                                    <option value="MC" @(cmpty.Type == "MC" ? "selected" : "")>MC</option>
+                                                                    <option value="TC" @(cmpty.Type == "TC" ? "selected" : "")>TC</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="input-group mt-3 d-flex justify-content-center">
+                                                                <span class="input-group-text">
+                                                                    <i class="fa-solid fa-tag fs-4" aria-hidden="true"></i>
+                                                                </span>
+                                                                <textarea type="text" class="form-control" placeholder="Competency TH" name="CompetencyNameTH" style="min-width: 80%">@cmpty.CompetencyNameTH</textarea>
+                                                            </div>
+                                                            <div class="input-group mt-3 d-flex justify-content-center">
+                                                                <span class="input-group-text">
+                                                                    <i class="fa-solid fa-tag fs-4" aria-hidden="true"></i>
+                                                                </span>
+                                                                <textarea type="text" class="form-control" placeholder="Competency EN" name="CompetencyNameEN" style="min-width: 80%">@cmpty.CompetencyNameEN</textarea>
+                                                            </div>
+                                                            <div class="input-group mt-3 d-flex justify-content-center">
+                                                                <span class="input-group-text">
+                                                                    <i class="fa-solid fa-file-text fs-4" aria-hidden="true"></i>
+                                                                </span>
+                                                                <textarea type="text" class="form-control" placeholder="ชื่อ IDP Group" name="CompetencyDesc" style="min-width: 80%">@cmpty.CompetencyDesc</textarea>
+                                                            </div>
+                                                            <hr />
+                                                            <div class="input-group-text">
+                                                                <div>ใช้ Competency นี้?</div>
+                                                            </div>
+                                                            <div class="input-group mt-2">
+                                                                <div class="input-group-text">
+                                                                    <input class="form-check-input mt-0" type="radio" value="true" @(cmpty.Active == true ? "checked" : "") name="Active" aria-label="Radio button for following text input">
+                                                                </div>
+                                                                <div class="form-control">ใช้</div>
+                                                            </div>
+                                                            <div class="input-group mt-2">
+                                                                <div class="input-group-text">
+                                                                    <input class="form-check-input mt-0" type="radio" value="false" @(cmpty.Active == false ? "checked" : "") name="Active" aria-label="Radio button for following text input">
+                                                                </div>
+                                                                <div class="form-control">ไม่ใช้</div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-7">
+                                                            <div class="input-group mt-3 d-flex justify-content-center">
+                                                                <span class="input-group-text">
+                                                                    <strong>PL1</strong>
+                                                                </span>
+                                                                <textarea type="text" class="form-control justify-content-center" style="min-width: 80%" name="Pl1">@cmpty.Pl1</textarea>
+                                                            </div>
+                                                            <div class="input-group mt-3 d-flex justify-content-center">
+                                                                <span class="input-group-text">
+                                                                    <strong>PL2</strong>
+                                                                </span>
+                                                                <textarea type="text" class="form-control justify-content-center" style="min-width: 80%" name="Pl2">@cmpty.Pl2</textarea>
+                                                            </div>
+                                                            <div class="input-group mt-3 d-flex justify-content-center">
+                                                                <span class="input-group-text">
+                                                                    <strong>PL3</strong>
+                                                                </span>
+                                                                <textarea type="text" class="form-control justify-content-center" style="min-width: 80%" name="Pl3">@cmpty.Pl3</textarea>
+                                                            </div>
+                                                            <div class="input-group mt-3 d-flex justify-content-center">
+                                                                <span class="input-group-text">
+                                                                    <strong>PL4</strong>
+                                                                </span>
+                                                                <textarea type="text" class="form-control justify-content-center" style="min-width: 80%" name="Pl4">@cmpty.Pl4</textarea>
+                                                            </div>
+                                                            <div class="input-group mt-3 d-flex justify-content-center">
+                                                                <span class="input-group-text">
+                                                                    <strong>PL5</strong>
+                                                                </span>
+                                                                <textarea type="text" class="form-control justify-content-center" style="min-width: 80%" name="Pl5">@cmpty.Pl5</textarea>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                                 <div class="modal-footer flex-nowrap p-0">
-                                                    <button type="button" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 py-3 rounded-0 m-0 " style="background-color: #f8d7da;" data-bs-dismiss="modal">No thanks</button>
-                                                    <button type="submit" class="btn btn-lg btn-link fs-6 text-decoration-none col-6 py-3 rounded-0 m-0 border-end" style="background-color: #cce5ff;"><strong>Yes, enable</strong></button>
+                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" data-bs-dismiss="modal"><i class="fa-solid fa-ban gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ยกเลิก</strong></button>
+                                                    <button type="submit" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit"><i class="fa-solid fa-save gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">บันทึก</strong></button>
                                                 </div>
                                             }
                                         </div>
@@ -118,16 +198,27 @@
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h1 class="modal-title fs-4">ต้องการที่จะลบ Competency นี้หรือไม่?</h1>
+                                                <h1 class="modal-title fs-3 fw-bold">
+                                                    <i class="fa-solid fa-trash-can gradient-text-delete"></i> ลบ Competency
+                                                </h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
-                                            <div class="modal-body">
-                                                <h5>รหัส Competency: @cmpty.CompetencyId</h5>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-                                                <a href="@Url.Action("DeleteCompetency", new { id = cmpty.CompetencyId })" class="btn btn-danger">ยืนยัน</a>
-                                            </div>
+                                            @using (Html.BeginForm("DeleteCompetency", "Home", FormMethod.Post, new { id = "myForm" }))
+                                            {
+                                                <div class="modal-body">
+                                                    <h5 class="text-center">
+                                                        คุณต้องการที่จะ<strong class="gradient-text-delete">ลบ</strong> Competency: <strong>@cmpty.CompetencyId</strong> นี้หรือไม่?
+                                                    </h5>
+                                                </div>
+                                                <div class="modal-footer flex-nowrap p-0">
+                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" data-bs-dismiss="modal">
+                                                        <i class="fa-solid fa-ban gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">ยกเลิก</strong>
+                                                    </button>
+                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" onclick="deleteForm('@cmpty.CompetencyId')">
+                                                        <i class="fa-solid fa-trash-can gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ลบ</strong>
+                                                    </button>
+                                                </div>
+                                            }
                                         </div>
                                     </div>
                                 </div>
@@ -143,7 +234,7 @@
 
 
 
-<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
 <link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
 <script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
 <script type="text/javascript">
@@ -168,6 +259,24 @@
         });
     });
 
+    function deleteForm(CompetencyId) {
+        var formData = $('#myForm').serialize();
+
+        formData += '&CompetencyId=' + encodeURIComponent(CompetencyId);
+
+        $.ajax({
+            type: 'POST',
+            url: $('#myForm').attr('action'),
+            data: formData,
+            success: function (data) {
+                window.location.reload();
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         const filterSelect = document.getElementById('selectType');
         const tableRows = document.querySelectorAll('#myTable tbody tr');
@@ -191,9 +300,6 @@
         filterTableByType();
     });
 </script>
-
-
-
 <style>
     main {
         margin-top: -50px;
@@ -311,6 +417,18 @@
         -webkit-text-fill-color: transparent;
     }
 
+    .gradient-icon-submit {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .gradient-icon-back {
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
     .active-link-edit {
         border: none;
         background-color: white;
@@ -349,5 +467,12 @@
         background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(357deg 94% 33%) 11%, hsl(358deg 89% 36%) 22%, hsl(358deg 84% 39%) 33%, hsl(358deg 79% 42%) 44%, hsl(359deg 74% 46%) 56%, hsl(359deg 70% 49%) 67%, hsl(359deg 73% 53%) 78%, hsl(360deg 80% 56%) 89%, hsl(0deg 87% 60%) 100% );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+    }
+    .btn-cancel:hover {
+        background-color: #f8d7da;
+    }
+
+    .btn-submit:hover {
+        background-color: #cce5ff;
     }
 </style>

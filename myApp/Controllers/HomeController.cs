@@ -19,7 +19,9 @@ using OfficeOpenXml;
 using System.Web.Helpers;
 using DocumentFormat.OpenXml.Bibliography;
 using DocumentFormat.OpenXml.Office2010.Excel;
-
+using System.Web.Services.Description;
+using DocumentFormat.OpenXml.Wordprocessing;
+using System.Security.Cryptography;
 
 namespace myApp.Controllers
 {
@@ -125,10 +127,10 @@ namespace myApp.Controllers
             }
             return RedirectToAction("Competency", "Home");
         }
-        public ActionResult DeleteCompetency(string id)
+        public ActionResult DeleteCompetency(string CompetencyId)
         {
-            app.DeleteCompetency(id);
-            return RedirectToAction("Competency", "Home");
+            app.DeleteCompetency(CompetencyId);
+            return null;
         }
         #endregion
 
@@ -690,39 +692,52 @@ namespace myApp.Controllers
         [HttpPost]
         public ActionResult AddEmployee(List<string> Ids, string idpGroupId, bool isChecked)
         {
+            System.Web.HttpCookie usernameCookie = Request.Cookies["username"];
+            string username = usernameCookie.Value;
+
+            string position = app.GetPositionByCookie(username);
+
             if (Ids != null && Ids.Any())
             {
                 foreach (var id in Ids)
                 {
+                    string status = app.GetStatus(id, idpGroupId);
+
                     if (!isChecked)
                     {
                         try
                         {
-                            app.UpdateEnrollmentStatus_1(id, idpGroupId);
+                            if(status == "Draft")
+                            {
+                                app.UpdateEnrollmentStatus_1(id, idpGroupId);
+                                int count = app.GetCountCompetencyThisId(idpGroupId);
+                                string guid = app.GetGuidById_IDPGroupId(id, idpGroupId);
 
-                            int count = app.GetCountCompetencyThisId(idpGroupId);
-                            string guid = app.GetGuidById_IDPGroupId(id, idpGroupId);
+                                List<IDPGroupItem> iDPGroupItems = app.GetIDPGroupItems(idpGroupId);
 
-                            List<IDPGroupItem> iDPGroupItems = app.GetIDPGroupItems(idpGroupId);
+                                string year = app.GetYearByGuid(guid);
 
-                            string year = app.GetYearByGuid(guid);
+                                List<ResultItem> actual2 = app.GetPreActual2(id, year);
 
-                            List<ResultItem> actual2 = app.GetPreActual2(id, year);
-
-                            app.InsertResultDetails(iDPGroupItems, guid, count, actual2);
+                                app.UpdateStartWorkFlow(guid, username);
+                                app.InsertWorkflowHS0(position, username);
+                                app.InsertResultDetails(iDPGroupItems, guid, count, actual2);
+                            }
                         }
                         catch
                         {
                             TempData["ErrorMessage"] = "ทำไม่ได้";
                         }
 
-                        return RedirectToAction("AddEmployee", new { idpGroupId = idpGroupId });
+                        //return RedirectToAction("AddEmployee", new { idpGroupId = idpGroupId });
                     }
                     else
                     {
+
                         try
                         {
                             app.UpdateEnrollmentStatus_6(id, idpGroupId);
+                            app.InsertWorkflowHS3(position, username);
                         }
                         catch (Exception ex)
                         {
@@ -926,7 +941,7 @@ namespace myApp.Controllers
                         else
                         {
                             SqlCommand updateCommand = new SqlCommand("UPDATE IDP_COMPTY SET COMPETENCY_NAME_TH = @CompetencyNameTH, COMPETENCY_NAME_EN = @CompetencyNameEN, COMPETENCY_DESC = @CompetencyDesc, " +
-                                "PL1 = @Pl1, PL2 = @P2, PL3 = @Pl3, PL4 = @Pl4, PL5 = @Pl5, Active = @Active, TYPE = @Type, DELETED = @Delete WHERE COMPETENCY_ID = @CompetencyId", con);
+                                "PL1 = @Pl1, PL2 = @Pl2, PL3 = @Pl3, PL4 = @Pl4, PL5 = @Pl5, Active = @Active, TYPE = @Type, DELETED = @Delete WHERE COMPETENCY_ID = @CompetencyId", con);
 
                             updateCommand.Parameters.AddWithValue("@CompetencyId", competencyId);
                             updateCommand.Parameters.AddWithValue("@CompetencyNameTH", row["COMPETENCY_NAME_TH"]);
@@ -1196,48 +1211,202 @@ namespace myApp.Controllers
                 return RedirectToAction("Index", "Form");
             }
         }
+        //[HttpPost]
+        //public ActionResult SaveResultDetails(int enrollId, Dictionary<string, ResultItem> forms, bool isChecked, string remark, string Guid)
+        //{
+
+        //    string username = Request.Cookies["username"].Value;
+        //    string IDPGroup = app.GetIDPGroupIdByEnrollment(enrollId);
+        //    string Id = app.GetIdByEnrollment(enrollId);
+        //    string Year = app.GetYearByEnrolled(enrollId);
+        //    bool isFormSubmitted = app.IsFormSubmitted(Id, IDPGroup);
+        //    string position = app.GetJoblevelByCookie(username);
+        //    string status = app.GetStatus(Id, IDPGroup);
+        //    int count = app.GetCountCompetencyThisId(IDPGroup);
+        //    string user = app.GetUserLoginByEnrollId(enrollId);
+
+        //    //INSERT AND UPDATE RESULTITEMS
+        //    if (isFormSubmitted)
+        //    {
+        //        List<ResultItem> resultItemsBefore = app.GetResultItemByGuidBeforeUpdate(Guid);
+        //        app.UpdateResultDetails(forms.Values, Guid);
+
+        //        //REMARK
+        //        if (status == "1st Evaluating" || status == "2nd Evaluating")
+        //        {
+        //            app.InsertRemark(remark, username, position, Guid);
+        //        }
+        //        List<ResultItem> resultItemsAfter = app.GetResultItemByGuidAfterUpdate(Guid);
+        //        List<int> resultItemIds = app.GetResultItemIdByGuid(Guid);
+        //        app.InsertLogOnUpdateResultItems(resultItemIds, username, resultItemsBefore, resultItemsAfter, status, Guid);
+        //    }
+        //    else
+        //    {
+        //        //app.InsertResultDetails(forms.Values, Guid, count);
+        //        //LOG DATA
+        //        //List<int> resultItemIds = app.GetResultItemIdByGuid(Guid);
+        //        //List<ResultItem> resultItems = app.GetResultItemByGuidOnInsert(Guid);
+        //        //app.InsertLogOnInsertResultItems(resultItemIds, username, resultItems, Guid);
+        //    }
+
+        //    //Calculate Values for Result
+        //    int all = app.GetCompetencyAllByGuid(Guid);
+        //    int pass = app.GetCompetencyPassByGuid(Guid);
+
+        //    float per = (float)pass / all * 100;
+        //    string rank;
+
+        //    switch (per)
+        //    {
+        //        case var p when p >= 100:
+        //            rank = "M";
+        //            break;
+        //        case var p when p < 100 && p >= 70:
+        //            rank = "C";
+        //            break;
+        //        default:
+        //            rank = "L";
+        //            break;
+        //    }
+
+        //    app.UpdateResult(Guid, pass, per, rank);
+
+        //    return RedirectToAction("Form", "Home", new { user = user, idpGroupId = IDPGroup, guid = Guid });
+
+        //}
+
         [HttpPost]
-        public ActionResult SaveResultDetails(int enrollId, Dictionary<string, ResultItem> forms, bool isChecked, string remark, string Guid)
+        public ActionResult SaveForm(int enrollId, string Guid, string IDPGroupId)
         {
-
+            string fileUploadPath = ConfigurationManager.AppSettings["FileUploadPath"].ToString();
             string username = Request.Cookies["username"].Value;
-            string IDPGroup = app.GetIDPGroupIdByEnrollment(enrollId);
             string Id = app.GetIdByEnrollment(enrollId);
-            string Year = app.GetYearByEnrolled(enrollId);
-            bool isFormSubmitted = app.IsFormSubmitted(Id, IDPGroup);
-            string position = app.GetJoblevelByCookie(username);
-            string status = app.GetStatus(Id, IDPGroup);
-            int count = app.GetCountCompetencyThisId(IDPGroup);
-            string user = app.GetUserLoginByEnrollId(enrollId);
+            var form = HttpContext.Request.Form;
+            List<ResultItem> resultItems = new List<ResultItem>();
+            string status = app.GetStatus(Id, IDPGroupId);
+            string joblevel = app.GetJoblevelByCookie(username);
+            string userLogin = app.GetUserLoginByEnrollId(enrollId);
+            //string position = app.GetPositionByCookie(username);
 
-            //INSERT AND UPDATE RESULTITEMS
-            if (isFormSubmitted)
+            int count = app.GetCompetencyAllByGuid(Guid);
+
+            for (var i = 0; i < count; i++)
             {
-                List<ResultItem> resultItemsBefore = app.GetResultItemByGuidBeforeUpdate(Guid);
-                app.UpdateResultDetails(forms.Values, Guid);
+                var criticalKey = "Critical_" + i;
+                var requireKey = "Requirement_" + i;
+                var actual1Key = "Actual1_" + i;
+                var priorityKey = "Priority_" + i;
+                var typeKey = "TypePlan_" + i;
+                var devPlanKey = "DevPlan_" + i;
+                var Q1key = "Q1_" + i;
+                var Q2Key = "Q2_" + i;
+                var Q3Key = "Q3_" + i;
+                var Q4Key = "Q4_" + i;
+                var devRstKey = "DevRst_" + i;
+                var fileKey = "File_" + i;
+                var fileEditKey = "FileEdit_" + i;
+                var actual2Key = "Actual2_" + i;
 
-                //REMARK
-                if (status == "1st Evaluating" || status == "2nd Evaluating")
+                var criticalValue = form[criticalKey];
+
+                var requireValue = form[requireKey];
+                var actual1Value = form[actual1Key];
+                var priorityValue = form[priorityKey];
+                var typeValue = form[typeKey];
+                var devPlanValue = string.IsNullOrEmpty(form[devPlanKey]) ? null : form[devPlanKey];
+                var Q1Value = form[Q1key];
+                var Q2Value = form[Q2Key];
+                var Q3Value = form[Q3Key];
+                var Q4Value = form[Q4Key];
+                var devRstValue = form[devRstKey];
+                var actual2Value = form[actual2Key];
+                var fileValue = Request.Files[fileKey];
+                var fileEditValue = form[fileEditKey];
+                var fileId = "";
                 {
-                    app.InsertRemark(remark, username, position, Guid);
+                    if (fileValue != null && fileValue.ContentLength > 0)
+                    {
+                        HttpPostedFileBase f = fileValue;
+                        string fname;
+                        if (f.FileName.Contains("\\"))
+                        {
+                            string[] testfiles = f.FileName.Split(new char[] { '\\' });
+                            fname = testfiles[testfiles.Length - 1];
+                        }
+                        else
+                        {
+                            fname = f.FileName;
+                        }
+                        string Type = string.Empty;
+                        var splitName = fname.Split('.');
+                        Type = splitName[splitName.Length - 1];
+
+                        int j = i + 1;
+
+                        var user = username.Replace(".", "-");
+                        var filenameGuid = "IDP_" + Guid + "_" + j;
+                        fileId = filenameGuid;
+
+                        //string filePath = Path.Combine(fileUploadPath, fileId);
+                        //f.SaveAs(filePath);
+                    }
+                    else if (fileEditValue != "")
+                    {
+                        fileId = fileEditValue;
+                    }
+                    else
+                    {
+                        fileId = null;
+                    }
                 }
+
+                int parsedRequire = Convert.ToInt32(requireValue);
+                int parsedActual1 = Convert.ToInt32(actual1Value);
+                int parsedActual2 = Convert.ToInt32(actual2Value);
+
+                bool parsedCritical;
+                bool.TryParse(criticalValue, out parsedCritical);
+
+                ResultItem resultItem = new ResultItem
+                {
+                    Critical = parsedCritical,
+                    Requirement = parsedRequire,
+                    Actual1 = parsedActual1,
+                    Priority = priorityValue,
+                    TypePlan = typeValue,
+                    DevPlan = devPlanValue,
+                    Q1 = Q1Value,
+                    Q2 = Q2Value,
+                    Q3 = Q3Value,
+                    Q4 = Q4Value,
+                    DevRst = devRstValue,
+                    FileId = fileId,
+                    Actual2 = parsedActual2
+
+                };
+
+                resultItems.Add(resultItem);
+
+            }
+
+           
+                //LOG DATA
+                List<ResultItem> resultItemsBefore = app.GetResultItemByGuidBeforeUpdate(Guid);
+                //UPDATE RESULTITEMS
+                app.UpdateForm(resultItems, Guid);
+
+                //LOG DATA
                 List<ResultItem> resultItemsAfter = app.GetResultItemByGuidAfterUpdate(Guid);
                 List<int> resultItemIds = app.GetResultItemIdByGuid(Guid);
-                app.InsertLogOnUpdateResultItems(resultItemIds, username, resultItemsBefore, resultItemsAfter, status, Guid);
-            }
-            else
-            {
-                //app.InsertResultDetails(forms.Values, Guid, count);
-                //LOG DATA
-                //List<int> resultItemIds = app.GetResultItemIdByGuid(Guid);
-                //List<ResultItem> resultItems = app.GetResultItemByGuidOnInsert(Guid);
-                //app.InsertLogOnInsertResultItems(resultItemIds, username, resultItems, Guid);
-            }
+                app.InsertLogAdmin(resultItemIds, username, resultItemsBefore, resultItemsAfter, Guid);
+            
 
-            //Calculate Values for Result
+           
+
             int all = app.GetCompetencyAllByGuid(Guid);
             int pass = app.GetCompetencyPassByGuid(Guid);
 
+            //CALCULATE VALUES FOR RESULT
             float per = (float)pass / all * 100;
             string rank;
 
@@ -1256,8 +1425,7 @@ namespace myApp.Controllers
 
             app.UpdateResult(Guid, pass, per, rank);
 
-            return RedirectToAction("Form", "Home", new { user = user, idpGroupId = IDPGroup, guid = Guid });
-
+            return RedirectToAction("Form", "Home", new { user = userLogin, idpGroupId = IDPGroupId, guid = Guid });
         }
         #endregion
 
@@ -1340,43 +1508,63 @@ namespace myApp.Controllers
         [HttpPost]
         public ActionResult InsertGoodness(string Year, List<string> userIds)
         {
-            HttpCookie usernameCookie = Request.Cookies["username"];
+            System.Web.HttpCookie usernameCookie = Request.Cookies["username"];
+            string username = usernameCookie.Value;
+
             if (usernameCookie != null)
             {
-                string username = usernameCookie.Value;
-                string[] types = Request.Form.GetValues("Type");
-                string[] companies = Request.Form.GetValues("Company");
-                string[] dates = Request.Form.GetValues("Date");
-                string[] hours = Request.Form.GetValues("Hour");
-                string[] descs = Request.Form.GetValues("Desc");
+                var form = HttpContext.Request.Form;
 
-                types = types.Where(s => !string.IsNullOrEmpty(s)).ToArray();
-
-                
-                if (types != null && companies != null && dates != null && hours != null)
+                var typeVal = form["Type"];
+                var companyVal = form["Company"];
+                var descVal = form["Desc"];
+                var dateVal = form["Date"];
+                var hourVal = form["Hour"];
+                var fileVal = Request.Files["File"];
+                var fileId = "";
+                if (fileVal != null && fileVal.ContentLength > 0)
                 {
-                    List<Goodness> goodnessList = new List<Goodness>();
-
-                    for (int i = 0; i < types.Length; i++)
+                    HttpPostedFileBase f = fileVal;
+                    string fname;
+                    if (f.FileName.Contains("\\"))
                     {
-                        Goodness goodness = new Goodness
-                        {
-                            Type = types[i],
-                            Company = companies[i],
-                            Date = dates[i],
-                            Hour = hours[i],
-                            Desc = descs[i]
-                        };
-
-                        goodnessList.Add(goodness);
+                        string[] testfiles = f.FileName.Split(new char[] { '\\' });
+                        fname = testfiles[testfiles.Length - 1];
                     }
+                    else
+                    {
+                        fname = f.FileName;
+                    }
+                    string Type = string.Empty;
+                    var splitName = fname.Split('.');
+                    Type = splitName[splitName.Length - 1];
+
+                    var user = username.Replace(".", "-");
+                    var filenameGuid = "Goodness_" + Year;
+                    fileId = filenameGuid;
+
+                    //string filePath = Path.Combine(fileUploadPath, filenameGuid);
+                    //f.SaveAs(filePath);
+                }
+
+                if (typeVal != null && companyVal != null && descVal != null && hourVal != null)
+                {
+                    Goodness goodness = new Goodness
+                    {
+                        Type = typeVal,
+                        Company = companyVal,
+                        Date = dateVal,
+                        Desc = descVal,
+                        Hour = hourVal,
+                        FileID = fileId,
+                    };
 
                     foreach (var id in userIds)
                     {
-                        app.InsertGoodnessById(goodnessList, id, Year);
+                        app.InsertGoodnessById(goodness, id, Year);
                     }
                 }
-                
+
                 return RedirectToAction("Goodness", "Home", new { year = Year });
             }
             else

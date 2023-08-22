@@ -145,13 +145,14 @@
         </div>
     </div>
 </main>
-<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
 <link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
 <script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
 <script type="text/javascript">
     var js = jQuery.noConflict(true);
     js(document).ready(function () {
         js('#myTable').DataTable({
+            searching: true,
             info: false,
             paging: false,
             order: [[4, 'asc']],

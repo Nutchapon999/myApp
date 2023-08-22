@@ -487,6 +487,7 @@
     <Content Include="JS\Form.js" />
     <Content Include="JS\kit.fontawesome.com_b88261c7eb.js" />
     <Content Include="JS\print.js" />
+    <Content Include="JS\unpkg.com_xlsx%400.18.5_dist_xlsx.full.min.js" />
     <Content Include="JS\unpkg_exceljs.min.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />

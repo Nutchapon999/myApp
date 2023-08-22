@@ -72,9 +72,9 @@
     </div>
 </div>
 <div class="container topic-title">
-    <div class="row">
+    <div class="row align-items-center">
         <div class="col-3">
-            <a href="@Url.Action("Goodness", "Form", new { year = ViewBag.Year })" class="btn btn-lg active-link-good">
+            <a href="@Url.Action("Goodness", "Form", new { year = ViewBag.Year })" class="btn active-link-good">
                 <i class="fa-solid fa-star" aria-hidden="true"></i> <strong class="gradient-text-good">บันทึกความดี</strong>
             </a>
         </div>
@@ -82,7 +82,7 @@
             <h1>เลือกแบบประเมิน</h1>
         </div>
         <div class="col-3 text-end">
-            <button id="toggle-btn" class="btn btn-lg action-view"><i class="fa-solid fa-list-ul"></i></button>
+            <button id="toggle-btn" class="btn btn-lg"><i class="fa-solid fa-list-ul"></i></button>
         </div>
     </div>
 </div>
@@ -97,7 +97,7 @@
     }
     <div id="list-view">
         <div class="container">
-            <table class="table" id="myTable">
+            <table class="table table-hover" id="myTable">
                 <thead style="background-color: #2D4686; color: #C8E8FF">
                     <tr>
                         <th width="10%" class="text-center">K2 No.</th>
@@ -170,8 +170,8 @@
                 @for (int i = 0; i < Model.Count(); i++)
                 {
                     var enroll = Model.ElementAt(i);
-                    var form = Url.Action("Form", "Home", new { idpGroupId = enroll.IDPGroupId, guid = enroll.Result.GUID });
-                    var info = Url.Action("Info", "Home", new { idpGroupId = enroll.IDPGroupId, guid = enroll.Result.GUID });
+                    var form = Url.Action("Form", "Form", new { idpGroupId = enroll.IDPGroupId, guid = enroll.Result.GUID });
+                    var info = Url.Action("Info", "Form", new { idpGroupId = enroll.IDPGroupId, guid = enroll.Result.GUID });
                     string backgroundColor = "";
                     string color = "";
                     if (enroll.Status == "Draft")

@@ -35,32 +35,30 @@
         <div class="card border-0 m-3">
             <div class="card-body border-0 mt-4">
                 <div class="row">
-                    <div class="col-3 d-flex align-items-center ">
-                        <label for="selectType" class="form-label me-2 mt-2"> ปี:</label>
-                        <select class="form-select" id="selectType">
-                            <option value="">ทั้งหมด</option>
-                            @foreach (var year in Model.Select(y => y.Year).Distinct())
-                            {
-                                <option value="@year">@year</option>
-                            }
-                        </select>
+                    <div class="col-3">
+                        <button type="submit" class="btn btn-lg active-link-submit">
+                            <i class="fa fa-save gradient-icon-submit" aria-hidden="true"></i> <strong class="gradient-icon-submit"> บันทึก</strong>
+                        </button>
                     </div>
                     <div class="col-6 text-center topic-title">
                         <h2 class="mt-2 ">เพิ่ม Competency</h2>
 
                     </div>
                     <div class="col-3 text-end">
-
+                        
                     </div>
                 </div>
                 <div class="row justify-content-center mb-2">
-                    <div class="col-2">
-                        <a href="@Url.Action("AddIDPGroup", new { id = ViewBag.Id })" class="btn btn-lg active-link-back shadow-sm">
-                            <i class="fa fa-arrow-left gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back"> กลับ</strong>
-                        </a>
-                        <button type="submit" class="btn btn-lg active-link-submit shadow-sm">
-                            <i class="fa fa-save gradient-icon-submit" aria-hidden="true"></i> <strong class="gradient-icon-submit"> บันทึก</strong>
-                        </button>
+                    <div class="col-2 d-flex align-items-center ">
+                       
+                        <label for="selectType" class="form-label me-2 mt-2"> ปี:</label>
+                        <select class="form-select" id="selectType" style="width: 100px">
+                            <option value="">ทั้งหมด</option>
+                            @foreach (var year in Model.Select(y => y.Year).Distinct())
+                            {
+                                <option value="@year">@year</option>
+                            }
+                        </select>
                     </div>
                     <div class="col-8 text-center">
                         <h6>
@@ -109,18 +107,15 @@
                     </tbody>
                 </table>
                 <div class="mt-2">
-                    <a href="@Url.Action("AddIDPGroup", new { id = ViewBag.Id })" class="btn btn-lg active-link-back shadow-sm">
+                    <a href="@Url.Action("AddIDPGroup", new { id = ViewBag.Id })" class="btn btn-lg active-link-back">
                         <i class="fa fa-arrow-left gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back"> กลับ</strong>
                     </a>
-                    <button type="submit" class="btn btn-lg active-link-submit shadow-sm">
-                        <i class="fa fa-save gradient-icon-submit" aria-hidden="true"></i> <strong class="gradient-icon-submit"> บันทึก</strong>
-                    </button>
                 </div>
             </div>
         </div>
     }
 </main>
-<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
 <link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
 <script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
 <script type="text/javascript">
@@ -173,17 +168,13 @@
 
         filterTableByType();
     });
-</script>
-<script>
-    // Get the "checkAll" checkbox element
+    
     const checkAllCheckbox = document.getElementById('checkAll');
-
-    // Get all checkboxes in the table body
+    
     const checkboxes = document.querySelectorAll('tbody input[name="competencyIds"]');
-
-    // Add an event listener to the "checkAll" checkbox
+    
     checkAllCheckbox.addEventListener('change', function () {
-        // Iterate over all checkboxes in the table body and set their checked property
+        
         checkboxes.forEach(function (checkbox) {
             checkbox.checked = checkAllCheckbox.checked;
         });
@@ -303,8 +294,8 @@
         -webkit-text-fill-color: transparent;
     }
 
-    .active-link-delete {
-        border: none;
+ /*   .active-link-delete {
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
         background-color: white;
     }
 
@@ -315,7 +306,7 @@
 
             .active-link-delete:hover i {
                 transform: scale(1.2);
-            }
+            }*/
 
     .gradient-text-delete {
         background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(357deg 94% 33%) 11%, hsl(358deg 89% 36%) 22%, hsl(358deg 84% 39%) 33%, hsl(358deg 79% 42%) 44%, hsl(359deg 74% 46%) 56%, hsl(359deg 70% 49%) 67%, hsl(359deg 73% 53%) 78%, hsl(360deg 80% 56%) 89%, hsl(0deg 87% 60%) 100% );
@@ -357,6 +348,9 @@
     #myTable {
         border-radius: 10px;
         overflow: hidden;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+    .active-link-back {
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     }
 
