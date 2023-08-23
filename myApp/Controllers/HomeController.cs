@@ -513,7 +513,7 @@ namespace myApp.Controllers
                 TempData["ErrorMessage"] = ex.Message;
             }
 
-            return RedirectToAction("AddIDPGroup", new { id = id });
+            return null;
 
         }
         #endregion
@@ -554,8 +554,12 @@ namespace myApp.Controllers
         [HttpPost]
         public ActionResult AddCompetency(string idpGroupId, Dictionary<string, IDPGroupItem> idpGroupItems)
         {
-            
+            int count = app.GetCountResult(idpGroupId);
             app.UpdateIDPGroupItems(idpGroupItems, idpGroupId);
+            if( count > 0)
+            {
+                app.UpdateResultItem(idpGroupItems);
+            }
             return RedirectToAction("AddCompetency", new { idpGroupId = idpGroupId });
             
         }
@@ -818,6 +822,7 @@ namespace myApp.Controllers
 
             return RedirectToAction("AddEmployee", new { idpGroupId = idpGroupId });
         }
+        [HttpPost]
         public ActionResult DeleteEmployeeByIDPGroup(int enrollId) 
         {
             string idpGroupId = app.GetIDPGroupIdByEnrollment(enrollId);
@@ -836,9 +841,9 @@ namespace myApp.Controllers
             {
                 TempData["ErrorMessage"] = ex.Message;
             }
-            
 
-            return RedirectToAction("AddEmployee", new { idpGroupId = idpGroupId });
+
+            return null;
         }
         #endregion
 
@@ -1467,6 +1472,15 @@ namespace myApp.Controllers
                 ViewBag.Status = status;
 
                 List<Result> results = app.GetInfoEmployeeByGuid(guid);
+                List<RemarkHS> remarkHs = app.GetRemark(guid);
+                Result result = app.GetResult(guid);
+
+                ViewBag.All = result.CompetencyAll;
+                ViewBag.Pass = result.CompetencyPass;
+                ViewBag.Per = result.CompetencyPer;
+                ViewBag.Rank = result.Rank;
+
+                ViewBag.Remark = remarkHs;
 
                 return View(results);
             }

@@ -153,15 +153,27 @@
                                             <div class="modal-dialog modal-dialog-centered">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h1 class="modal-title fs-4">ต้องการที่จะลบ IDP Group นี้หรือไม่?</h1>
+                                                        <h1 class="modal-title fs-5 fw-bold">
+                                                            <i class="fa-solid fa-trash-can gradient-text-delete"></i> ลบ IDP Group ออกจากพนักงาน
+                                                        </h1>
                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <h5>รหัส Enrollment: @enroll.EnrollId</h5>
+                                                        <h5 class="text-center">
+                                                            <i class="fa fa-key fs-4" title="รหัส IDP Group"></i> รหัส<strong>: @enroll.IDPGroupId</strong>
+                                                            <br />
+                                                            <i class="fa fa-book fa-book-bg fs-4 mt-3" title="ชื่อ IDP Group"></i> ชื่อ<strong>: @enroll.IDPGroup.IDPGroupName</strong>
+                                                            <br />
+                                                            <i class="fa fa-regular fa-calendar-days fs-4 mt-3" title="ปี"></i> ปี<strong>: @enroll.IDPGroup.Year</strong>
+                                                        </h5>
                                                     </div>
-                                                    <div class="modal-footer">
-                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-                                                        <a href="@Url.Action("DeleteIDPGroupByEmployee", new { enrollId = enroll.EnrollId })" class="btn btn-danger">ยืนยัน</a>
+                                                    <div class="modal-footer flex-nowrap p-0">
+                                                        <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" data-bs-dismiss="modal">
+                                                            <i class="fa-solid fa-ban gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">ยกเลิก</strong>
+                                                        </button>
+                                                        <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" onclick="deleteEnroll('@enroll.EnrollId')">
+                                                            <i class="fa-solid fa-trash-can gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ลบ</strong>
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -242,6 +254,20 @@
             },
             error: function (xhr, status, error) {
 
+            }
+        });
+    }
+
+    function deleteEnroll(enroll) {
+        $.ajax({
+            url: '@Url.Action("DeleteIDPGroupByEmployee", "Home")',
+            type: 'POST',
+            data: { enrollId: enroll },
+            success: function (response) {
+                window.location.href = '@Url.Action("AddIDPGroup", "Home", new { id = ViewBag.Id })';
+            },
+            error: function (error) {
+                console.log(error)
             }
         });
     }
@@ -468,10 +494,18 @@
         transform: scale(.95);
         border: 2px solid #9B0008;
     }
+    .fa-calendar-days,
     .gradient-icon-decline,
     .gradient-icon-back {
         background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+    }
+    .btn-cancel:hover {
+        background-color: #f8d7da;
+    }
+
+    .btn-submit:hover {
+        background-color: #cce5ff;
     }
 </style>

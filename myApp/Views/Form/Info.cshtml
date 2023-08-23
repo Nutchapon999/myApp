@@ -32,11 +32,6 @@
     </div>
 </div>
 <main>
-
-    @{
-        var enrollmentsGrouped = Model.GroupBy(e => e.GUID);
-        var emp = enrollmentsGrouped.FirstOrDefault()?.FirstOrDefault();
-    }
     <div class="text-center m-4 sticky-header-topic">
         <h5 class="mt-2"><i class="fa-solid fa-address-card fs-2"></i> <strong>รายละเอียด</strong></h5>
         <div class="row justify-content-center">
@@ -68,15 +63,15 @@
             <table class="table table-striped" id="myTable" width="80px">
                 <tr class="text-center">
                     <th style="background-color: #C8E8FF; color: #2D4686; ">Competency All</th>
-                    <td>@emp.CompetencyAll</td>
+                    <td>@ViewBag.All</td>
                 </tr>
                 <tr class="text-center">
                     <th style="background-color: #C8E8FF; color: #2D4686;">Competency Pass</th>
-                    <td>@emp.CompetencyPass</td>
+                    <td>@ViewBag.Pass</td>
                 </tr>
                 <tr class="text-center">
                     <th style="background-color: #C8E8FF; color: #2D4686; ">% Competency</th>
-                    <td>@emp.CompetencyPer%</td>
+                    <td>@ViewBag.Per%</td>
                 </tr>
                 <tr class="text-center">
                     <th style="background-color: #C8E8FF; color: #2D4686; ">>100%</th>
@@ -86,7 +81,7 @@
                 <tr class="text-center">
                     <th style="background-color: #C8E8FF; color: #2D4686; ">>70%&#60;100%</th>
                     <td>
-                        @emp.Rank
+                        @ViewBag.Rank
                     </td>
                 </tr>
                 <tr class="text-center">
@@ -156,9 +151,11 @@
                         <tbody>
                             @foreach (var res in Model.Where(r => competencyType == "TC_CC" ? r.Competency.Type == "TC" || r.Competency.Type == "CC" : r.Competency.Type == competencyType))
                             {
+                                var gap1 = res.ResultItem.Actual1 - int.Parse(res.IDPGroupItem.Pl);
+                                var gap2 = res.ResultItem.Actual2 - int.Parse(res.IDPGroupItem.Pl);
                                 <tr>
                                     <td class="text-center">
-                                        @if (res.ResultItem.Critical == false)
+                                        @if (res.IDPGroupItem.Critical == false)
                                         {
                                             <text></text>
                                         }
@@ -168,19 +165,19 @@
                                         }
                                     </td>
                                     <td>@res.Competency.CompetencyNameTH</td>
-                                    <td class="text-center">@res.ResultItem.Requirement</td>
+                                    <td class="text-center">@res.IDPGroupItem.Pl</td>
                                     <td class="text-center">@res.ResultItem.Actual1</td>
-                                    @if (res.ResultItem.Gap1 < 0)
+                                    @if (gap1 < 0)
                                     {
-                                        <td class="text-center">@res.ResultItem.Gap1</td>
+                                        <td class="text-center">@gap1</td>
                                     }
                                     else
                                     {
                                         <td></td>
                                     }
-                                    @if (res.ResultItem.Gap1 >= 0)
+                                    @if (gap1 >= 0)
                                     {
-                                        <td class="text-center">@res.ResultItem.Gap1</td>
+                                        <td class="text-center">@gap1</td>
                                     }
                                     else
                                     {
@@ -223,17 +220,17 @@
                                     }
                                     <td>@res.ResultItem.DevRst</td>
                                     <td class="text-center">@res.ResultItem.Actual2</td>
-                                    @if (res.ResultItem.Gap2 < 0)
+                                    @if (gap2 < 0)
                                     {
-                                        <td class="text-center">@res.ResultItem.Gap2</td>
+                                        <td class="text-center">@gap2</td>
                                     }
                                     else
                                     {
                                         <td></td>
                                     }
-                                    @if (res.ResultItem.Gap2 >= 0)
+                                    @if (gap2 >= 0)
                                     {
-                                        <td class="text-center">@res.ResultItem.Gap2</td>
+                                        <td class="text-center">@gap2</td>
                                     }
                                     else
                                     {
@@ -673,15 +670,15 @@
         printDocument.write('<table class="table table-striped" id="myTable" width="80">');
         printDocument.write('<tr class="text-center">');
         printDocument.write('<th style="background-color: #B7DCFF; font-size: 12px;">Competency All</th>');
-        printDocument.write('<td>' + res[0].CompetencyAll +'</td>');
+        printDocument.write('<td>' + @ViewBag.All +'</td>');
         printDocument.write('</tr>');
         printDocument.write('<tr class="text-center">');
         printDocument.write('<th style="background-color: #B7DCFF; font-size: 12px;">Competency Pass</th>');
-        printDocument.write('<td>' + res[0].CompetencyPass +'</td>');
+        printDocument.write('<td>' + @ViewBag.Pass +'</td>');
         printDocument.write('</tr>');
         printDocument.write('<tr class="text-center">');
         printDocument.write('<th style="background-color: #B7DCFF; font-size: 12px;">% Competency</th>');
-        printDocument.write('<td>' + res[0].CompetencyPer +'%</td>');
+        printDocument.write('<td>' + @ViewBag.Per +'%</td>');
         printDocument.write('</tr>');
         printDocument.write('<tr class="text-center">');
         printDocument.write('<th style="background-color: #B7DCFF; font-size: 12px;">>100%</th>');
@@ -690,7 +687,7 @@
         printDocument.write('</tr>');
         printDocument.write('<tr class="text-center">');
         printDocument.write('<th style="background-color: #B7DCFF; font-size: 12px;">>70%&#60;100%</th>');
-        printDocument.write('<td>' + res[0].Rank +'</td>');
+        printDocument.write('<td>' + '@ViewBag.Rank' +'</td>');
         printDocument.write('</tr>');
         printDocument.write('<tr class="text-center">');
         printDocument.write('<th style="background-color: #B7DCFF; font-size: 12px;">&#60;70%</th>');
@@ -734,7 +731,7 @@
         for (i = 0; i < propertyCount; i++) {
             if (res[i].Competency.Type === "MC") {
                 printDocument.write('<tr>');
-                if (res[i].ResultItem.Critical == false) {
+                if (res[i].IDPGroupItem.Critical == false) {
                     printDocument.write('<td></td>');
                 } else {
                     printDocument.write('<td class="text-center"><img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Regular_hexagon.svg" width="25" height="25" /></td>');
@@ -834,7 +831,7 @@
         for (i = 0; i < propertyCount; i++) {
             if (res[i].Competency.Type === "FC") {
                 printDocument.write('<tr>');
-                if (res[i].ResultItem.Critical == false) {
+                if (res[i].IDPGroupItem.Critical == false) {
                     printDocument.write('<td></td>');
                 } else {
                     printDocument.write('<td class="text-center"><img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Regular_hexagon.svg" width="25" height="25" /></td>');
@@ -936,7 +933,7 @@
             if (res[i].Competency.Type === "TC" || res[i].Competency.Type === "CC")
             {
                 printDocument.write('<tr>');
-                if (res[i].ResultItem.Critical == false) {
+                if (res[i].IDPGroupItem.Critical == false) {
                     printDocument.write('<td></td>');
                 } else {
                     printDocument.write('<td class="text-center"><img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Regular_hexagon.svg" width="25" height="25" /></td>');

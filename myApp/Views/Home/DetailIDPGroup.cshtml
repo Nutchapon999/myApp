@@ -2,10 +2,9 @@
 @{
     ViewBag.Title = "DetailCompetency";
     var idpGroupItemJson = Newtonsoft.Json.JsonConvert.SerializeObject(ViewBag.IDPGroupItem);
+    //var modelJson = Newtonsoft.Json.JsonConvert.SerializeObject(Model);
+
 }
-<script type="text/javascript">
-    var idpGroupItem = @Html.Raw(idpGroupItemJson);
-</script>
 <div class="sticky-header-breadcrumb">
     <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
         <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
@@ -138,18 +137,15 @@
     </div>
    
 </main>
-<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
 <link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
 <script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
 <script src="~/JS/unpkg_exceljs.min.js"></script>
 <script type="text/javascript">
-    console.log(idpGroupItem);
-
     var js = jQuery.noConflict(true);
     js(document).ready(function () {
         js('#competencyTB').DataTable({
             info: false,
-
             paging: false,
             ordering: false,
             language: {
@@ -170,7 +166,6 @@
 
         js('#employeeTB').DataTable({
             info: false,
-            scrollX: true,
             paging: false,
             ordering: false,
             language: {
@@ -206,7 +201,7 @@
                 var cellData = cell.innerText;
 
                 if (cell.classList.contains("text-center") && cell.querySelector("img") !== null) {
-                    cellData = "1"; 
+                    cellData = "1";
                 }
 
                 rowData.push(cellData);
@@ -224,6 +219,12 @@
         });
     }
 
+    var idpGroupItem = @Html.Raw(idpGroupItemJson);
+    @*var model = @Html.Raw(modelJson);*@
+
+    console.log(idpGroupItem);
+    //console.log(model);
+
     function printTable(tableId) {
         var printContents = document.getElementById(tableId).outerHTML;
         var originalContents = document.body.innerHTML;
@@ -238,22 +239,69 @@
         printDocument.write('<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">');
         printDocument.write('<title>Print</title>');
         printDocument.write('<meta name="filename" content="Print">');
-        printDocument.write('<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">');
+        printDocument.write('<style>');
+        printDocument.write('body { font-family: Arial, sans-serif; }');
+        printDocument.write('td { padding: 5px 5px 5px 5px}');
+        printDocument.write('#TB,#TB td,#TB th { border: 1px solid; }');
+        printDocument.write('#TB td, #TB tbody tr th {vertical-align: top;}')
+        printDocument.write('#reTB,#reTB th { border: 1px solid; }');
+        printDocument.write('#TB { width: 100 %; border - collapse: collapse; }');
+        printDocument.write('#TB tbody tr:nth-child(even) { background-color: #f2f2f2; border: 1px solid;}');
+        printDocument.write('</style>');
+        printDocument.write('<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">');
         printDocument.write('</head>');
         printDocument.write('<body>');
-        printDocument.write('<div class="container">');
-        printDocument.write('<img height="100" src="https://www.satpcl.co.th/themes/default/assets/static/images/logo.png" />');
-        printDocument.write('<h3 class="mt-4"><strong>รายละเอียด</strong></h3>');
-        printDocument.write('<h5>รหัส IDP Group: <code>@ViewBag.IDPGroupId</code></h5>');
-        printDocument.write('<h5></i> ชื่อ IDP Group: <code>@ViewBag.IDPGroupName</code></h5>');
-        printDocument.write('<h5>ปี: <code>@ViewBag.Year</code></h5>');
-        printDocument.write('<h5>จำนวนคน: <code>@ViewBag.Member</code> | จำนวน Competency: <code>@ViewBag.Competency</code></h5>');
-        printDocument.write('<h5>วันที่พิมพ์: <code>' + new Date().toLocaleDateString() + '</code></h5>');
-        printDocument.write(printContents);
+        printDocument.write('<div class="row m-2 align-items-center" style="background-color: #D5F8EF; border: 2px solid black;">');
+        printDocument.write('<img src="https://www.satpcl.co.th/themes/default/assets/static/images/logo.png" style="max-width: 10%" />');
+        printDocument.write('<div class="col-auto mt-2">');
+        printDocument.write('<p class="fw-bold" style="font-size: 14px;">Detail IDP Group</p>');
+        printDocument.write('</div>');
+        printDocument.write('<div class="col-auto mt-2">');
+        printDocument.write('<p style="font-size: 12px;"><strong>รหัส IDP Group:</strong> @ViewBag.IDPGroupId</p>');
+        printDocument.write('<p style="font-size: 12px;"><strong>จำนวนคน:</strong> @ViewBag.Member</p>');
+        printDocument.write('</div>');
+        printDocument.write('<div class="col-auto mt-2">');
+        printDocument.write('<p style="font-size: 12px;"><strong>ชื่อ IDP Group:</strong> @ViewBag.IDPGroupName</p>');
+        printDocument.write('<p style="font-size: 12px;"><strong>จำนวน Competency:</strong> @ViewBag.Competency</p>');
+        printDocument.write('</div>');
+        printDocument.write('<div class="col-auto mt-2">');
+        printDocument.write('<p style="font-size: 12px;"><strong>ปี:</strong> @ViewBag.Year</p>');
+        printDocument.write('<p style="font-size: 12px;"><strong>วันที่พิมพ์:</strong> ' + new Date().toLocaleDateString() + '</p>');
+        printDocument.write('</div>');
+        printDocument.write('</div>');
 
+        printDocument.write('<h5 class="fw-bold mt-3">Competency</h5>');
+        printDocument.write('<table class="mt-2" id="TB" width="100%">');
+        printDocument.write('<thead style="background-color: #fbd0da">');
+        printDocument.write('<tr>');
+        printDocument.write('<th class="text-center" width="10%">รหัส Competency</th>');
+        printDocument.write('<th class="text-center" width="60%">ชื่อ Competency</th>');
+        printDocument.write('<th class="text-center" width="5%">Pl</th>');
+        printDocument.write('<th class="text-center" width="5%">Critical</th>');
+        printDocument.write('</tr>');
+        printDocument.write('</thead>');
+        printDocument.write('<tbody>');
 
-        printDocument.write('<table class="table table-hover table-striped mt-5">');
-        printDocument.write('<thead style="background-color: #2D4686; color: #C8E8FF">');
+        for (var i = 0; i < idpGroupItem.length; i++) {
+            printDocument.write('<tr>');
+            printDocument.write('<th scope="row" class="text-center">' + idpGroupItem[i].CompetencyId + '</th>');
+            printDocument.write('<td style="font-size: 16px">' + idpGroupItem[i].Competency.CompetencyNameTH + '</td>');
+            printDocument.write('<td class="text-center">' + idpGroupItem[i].Pl + '</td>');
+            if (idpGroupItem[i].Critical) {
+                printDocument.write('<td class="text-center"><img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Regular_hexagon.svg" width="25" height="25" /></td>');
+            }
+            else {
+                printDocument.write('<td class="text-center"></td>');
+
+            }
+            printDocument.write('</tr>');
+        }
+
+        printDocument.write('</tbody>');
+        printDocument.write('</table>');
+        printDocument.write('<h5 class="fw-bold mt-3">รายละเอียดของ Competency</h5>');
+        printDocument.write('<table class="mt-2" id="TB" width="100%">');
+        printDocument.write('<thead style="background-color: #FDF3CE">');
         printDocument.write('<tr>');
         printDocument.write('<th class="text-center">รหัส Competency</th>');
         printDocument.write('<th class="text-center">ชื่อ Competency</th>');
@@ -269,19 +317,17 @@
         for (var i = 0; i < idpGroupItem.length; i++) {
             printDocument.write('<tr>');
             printDocument.write('<th scope="row" class="text-center">' + idpGroupItem[i].CompetencyId + '</th>');
-            printDocument.write('<td>' + idpGroupItem[i].Competency.CompetencyNameTH + '</td>');
-            printDocument.write('<td>' + idpGroupItem[i].Competency.Pl1 + '</td>');
-            printDocument.write('<td>' + idpGroupItem[i].Competency.Pl2 + '</td>');
-            printDocument.write('<td>' + idpGroupItem[i].Competency.Pl3 + '</td>');
-            printDocument.write('<td>' + idpGroupItem[i].Competency.Pl4 + '</td>');
-            printDocument.write('<td>' + idpGroupItem[i].Competency.Pl5 + '</td>');
+            printDocument.write('<td style="font-size: 15px">' + idpGroupItem[i].Competency.CompetencyNameTH + '</td>');
+            printDocument.write('<td style="font-size: 13px">' + (idpGroupItem[i].Competency.Pl1 || '') + '</td>');
+            printDocument.write('<td style="font-size: 13px">' + (idpGroupItem[i].Competency.Pl2 || '') + '</td>');
+            printDocument.write('<td style="font-size: 13px">' + (idpGroupItem[i].Competency.Pl3 || '') + '</td>');
+            printDocument.write('<td style="font-size: 13px">' + (idpGroupItem[i].Competency.Pl4 || '') + '</td>');
+            printDocument.write('<td style="font-size: 13px">' + (idpGroupItem[i].Competency.Pl5 || '') + '</td>');
             printDocument.write('</tr>');
         }
 
         printDocument.write('</tbody>');
         printDocument.write('</table>');
-
-        printDocument.write('</div>');
         printDocument.write('</body>');
         printDocument.write('</html>');
         printDocument.close();

@@ -33,5 +33,8 @@ namespace myApp.Models
 
         public virtual ResultItem ResultItem { get; set; }
         public virtual Competency Competency { get; set; }
+        public virtual IDPGroupItem IDPGroupItem { get; set; }
+        public virtual IDPGroup IDPGroup { get; set; }
+
     }
 }

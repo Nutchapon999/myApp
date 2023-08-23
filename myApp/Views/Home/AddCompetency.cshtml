@@ -97,11 +97,14 @@
                         @foreach (var idpItm in Model)
                         {
                             <tr style="@(idpItm.Critical ? "background-color: #D5F2E3;" : "background-color: none;")">
-                                <th scope="row" class="text-center">@idpItm.CompetencyId</th>
+                                <th scope="row" class="text-center">
+                                    @idpItm.CompetencyId
+                                    <input type="hidden" name="idpGroupItems[@idpItm.IDPGroupItemId].CompetencyId" value="@idpItm.CompetencyId" />
+                                </th>
                                 <td>@idpItm.Competency.CompetencyNameTH</td>
                                 <td class="text-center">
                                     <button id="plButton" onchange="EditPl(this)" type="button" class="btn btn-dark active-link-competency " data-bs-toggle="modal" data-bs-target="#DetailPl-@idpItm.CompetencyId">
-                                        <strong>@idpItm.Pl</strong>
+                                        <strong style="font-size: 18px">@idpItm.Pl</strong>
                                     </button>
                                     <div class="modal fade modal-xl modal1" id="DetailPl-@idpItm.CompetencyId" aria-labelledby="deleteModalLabel" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-scrollable">
@@ -210,7 +213,7 @@
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h1 class="modal-title fs-3 fw-bold">
+                                                    <h1 class="modal-title fs-5 fw-bold">
                                                         <i class="fa-solid fa-trash-can gradient-text-delete"></i> ลบ Competency ออกจาก @ViewBag.IDPGroupId
                                                     </h1>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -218,9 +221,13 @@
                                                 <div class="modal-body">
                                                     <h5><i class="fa-solid fa-key"></i> Competency: @idpItm.CompetencyId</h5>
                                                 </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-                                                    <button class="btn btn-danger" onclick="deleteIDPGroupItem('@idpItm.IDPGroupItemId')">ยืนยัน</button>
+                                                <div class="modal-footer flex-nowrap p-0">
+                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" data-bs-dismiss="modal">
+                                                        <i class="fa-solid fa-ban gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">ยกเลิก</strong>
+                                                    </button>
+                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" onclick="deleteIDPGroupItem('@idpItm.IDPGroupItemId')">
+                                                        <i class="fa-solid fa-trash-can gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ลบ</strong>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -453,6 +460,11 @@
     .icon-item {
         margin-left: 20px;
     }
+    .fa-signature {
+        background-image: linear-gradient( 0deg, hsl(220deg 100% 47%) 0%, hsl(216deg 100% 47%) 6%, hsl(213deg 100% 48%) 14%, hsl(209deg 100% 48%) 22%, hsl(206deg 100% 48%) 32%, hsl(202deg 100% 49%) 43%, hsl(199deg 100% 49%) 56%, hsl(195deg 100% 49%) 70%, hsl(192deg 100% 50%) 85%, hsl(188deg 100% 50%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 
     #myTable {
         border-radius: 10px;
@@ -471,5 +483,15 @@
         background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+    }
+    .modal-header {
+        justify-content: center;
+    }
+    .btn-cancel:hover {
+        background-color: #f8d7da;
+    }
+
+    .btn-submit:hover {
+        background-color: #cce5ff;
     }
 </style>

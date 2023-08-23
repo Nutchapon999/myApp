@@ -305,6 +305,7 @@ namespace myApp.Controllers
             List<ResultItem> actual2NullItems = new List<ResultItem>();
 
             List<ResultItem> criticalRes = new List<ResultItem>();
+            List<ResultItem> hasGap = new List<ResultItem>();
 
             for (var i = 0; i < count; i++)
             {
@@ -424,6 +425,10 @@ namespace myApp.Controllers
                 {
                     criticalRes.Add(resultItem);
                 }
+                else
+                {
+                    hasGap.Add(resultItem);
+                }
 
                 resultItems.Add(resultItem);
 
@@ -490,6 +495,36 @@ namespace myApp.Controllers
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
                 }
+                foreach(var hasGapResultItem in hasGap)
+                {
+                    if(hasGapResultItem.Actual1 < hasGapResultItem.Requirement)
+                    {
+                        if (string.IsNullOrEmpty(hasGapResultItem.DevPlan))
+                        {
+                            TempData["ErrorMessage"] = "มี Competency ที่มี Gap แต่ยังไม่ได้ระบุ Development Plan";
+                            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                        }
+                        else if (string.IsNullOrEmpty(hasGapResultItem.Q1) &&
+                                string.IsNullOrEmpty(hasGapResultItem.Q2) &&
+                                string.IsNullOrEmpty(hasGapResultItem.Q3) &&
+                                string.IsNullOrEmpty(hasGapResultItem.Q4))
+                        {
+                            TempData["ErrorMessage"] = "มี Competency ที่มี Gap แต่ยังไม่ได้ระบุ Quarter";
+                            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                        }
+
+                        else if (string.IsNullOrEmpty(hasGapResultItem.DevRst) && (status == "2nd Evaluating" || status == "Developing"))
+                        {
+                            TempData["ErrorMessage"] = "มี Competency ที่มี Gap แต่ยังไม่ได้ระบุ Development Result";
+                            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                        }
+                        else if (string.IsNullOrEmpty(hasGapResultItem.FileId) && (status == "2nd Evaluating" || status == "Developing"))
+                        {
+                            TempData["ErrorMessage"] = "มี Competency ที่มี Gap แต่ยังไม่ได้อัปโหลด File Attachment";
+                            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                        }
+                    }
+                }
 
                 //WORKFLOW UPDATE
                 if (status == "1st Evaluating" || status == "2nd Evaluating")
@@ -550,7 +585,6 @@ namespace myApp.Controllers
 
             return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
         }
-
 
         #endregion
 
@@ -737,7 +771,13 @@ namespace myApp.Controllers
                 ViewBag.Year = year;
 
                 List<Result> results = app.GetInfoEmployeeByGuid(guid);
-                List<RemarkHS> remarkHs = app.GetRemark(guid);    
+                List<RemarkHS> remarkHs = app.GetRemark(guid);
+                Result result = app.GetResult(guid);
+
+                ViewBag.All = result.CompetencyAll;
+                ViewBag.Pass = result.CompetencyPass;
+                ViewBag.Per = result.CompetencyPer;
+                ViewBag.Rank = result.Rank;
 
                 ViewBag.Remark = remarkHs;
 

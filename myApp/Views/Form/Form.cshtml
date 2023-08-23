@@ -133,8 +133,9 @@
                     @for (var i = 0; i < Model.Count(); i++)
                     {
                         var enroll = Model.ElementAt(i);
-                        var gap1 = enroll.ResultItem.Actual1 - enroll.ResultItem.Requirement;
-                        var gap2 = enroll.ResultItem.Actual2 - enroll.ResultItem.Requirement;
+                        var plVal = int.Parse(enroll.IDPGroupItem.Pl);
+                        var gap1 = enroll.ResultItem.Actual1 - plVal;
+                        var gap2 = enroll.ResultItem.Actual2 - plVal;
                         string backgroundColor1 = "";
                         string color1 = "";
                         string backgroundColor2 = "";
@@ -144,12 +145,12 @@
                             backgroundColor1 = "#E50087";
                             color1 = "#FFE5F4";
                         }
-                        else if (enroll.ResultItem.Actual1 < enroll.ResultItem.Requirement && enroll.ResultItem.Actual1 > 0)
+                        else if (enroll.ResultItem.Actual1 < plVal && enroll.ResultItem.Actual1 > 0)
                         {
                             backgroundColor1 = "#DAAB00";
                             color1 = "#FDF3CE";
                         }
-                        else if (enroll.ResultItem.Actual1 >= enroll.ResultItem.Requirement)
+                        else if (enroll.ResultItem.Actual1 >= plVal)
                         {
                             backgroundColor1 = "#14B789";
                             color1 = "#D5F8EF";
@@ -160,18 +161,18 @@
                             backgroundColor2 = "#E50087";
                             color2 = "#FFE5F4";
                         }
-                        else if (enroll.ResultItem.Actual2 < enroll.ResultItem.Requirement && enroll.ResultItem.Actual2 > 0)
+                        else if (enroll.ResultItem.Actual2 < plVal && enroll.ResultItem.Actual2 > 0)
                         {
                             backgroundColor2 = "#DAAB00";
                             color2 = "#FDF3CE";
                         }
-                        else if (enroll.ResultItem.Actual2 >= enroll.ResultItem.Requirement)
+                        else if (enroll.ResultItem.Actual2 >= plVal)
                         {
                             backgroundColor2 = "#14B789";
                             color2 = "#D5F8EF";
                         }
                         <tr id="row-@i">
-                            <td>
+                            <td class="text-center">
                                 @if (enroll.IDPGroupItem.Critical)
                                 {
                                     <img src="~/Images/hexagon_icon.png" width="25" height="25" />

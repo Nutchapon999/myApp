@@ -23,6 +23,8 @@ namespace myApp.Models
         public virtual IDPGroupItem IDPGroupItem { get; set;}
         public virtual Enrollment Enrollment { get; set;}
         public virtual Competency Competency { get; set; }
+        public virtual ResultItem ResultItem { get; set; }
+        public virtual Result Result { get; set; }
         public virtual User User { get; set;}
     }
 }

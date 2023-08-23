@@ -247,12 +247,20 @@
         </div>
     </div>
     <div class="modal fade" id="AddModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
                     <div class="row align-items-center">
-                        <div class="col-2">
-                            <h1 class="modal-title fs-5" id="exampleModalLabel">เลือกพนักงาน</h1>
+                        <div class="col-4 d-flex align-items-center">
+                            <h1 class="modal-title fs-4 fw-bold me-3" id="exampleModalLabel">เลือกพนักงาน</h1>
+                            <label for="selectType" class="form-label me-2 mt-2"> BU/Holding:</label>
+                            <select class="form-select" id="selectType" style="width: 200px">
+                                <option value="">ทั้งหมด</option>
+                                @foreach (var dpt in ((List<myApp.Models.User>)ViewBag.User).Where(u => u.Company != null).GroupBy(u => u.Company).Select(grp => grp.First()))
+                                {
+                                    <option value="@dpt.Company">@dpt.Company</option>
+                                }
+                            </select>   
                         </div>
                         <div class="col-5 ms-auto text-end">
                             <button type="submit" class="btn btn-lg active-link-submit me-2" id="actionButton" disabled>
@@ -492,6 +500,31 @@
         }
     }
 
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterSelect = document.getElementById('selectType');
+        const tableRows = document.querySelectorAll('#empTB tbody tr');
+
+        function filterTableByType() {
+            const selectedType = filterSelect.value;
+
+            tableRows.forEach((row) => {
+                const rowType = row.cells[8].textContent.trim();
+
+                console.log(rowType);
+                console.log(selectedType);
+
+                if (selectedType === '' || rowType === selectedType) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        filterSelect.addEventListener('change', filterTableByType);
+
+        filterTableByType();
+    });
 
     function myFunction() {
         var input, filter, table, tr, td, i, j, txtValue;

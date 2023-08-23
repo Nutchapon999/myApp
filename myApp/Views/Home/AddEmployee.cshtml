@@ -177,15 +177,33 @@
                                         <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
                                                 <div class="modal-header">
-                                                    <h1 class="modal-title fs-4">ต้องการที่จะลบพนักงานคนนี้หรือไม่?</h1>
+                                                    <h1 class="modal-title fs-5 fw-bold">
+                                                        <i class="fa-solid fa-trash-can gradient-text-delete"></i> ลบพนักงานออกจาก @ViewBag.IDPGroupId
+                                                    </h1>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body">
-                                                    <h5>รหัสพนักงาน: @enroll.Id</h5>
+                                                    <h5>
+                                                        <i class="fa-solid fa-key fs-4"></i><strong> รหัส:</strong> @enroll.Id
+                                                        <br />
+                                                        <i class="fa-solid fa-user fs-4 mt-2"></i><strong> ชื่อ:</strong> @enroll.User.Prefix @enroll.User.FirstNameTH @enroll.User.LastNameTH
+                                                        <br />
+                                                        <i class="fa-solid fa-ranking-star fs-4 mt-2"></i><strong> ตำแหน่งขั้น:</strong> @enroll.User.JobLevel
+                                                        <br />
+                                                        <i class="fa-solid fa-location-dot fs-4 mt-2"></i><strong> ตำแหน่ง:</strong> @enroll.User.Position
+                                                        <br />
+                                                        <i class="fa fa-home-user fs-4 mt-2"></i><strong> แผนก:</strong> @enroll.User.DepartmentName
+                                                        <br />
+                                                        <i class="fa-solid fa-building fs-4 mt-2"></i><strong> ชื่อ:</strong> @enroll.User.Company
+                                                    </h5>
                                                 </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-                                                    <a href="@Url.Action("DeleteEmployeeByIDPGroup", new { EnrollId = enroll.EnrollId })" class="btn btn-danger">ยืนยัน</a>
+                                                <div class="modal-footer flex-nowrap p-0">
+                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" data-bs-dismiss="modal">
+                                                        <i class="fa-solid fa-ban gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">ยกเลิก</strong>
+                                                    </button>
+                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" onclick="deleteEnroll('@enroll.EnrollId')">
+                                                        <i class="fa-solid fa-trash-can gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ลบ</strong>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -246,6 +264,20 @@
 
 
     });
+
+    function deleteEnroll(enroll) {
+        $.ajax({
+            url: '@Url.Action("DeleteEmployeeByIDPGroup", "Home")',
+            type: 'POST',
+            data: { enrollId: enroll },
+            success: function (response) {
+                window.location.href = '@Url.Action("AddEmployee", "Home", new { idpGroupId = ViewBag.IDPGroupId })';
+            },
+            error: function (error) {
+                console.log(error)
+            }
+        });
+    }
 
     function submitFormAjax(isChecked) {
         var formData = $('#myForm').serialize();
@@ -315,7 +347,11 @@
         font-size: 45px;
         /* Any other styles for the icon, if needed */
     }
-
+    .fa-user {
+        background-image: linear-gradient( 0deg, hsl(220deg 100% 47%) 0%, hsl(216deg 100% 47%) 6%, hsl(213deg 100% 48%) 14%, hsl(209deg 100% 48%) 22%, hsl(206deg 100% 48%) 32%, hsl(202deg 100% 49%) 43%, hsl(199deg 100% 49%) 56%, hsl(195deg 100% 49%) 70%, hsl(192deg 100% 50%) 85%, hsl(188deg 100% 50%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
     .topic-title {
         background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
         -webkit-background-clip: text;
@@ -426,11 +462,42 @@
         transform: scale(.95);
         border: 2px solid #9B0008;
     }
-
+    .fa-calendar-days,
     .gradient-icon-decline,
     .gradient-icon-back {
         background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+    }
+    .btn-cancel:hover {
+        background-color: #f8d7da;
+    }
+
+    .btn-submit:hover {
+        background-color: #cce5ff;
+    }
+    .fa-ranking-star {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(237deg 17% 44%) 11%, hsl(298deg 1% 48%) 22%, hsl(52deg 13% 52%) 33%, hsl(54deg 26% 54%) 44%, hsl(55deg 40% 56%) 56%, hsl(55deg 54% 58%) 67%, hsl(56deg 67% 59%) 78%, hsl(56deg 81% 59%) 89%, hsl(56deg 94% 59%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .fa-building,
+    .fa-home-user {
+        background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .fa-address-card,
+    .fa-location-dot{
+        background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .btn-cancel:hover {
+        background-color: #f8d7da;
+    }
+
+    .btn-submit:hover {
+        background-color: #cce5ff;
     }
 </style>

@@ -76,12 +76,12 @@
                             <td style="@(cmpty.Active ? "background-color: #D5F2E3; color: #006f57;" : "background-color: #F8D7DA; color: #9B0008")">@(cmpty.Active ? "ใช้" : "ไม่ใช้")</td>
                             <td style="font-size: 14px">@cmpty.CompetencyNameTH</td>
                             <td style="font-size: 14px">@cmpty.CompetencyNameEN</td>
-                            <td style="font-size: 12px">@cmpty.CompetencyDesc</td>
-                            <td style="font-size: 12px">@cmpty.Pl1</td>
-                            <td style="font-size: 12px">@cmpty.Pl2</td>
-                            <td style="font-size: 12px">@cmpty.Pl3</td>
-                            <td style="font-size: 12px">@cmpty.Pl4</td>
-                            <td style="font-size: 12px">@cmpty.Pl5</td>
+                            <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.CompetencyDesc</textarea></td>
+                            <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl1</textarea></td>
+                            <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl2</textarea></td>
+                            <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl3</textarea></td>
+                            <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl4</textarea></td>
+                            <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl5</textarea></td>
                             <td>
                                 <div class="btn-group me-2" role="group" aria-label="Second group">
                                     <button id="link" type="button" class="btn active-link-edit" title="แก้ไข" data-bs-toggle="modal" data-bs-target="#editModal-@cmpty.CompetencyId">
@@ -310,6 +310,10 @@
         overflow: hidden;
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     }
+        #myTable td,
+        #myTable tbody th {
+            vertical-align: top;
+        }
 
     .background-container {
         background-color: white; /* Set the white background */

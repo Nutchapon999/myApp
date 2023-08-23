@@ -114,14 +114,12 @@
                                 <th scope="row">@cmpty.CompetencyId</th>
                                 <td style="font-size: 14px">@cmpty.CompetencyNameTH</td>
                                 <td style="font-size: 14px">@cmpty.CompetencyNameEN</td>
-                                <td style="font-size: 14px">@cmpty.CompetencyDesc</td>
-                                <td style="font-size: 14px">@cmpty.Pl1</td>
-                                <td style="font-size: 14px">@cmpty.Pl2</td>
-                                <td style="font-size: 14px">@cmpty.Pl3</td>
-                                <td style="font-size: 14px">@cmpty.Pl4</td>
-                                <td style="font-size: 14px">@cmpty.Pl5</td>
-
-
+                                <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.CompetencyDesc</textarea></td>
+                                <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl1</textarea></td>
+                                <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl2</textarea></td>
+                                <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl3</textarea></td>
+                                <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl4</textarea></td>
+                                <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl5</textarea></td>
                             </tr>
                         }
                     </tbody>
@@ -143,7 +141,7 @@
         </div>
     }
 </main>
-<script src="~/Scripts/jquery-3.4.1.js"></script>
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
 <link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
 <link  rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css"/>
 <script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
