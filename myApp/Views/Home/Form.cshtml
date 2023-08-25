@@ -33,6 +33,10 @@
                 {
                     <p style="color: #14B789; background-color: #D5F8EF; padding: 7px; border-radius: 3rem; width: auto;" class="text-center fw-bold">@ViewBag.Status</p>
                 }
+                else if (ViewBag.Status == "Decline")
+                {
+                    <p style="color: #CC660A; background-color: #FFF2E7; padding: 7px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@ViewBag.Status</p>
+                }
             </div>
             <div class="col-auto overflow-x">
                 <button type="submit" class="btn btn-lg active-link-submit" id="liveToastBtn" name="isSave" value="true">

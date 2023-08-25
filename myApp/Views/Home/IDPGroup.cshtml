@@ -30,7 +30,9 @@
         <div class="card-body mt-4 ">
             <div class="row mb-2">
                 <div class="col-4">
-
+                    @*<button type="button" class="btn btn-lg active-link-back mb-2" id="actionButton">
+                        <i class="fa-solid fa-trash-can gradient-icon-back" aria-hidden="true"></i><strong class="gradient-icon-back"> ลบ</strong>
+                    </button>*@
                 </div>
                 <div class="col-4 text-center topic-title">
                     <h1>IDP Group</h1>
@@ -130,6 +132,13 @@
             <table class="table table-hover table-responsive table-striped" id="myTable">
                 <thead style="background-color: #2D4686; color: #C8E8FF ">
                     <tr>
+                        @*<th width="5%" class="text-center">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="checkAll" />
+                                <label class="form-check-label" for="checkAll">
+                                </label>
+                            </div>
+                        </th>*@
                         <th width="10%" class="text-center">รหัส IDP Group</th>
                         <th width="50%" class="text-center">ชื่อ IDP Group</th>
                         <th width="10%" class="text-center">จำนวนคน</th>
@@ -142,6 +151,11 @@
                     @foreach (var idp in Model)
                     {
                         <tr>
+                            @*<td>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="idpGroupIds" value="@idp.IDPGroupId"/>
+                                </div>
+                            </td>*@
                             <td class="text-center">@idp.IDPGroupId</td>
                             <td class="text-start">@idp.IDPGroupName</td>
                             <td class="text-end">@idp.EmployeeEnrollmentCount</td>

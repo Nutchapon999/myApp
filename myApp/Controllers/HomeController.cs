@@ -35,6 +35,7 @@ namespace myApp.Controllers
         }
 
         SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyConnection"].ConnectionString);
+
         OleDbConnection Econ;
 
 
@@ -1056,8 +1057,8 @@ namespace myApp.Controllers
                         else
                         {
                             SqlCommand updateCommand = new SqlCommand("UPDATE IDP_GROUP SET IDP_GROUP_ID = @IDPGroupId, IDP_GROUP_NAME = @IDPGroupName, " +
-                                                                    "YEAR = @Year " +
-                                                                    "WHERE IDP_GROUP_ID = @IDPGroupId", con);
+                                                                   "YEAR = @Year " +
+                                                                   "WHERE IDP_GROUP_ID = @IDPGroupId", con);
 
                             updateCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
                             updateCommand.Parameters.AddWithValue("@IDPGroupName", row["IDP_GROUP_NAME"]);
@@ -1066,6 +1067,45 @@ namespace myApp.Controllers
 
 
                             updateCommand.ExecuteNonQuery();
+                            //SqlCommand selectOldDataCommand = new SqlCommand("SELECT IDP_GROUP_NAME, YEAR FROM IDP_GROUP WHERE IDP_GROUP_ID = @IDPGroupId", con);
+                            //selectOldDataCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
+
+                            //using (SqlDataReader reader = selectOldDataCommand.ExecuteReader())
+                            //{
+                            //    if (reader.Read())
+                            //    {
+                            //        string oldGroupName = reader["IDP_GROUP_NAME"].ToString();
+                            //        int oldYear = Convert.ToInt32(reader["YEAR"]);
+
+                            //        string newGroupName = row["IDP_GROUP_NAME"].ToString();
+                            //        int newYear = Convert.ToInt32(row["YEAR"]);
+
+                            //        reader.Close();
+
+
+                            //        if (oldGroupName != newGroupName || oldYear != newYear)
+                            //        {
+                            //            // Update data
+                            //            SqlCommand updateCommand = new SqlCommand("UPDATE IDP_GROUP SET IDP_GROUP_NAME = @IDPGroupName, YEAR = @Year WHERE IDP_GROUP_ID = @IDPGroupId", con);
+
+                            //            updateCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
+                            //            updateCommand.Parameters.AddWithValue("@IDPGroupName", oldGroupName);
+                            //            updateCommand.Parameters.AddWithValue("@Year", oldYear);
+
+                            //            updateCommand.ExecuteNonQuery();
+                            //        }
+                            //        else
+                            //        {
+                            //            SqlCommand updateCommand = new SqlCommand("UPDATE IDP_GROUP SET IDP_GROUP_NAME = @IDPGroupName, YEAR = @Year WHERE IDP_GROUP_ID = @IDPGroupId", con);
+
+                            //            updateCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
+                            //            updateCommand.Parameters.AddWithValue("@IDPGroupName", newGroupName);
+                            //            updateCommand.Parameters.AddWithValue("@Year", newYear);
+
+                            //            updateCommand.ExecuteNonQuery();
+                            //        }
+                            //    }
+                            //}
                         }
 
                     }
@@ -1529,7 +1569,8 @@ namespace myApp.Controllers
             {
                 var form = HttpContext.Request.Form;
 
-                var typeVal = form["Type"];
+                var str = form["Type"];
+                var typeVal = str.Substring(0 , str.Length - 1);
                 var companyVal = form["Company"];
                 var descVal = form["Desc"];
                 var dateVal = form["Date"];

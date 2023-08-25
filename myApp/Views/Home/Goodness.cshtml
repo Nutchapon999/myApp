@@ -4,7 +4,7 @@
     string good1 = "การแบ่งปันความรู้ให้กับผู้มีส่วนได้เสียของบริษัท";
     string good2 = "กิจกรรม Lean Kaizen Suggestion";
     string good3 = "บริจาคเลือดและอวัยวะ";
-    string good4 = "การบำเพ็ญประโยชน์เพื่อสังคม";
+    string good4 = "การบำเพ็ญประโยชน์เพื่อสังคม"; 
 }
 <link rel="stylesheet" href="/CSS/Style.css">
 <div class="sticky-header-breadcrumb">
@@ -89,7 +89,9 @@
                             <td class="text-center">
                                 @if (!string.IsNullOrEmpty(good.FileID))
                                 {
-                                    <button type='button' class='btn btn-primary btn-xs addfile' value='@good.FileID' title='แนบไฟลล์'><i class='fa fa-file'></i></button>
+                                    <button type='button' class='btn btn-xs addfile active-link-image' value='@good.FileID' title='แนบไฟลล์'>
+                                        <i class="fa-solid fa-file-image fs-5"></i>
+                                    </button>
                                 }
                             </td>
                             <td class="text-center">
@@ -105,10 +107,9 @@
                                     <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h1 class="modal-title fs-5 fw-bold" id="staticBackdropLabel">
-                                                    <i class="fa-solid fa-pencil gradient-text-edit"></i> แก้ไข IDP Group
+                                                <h1 class="modal-title fs-5 fw-bold" id="CreateIDPGroupLabel">
+                                                    <i class="fa-solid fa-pencil gradient-text-edit"></i> แก้ไขบันทึกความดี
                                                 </h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
                                                 <input type="hidden" name="GDId" value="@good.GDId" />
@@ -116,7 +117,7 @@
                                                 {
                                                     <div class="input-group mt-3 d-flex justify-content-center">
                                                         <span class="input-group-text">
-                                                            <i class="fa-solid fa-calendar-days fs-4" aria-hidden="true"></i>
+                                                            <i class="fa-solid fa-tag fs-4" aria-hidden="true"></i>
                                                         </span>
                                                         <select class="form-select" aria-label="Default select example" id="TypeEdit-@good.GDId" name="TypeEdit" onchange="toggleEdit(@good.GDId)">
                                                             <option value="@good1" @(good.Type == good1 ? "selected" : "")>การแบ่งปันความรู้ให้กับผู้มีส่วนได้เสียของบริษัท</option>
@@ -193,18 +194,17 @@
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h1 class="modal-title fs-5 fw-bold" id="staticBackdropLabel">
-                                                    <i class="fa-solid fa-pencil gradient-text-edit"></i> ลบ Goodness
+                                                    <i class="fa-solid fa-trash-can gradient-text-delete"></i> ลบบันทึกความดี
                                                 </h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
-
-                                                <div class="modal-footer flex-nowrap p-0">
-                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" data-bs-dismiss="modal"><i class="fa-solid fa-ban gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ยกเลิก</strong></button>
-                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" onclick="DeleteGoodness('@good.GDId')">
-                                                        <i class="fa-solid fa-save gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">บันทึก</strong>
-                                                    </button>
-                                                </div>
+                                                <h5>คุณต้องการ<strong class="gradient-text-delete">ลบ</strong>บันทึกความดีของ คุณ@(good.User.FirstNameTH) @good.User.LastNameTH หรือไม่?</h5>
+                                            </div>
+                                            <div class="modal-footer flex-nowrap p-0">
+                                                <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" data-bs-dismiss="modal"><i class="fa-solid fa-ban gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ยกเลิก</strong></button>
+                                                <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" onclick="DeleteGoodness('@good.GDId')">
+                                                    <i class="fa-solid fa-save gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">บันทึก</strong>
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -266,7 +266,7 @@
                             <button type="submit" class="btn btn-lg active-link-submit me-2" id="actionButton" disabled>
                                 <i class="fa-solid fa-save gradient-icon-submit"></i><strong class="gradient-icon-submit"> บันทึก</strong>
                             </button>
-                            <input type="text" id="myInput" onkeyup="myFunction()" placeholder="ค้นหา">
+                            <input type="text" id="myInput" onkeyup="searchFilter   ()" placeholder="ค้นหา">
                         </div>
                         <div class="col-auto text-end">
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -526,7 +526,7 @@
         filterTableByType();
     });
 
-    function myFunction() {
+    function searchFilter() {
         var input, filter, table, tr, td, i, j, txtValue;
         input = document.getElementById("myInput");
         filter = input.value.toUpperCase();
@@ -738,6 +738,11 @@
         width: 25px;
         height: 25px;
     }
+    .fa-file-image {
+        background-image: linear-gradient( 0deg, hsl(4deg 85% 57%) 0%, hsl(7deg 86% 58%) 11%, hsl(11deg 87% 58%) 22%, hsl(14deg 89% 59%) 33%, hsl(18deg 90% 59%) 44%, hsl(22deg 91% 60%) 56%, hsl(25deg 92% 60%) 67%, hsl(29deg 93% 61%) 78%, hsl(32deg 95% 61%) 89%, hsl(36deg 96% 62%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 
     .sticky-header-breadcrumb {
         position: sticky;
@@ -759,6 +764,19 @@
         --bs-modal-width: 1600px;
     }
 
+    .active-link-image {
+        border: none;
+        background-color: white;
+    }
+
+        .active-link-image:hover {
+            background-color: white;
+            border-bottom: 2px solid #ef4136;
+        }
+
+            .active-link-image:hover i {
+                transform: scale(1.2);
+            }
 
     #myTable,
     .table-container {
@@ -866,5 +884,12 @@
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         font-weight: bold;
+    }
+    .btn-cancel:hover {
+        background-color: #f8d7da;
+    }
+
+    .btn-submit:hover {
+        background-color: #cce5ff;
     }
 </style>

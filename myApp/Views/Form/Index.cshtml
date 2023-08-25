@@ -53,10 +53,13 @@
                             <strong>ปีก่อนๆ</strong>
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="yearDropdown" id="dropdownMenu">
-
-                            <li>
-                                <a class="nav-link year" href="@Url.Action("Index", "Form", new { Year = (DateTime.Now.Year + 541).ToString() })"><strong>@(DateTime.Now.Year + 541)</strong></a>
-                            </li>
+                            @for(var year = DateTime.Now.Year + 541; year > DateTime.Now.Year + 536; year--)
+                            {
+                                <li>
+                                    <a class="nav-link year" href="@Url.Action("Index", "Form", new { Year = year.ToString() })"><strong>@year.ToString()</strong></a>
+                                </li>
+                            }
+                            
                         </ul>
                     </li>
                 </ul>

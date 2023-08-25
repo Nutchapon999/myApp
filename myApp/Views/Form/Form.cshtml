@@ -33,6 +33,10 @@
                 {
                     <p style="color: #14B789; background-color: #D5F8EF; padding: 7px; border-radius: 3rem; width: auto;" class="text-center fw-bold">@ViewBag.Status</p>
                 }
+                else if (ViewBag.Status == "Decline")
+                {
+                    <p style="color: #CC660A; background-color: #FFF2E7; padding: 7px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@ViewBag.Status</p>
+                }
             </div>
             <div class="col-auto overflow-x">
                 @if ((ViewBag.Status == "1st Evaluating" || ViewBag.Status == "2nd Evaluating") && (ViewBag.Approver != ViewBag.Username))
@@ -130,467 +134,569 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @for (var i = 0; i < Model.Count(); i++)
+                    @if (ViewBag.Status != "Decline")
                     {
-                        var enroll = Model.ElementAt(i);
-                        var plVal = int.Parse(enroll.IDPGroupItem.Pl);
-                        var gap1 = enroll.ResultItem.Actual1 - plVal;
-                        var gap2 = enroll.ResultItem.Actual2 - plVal;
-                        string backgroundColor1 = "";
-                        string color1 = "";
-                        string backgroundColor2 = "";
-                        string color2 = "";
-                        if (enroll.ResultItem.Actual1 == 0)
+                        for (var i = 0; i < Model.Count(); i++)
                         {
-                            backgroundColor1 = "#E50087";
-                            color1 = "#FFE5F4";
-                        }
-                        else if (enroll.ResultItem.Actual1 < plVal && enroll.ResultItem.Actual1 > 0)
-                        {
-                            backgroundColor1 = "#DAAB00";
-                            color1 = "#FDF3CE";
-                        }
-                        else if (enroll.ResultItem.Actual1 >= plVal)
-                        {
-                            backgroundColor1 = "#14B789";
-                            color1 = "#D5F8EF";
-                        }
+                            var enroll = Model.ElementAt(i);
+                            var plVal = int.Parse(enroll.IDPGroupItem.Pl);
+                            var gap1 = enroll.ResultItem.Actual1 - plVal;
+                            var gap2 = enroll.ResultItem.Actual2 - plVal;
+                            string backgroundColor1 = "";
+                            string color1 = "";
+                            string backgroundColor2 = "";
+                            string color2 = "";
+                            if (enroll.ResultItem.Actual1 == 0)
+                            {
+                                backgroundColor1 = "#E50087";
+                                color1 = "#FFE5F4";
+                            }
+                            else if (enroll.ResultItem.Actual1 < plVal && enroll.ResultItem.Actual1 > 0)
+                            {
+                                backgroundColor1 = "#DAAB00";
+                                color1 = "#FDF3CE";
+                            }
+                            else if (enroll.ResultItem.Actual1 >= plVal)
+                            {
+                                backgroundColor1 = "#14B789";
+                                color1 = "#D5F8EF";
+                            }
 
-                        if (enroll.ResultItem.Actual2 == 0)
-                        {
-                            backgroundColor2 = "#E50087";
-                            color2 = "#FFE5F4";
-                        }
-                        else if (enroll.ResultItem.Actual2 < plVal && enroll.ResultItem.Actual2 > 0)
-                        {
-                            backgroundColor2 = "#DAAB00";
-                            color2 = "#FDF3CE";
-                        }
-                        else if (enroll.ResultItem.Actual2 >= plVal)
-                        {
-                            backgroundColor2 = "#14B789";
-                            color2 = "#D5F8EF";
-                        }
-                        <tr id="row-@i">
-                            <td class="text-center">
-                                @if (enroll.IDPGroupItem.Critical)
-                                {
-                                    <img src="~/Images/hexagon_icon.png" width="25" height="25" />
-                                }
-                                <input type="hidden" name="Critical_@i" value="@enroll.IDPGroupItem.Critical.ToString()" />
-                            </td>
-                            <td style="font-size: 14px">@enroll.Competency.CompetencyNameTH</td>
-                            <td class="text-center">
-                                @enroll.IDPGroupItem.Pl
-                                <input type="hidden" name="Requirement_@i" value="@enroll.IDPGroupItem.Pl" />
-                            </td>
-                            <td class="text-center">
-                                @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
-                                    (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
-                                {
-                                    @enroll.ResultItem.Actual1
-                                }
-                                else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
-                                {
-                                    <button id="actual1Button" onchange="calculateGap(this)" type="button" class="btn active-link-competency m-1" data-bs-toggle="modal" style="background-color: @backgroundColor1; color: @color1; width: auto; font-size: 20px;" data-bs-target="#DetailPl-@enroll.IDPGroupItem.CompetencyId">
-                                        <strong>@(enroll.ResultItem.Actual1 >= 0 ? enroll.ResultItem.Actual1.ToString() : "?")</strong>
-                                    </button>
-                                }
-                                <div class="modal fade modal-xl modal1" id="DetailPl-@enroll.IDPGroupItem.CompetencyId" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-scrollable">
-                                        <div class="modal-content">
-                                            <div class="modal-header text-center">
-                                                <h6 class="modal-title fs-5">
-                                                    <i class="fa-solid fa-key fs-4"></i> รหัส: <strong>@enroll.IDPGroupItem.CompetencyId</strong>
-                                                    <br />
-                                                    <i class="fa-solid fa-signature fs-4"></i> ชื่อ: <strong>@enroll.Competency.CompetencyNameTH</strong>
-                                                    <br />
-                                                    ความต้องการ: <strong>PL@(enroll.IDPGroupItem.Pl)</strong>
-                                                </h6>
-                                            </div>
-                                            <div class="modal-body">
-                                                <h5 class="text-center">PL1</h5>
-                                                @if (@enroll.Competency.Pl1 != null)
-                                                {
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="modalRadio1[@i]" id="modalRadioButton1-@i" value="1" @(enroll.ResultItem.Actual1 == 1 ? "checked" : "") />
-                                                        <label class="form-check-label text-start" for="modalRadioButton1-@i" style="cursor: pointer">
-                                                            @enroll.Competency.Pl1
-                                                        </label>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <h5 class="text-center">ไม่มี PL1</h5>
-                                                }
-                                                <hr />
-                                                <h5 class="text-center">PL2</h5>
-                                                @if (@enroll.Competency.Pl2 != null)
-                                                {
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="modalRadio1[@i]" id="modalRadioButton2-@i" value="2" @(enroll.ResultItem.Actual1 == 2 ? "checked" : "") />
-                                                        <label class="form-check-label text-start" for="modalRadioButton2-@i" style="cursor: pointer">
-                                                            @enroll.Competency.Pl2
-                                                        </label>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <h5 class="text-center">ไม่มี PL2</h5>
-                                                }
-                                                <hr />
-                                                <h5 class="text-center">PL3</h5>
-                                                @if (@enroll.Competency.Pl3 != null)
-                                                {
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="modalRadio1[@i]" id="modalRadioButton3-@i" value="3" @(enroll.ResultItem.Actual1 == 3 ? "checked" : "") />
-                                                        <label class="form-check-label text-start" for="modalRadioButton3-@i" style="cursor: pointer">
-                                                            @enroll.Competency.Pl3
-                                                        </label>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <h5 class="text-center">ไม่มี PL3</h5>
-                                                }
-                                                <hr />
-                                                <h5 class="text-center">PL4</h5>
-                                                @if (@enroll.Competency.Pl4 != null)
-                                                {
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="modalRadio1[@i]" id="modalRadioButton4-@i" value="4" @(enroll.ResultItem.Actual1 == 4 ? "checked" : "") />
-                                                        <label class="form-check-label text-start" for="modalRadioButton4-@i" style="cursor: pointer">
-                                                            @enroll.Competency.Pl4
-                                                        </label>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <h5 class="text-center">ไม่มี PL4</h5>
-                                                }
-                                                <hr />
-                                                <h5 class="text-center">PL5</h5>
-                                                @if (@enroll.Competency.Pl5 != null)
-                                                {
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="modalRadio1[@i]" id="modalRadioButton5-@i" value="5" @(enroll.ResultItem.Actual1 == 5 ? "checked" : "") />
-                                                        <label class="form-check-label text-start" for="modalRadioButton5-@i" style="cursor: pointer">
-                                                            @enroll.Competency.Pl5
-                                                        </label>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <h5 class="text-center">ไม่มี PL5</h5>
-                                                }
+                            if (enroll.ResultItem.Actual2 == 0)
+                            {
+                                backgroundColor2 = "#E50087";
+                                color2 = "#FFE5F4";
+                            }
+                            else if (enroll.ResultItem.Actual2 < plVal && enroll.ResultItem.Actual2 > 0)
+                            {
+                                backgroundColor2 = "#DAAB00";
+                                color2 = "#FDF3CE";
+                            }
+                            else if (enroll.ResultItem.Actual2 >= plVal)
+                            {
+                                backgroundColor2 = "#14B789";
+                                color2 = "#D5F8EF";
+                            }
+                            <tr id="row-@i">
+                                <td class="text-center">
+                                    @if (enroll.IDPGroupItem.Critical)
+                                    {
+                                        <img src="~/Images/hexagon_icon.png" width="25" height="25" />
+                                    }
+                                    <input type="hidden" name="Critical_@i" value="@enroll.IDPGroupItem.Critical.ToString()" />
+                                </td>
+                                <td style="font-size: 14px">@enroll.Competency.CompetencyNameTH</td>
+                                <td class="text-center">
+                                    @enroll.IDPGroupItem.Pl
+                                    <input type="hidden" name="Requirement_@i" value="@enroll.IDPGroupItem.Pl" />
+                                </td>
+                                <td class="text-center">
+                                    @if ((ViewBag.Status == "Dewveloping" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
+                                (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
+                                    {
+                                        @enroll.ResultItem.Actual1
+                                    }
+                                    else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
+                                    {
+                                        <button id="actual1Button" onchange="calculateGap(this)" type="button" class="btn active-link-competency m-1" data-bs-toggle="modal" style="background-color: @backgroundColor1; color: @color1; width: auto; font-size: 20px;" data-bs-target="#DetailPl-@enroll.IDPGroupItem.CompetencyId">
+                                            <strong>@(enroll.ResultItem.Actual1 >= 0 ? enroll.ResultItem.Actual1.ToString() : "?")</strong>
+                                        </button>
+                                    }
+                                    <div class="modal fade modal-xl modal1" id="DetailPl-@enroll.IDPGroupItem.CompetencyId" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-scrollable">
+                                            <div class="modal-content">
+                                                <div class="modal-header text-center">
+                                                    <h6 class="modal-title fs-5">
+                                                        <i class="fa-solid fa-key fs-4"></i> รหัส: <strong>@enroll.IDPGroupItem.CompetencyId</strong>
+                                                        <br />
+                                                        <i class="fa-solid fa-signature fs-4"></i> ชื่อ: <strong>@enroll.Competency.CompetencyNameTH</strong>
+                                                        <br />
+                                                        ความต้องการ: <strong>PL@(enroll.IDPGroupItem.Pl)</strong>
+                                                    </h6>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <h5 class="text-center">PL1</h5>
+                                                    @if (@enroll.Competency.Pl1 != null)
+                                                    {
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio1[@i]" id="modalRadioButton1-@i" value="1" @(enroll.ResultItem.Actual1 == 1 ? "checked" : "") />
+                                                            <label class="form-check-label text-start" for="modalRadioButton1-@i" style="cursor: pointer">
+                                                                @enroll.Competency.Pl1
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5 class="text-center">ไม่มี PL1</h5>
+                                                    }
+                                                    <hr />
+                                                    <h5 class="text-center">PL2</h5>
+                                                    @if (@enroll.Competency.Pl2 != null)
+                                                    {
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio1[@i]" id="modalRadioButton2-@i" value="2" @(enroll.ResultItem.Actual1 == 2 ? "checked" : "") />
+                                                            <label class="form-check-label text-start" for="modalRadioButton2-@i" style="cursor: pointer">
+                                                                @enroll.Competency.Pl2
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5 class="text-center">ไม่มี PL2</h5>
+                                                    }
+                                                    <hr />
+                                                    <h5 class="text-center">PL3</h5>
+                                                    @if (@enroll.Competency.Pl3 != null)
+                                                    {
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio1[@i]" id="modalRadioButton3-@i" value="3" @(enroll.ResultItem.Actual1 == 3 ? "checked" : "") />
+                                                            <label class="form-check-label text-start" for="modalRadioButton3-@i" style="cursor: pointer">
+                                                                @enroll.Competency.Pl3
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5 class="text-center">ไม่มี PL3</h5>
+                                                    }
+                                                    <hr />
+                                                    <h5 class="text-center">PL4</h5>
+                                                    @if (@enroll.Competency.Pl4 != null)
+                                                    {
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio1[@i]" id="modalRadioButton4-@i" value="4" @(enroll.ResultItem.Actual1 == 4 ? "checked" : "") />
+                                                            <label class="form-check-label text-start" for="modalRadioButton4-@i" style="cursor: pointer">
+                                                                @enroll.Competency.Pl4
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5 class="text-center">ไม่มี PL4</h5>
+                                                    }
+                                                    <hr />
+                                                    <h5 class="text-center">PL5</h5>
+                                                    @if (@enroll.Competency.Pl5 != null)
+                                                    {
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio1[@i]" id="modalRadioButton5-@i" value="5" @(enroll.ResultItem.Actual1 == 5 ? "checked" : "") />
+                                                            <label class="form-check-label text-start" for="modalRadioButton5-@i" style="cursor: pointer">
+                                                                @enroll.Competency.Pl5
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5 class="text-center">ไม่มี PL5</h5>
+                                                    }
 
-                                            </div>
-                                            <div class="modal-footer flex-nowrap p-0">
-                                                <button type="button" class="btn btn-lg col-12 text-decoration-none py-3 rounded-0 m-0 " style="background-color: #D893A3; color: #B30021" data-bs-dismiss="modal"><strong>ปิด</strong></button>
+                                                </div>
+                                                <div class="modal-footer flex-nowrap p-0">
+                                                    <button type="button" class="btn btn-lg col-12 text-decoration-none py-3 rounded-0 m-0 " style="background-color: #D893A3; color: #B30021" data-bs-dismiss="modal"><strong>ปิด</strong></button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <input type="hidden" name="Actual1_@i" value="@enroll.ResultItem.Actual1" />
-                            </td>
-                            <td class="text-center">
-                                @if (gap1 < 0)
-                                {
-                                    @gap1
-                                }
-                            </td>
-                            <td class="text-center">
-                                @if (gap1 >= 0)
-                                {
-                                    @gap1
-                                }
-                            </td>
-                            <td class="text-center">
-                                @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
-                                    (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
-                                {
-                                    @enroll.ResultItem.Priority
-                                    <input type="hidden" name="Priority_@i" value="@enroll.ResultItem.Priority" />
-                                }
-                                else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
-                                {
-                                    <select class="form-select" name="Priority_@i" id="prioritySelect-row-@i">
-                                        <option value="A" @(enroll.ResultItem.Priority == "A" ? "selected" : "")>A</option>
-                                        <option value="B" @(enroll.ResultItem.Priority == "B" ? "selected" : "")>B</option>
-                                        <option value="C" @(enroll.ResultItem.Priority == "C" ? "selected" : "")>C</option>
-                                    </select>
-                                }
-                            </td>
-                            <td class="text-center">
-                                @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
-                                    (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
-                                {
-                                    @enroll.ResultItem.TypePlan
-                                    <input type="hidden" name="TypePlan_@i" value="@enroll.ResultItem.TypePlan" />
-                                }
-                                else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
-                                {
-                                    <select class="form-select" name="TypePlan_@i" id="typeSelect-row-@i">
-                                        <option value="Co" @(enroll.ResultItem.TypePlan == "Co" ? "selected" : "")>ผู้บังคับบัญชา (Coaching)</option>
-                                        <option value="INT" @(enroll.ResultItem.TypePlan == "INT" ? "selected" : "")>อบรมภายใน (Inhous Training)</option>
-                                        <option value="JA" @(enroll.ResultItem.TypePlan == "JA" ? "selected" : "")> การมอบหมายงาน (Job Assignment)</option>
-                                        <option value="EXT" @(enroll.ResultItem.TypePlan == "EXT" ? "selected" : "")>อบรมภายนอก (External Training)</option>
-                                        <option value="PJ" @(enroll.ResultItem.TypePlan == "PJ" ? "selected" : "")>การมอบหมายโครงการ (Project Assignment)</option>
-                                        <option value="SS" @(enroll.ResultItem.TypePlan == "SS" ? "selected" : "")>การให้ศึกษาเอง (Self- Study)</option>
-                                        <option value="OJT" @(enroll.ResultItem.TypePlan == "OJT" ? "selected" : "")>การสอนงานหน้างาน (On The Job Training)</option>
-                                    </select>
-                                }
-                            </td>
-                            <td>
-                                @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
-                                    (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
-                                {
-                                    @enroll.ResultItem.DevPlan
-                                    <input type="hidden" name="DevPlan_@i" value="@enroll.ResultItem.DevPlan" />
-                                }
-                                else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
-                                {
-                                    <textarea class="form-control" name="DevPlan_@i" id="devPlanSelect-row-@i" style="min-width: 100%;">@enroll.ResultItem.DevPlan</textarea>
-                                }
-                            </td>
-                            <td class="text-center">
-                                @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
-                                    (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
-                                {
-                                    if (enroll.ResultItem.Q1 == "1")
+                                    <input type="hidden" name="Actual1_@i" value="@enroll.ResultItem.Actual1" />
+                                </td>
+                                <td class="text-center">
+                                    @if (gap1 < 0)
                                     {
-                                        <i class="fa fa-check" aria-hidden="true"></i>
-                                        <input type="hidden" name="Q1_@i" value="@enroll.ResultItem.Q1" />
+                                        @gap1
                                     }
-                                }
-                                else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
-                                {
-                                    <input class="form-check-input" type="checkbox" name="Q1_@i" id="Q1select-row-@i" value="1" @(enroll.ResultItem.Q1 == "1" ? "checked" : "") />
-                                }
-                            </td>
-                            <td class="text-center">
-                                @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
-                                    (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
-                                {
-                                    if (enroll.ResultItem.Q2 == "1")
+                                </td>
+                                <td class="text-center">
+                                    @if (gap1 >= 0)
                                     {
-                                        <i class="fa fa-check" aria-hidden="true"></i>
-                                        <input type="hidden" name="Q2_@i" value="@enroll.ResultItem.Q2" />
+                                        @gap1
                                     }
-                                }
-                                else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
-                                {
-                                    <input class="form-check-input" type="checkbox" name="Q2_@i" id="Q1select-row-@i" value="1" @(enroll.ResultItem.Q2 == "1" ? "checked" : "") />
-                                }
-                            </td>
-                            <td class="text-center">
-                                @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
-                                    (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
-                                {
-                                    if (enroll.ResultItem.Q3 == "1")
+                                </td>
+                                <td class="text-center">
+                                    @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
+                                (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
                                     {
-                                        <i class="fa fa-check" aria-hidden="true"></i>
-                                        <input type="hidden" name="Q3_@i" value="@enroll.ResultItem.Q3" />
+                                        @enroll.ResultItem.Priority
+                                        <input type="hidden" name="Priority_@i" value="@enroll.ResultItem.Priority" />
                                     }
-                                }
-                                else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
-                                {
-                                    <input class="form-check-input" type="checkbox" name="Q3_@i" id="Q1select-row-@i" value="1" @(enroll.ResultItem.Q3 == "1" ? "checked" : "") />
-                                }
-                            </td>
-                            <td class="text-center">
-                                @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
-                                    (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
-                                {
-                                    if (enroll.ResultItem.Q4 == "1")
+                                    else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
                                     {
-                                        <i class="fa fa-check" aria-hidden="true"></i>
-                                        <input type="hidden" name="Q4_@i" value="@enroll.ResultItem.Q4" />
+                                        <select class="form-select" name="Priority_@i" id="prioritySelect-row-@i">
+                                            <option value="A" @(enroll.ResultItem.Priority == "A" ? "selected" : "")>A</option>
+                                            <option value="B" @(enroll.ResultItem.Priority == "B" ? "selected" : "")>B</option>
+                                            <option value="C" @(enroll.ResultItem.Priority == "C" ? "selected" : "")>C</option>
+                                        </select>
                                     }
-                                }
-                                else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
-                                {
-                                    <input class="form-check-input" type="checkbox" name="Q4_@i" id="Q1select-row-@i" value="1" @(enroll.ResultItem.Q4 == "1" ? "checked" : "") />
-                                }
-                            </td>
-                            <td>
-                                @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating") && ViewBag.Approver != ViewBag.Username)
-                                {
-                                    <textarea class="form-control" name="DevRst_@i" id="devRstSelect-row-@i" style="min-width: 100%;">@enroll.ResultItem.DevRst</textarea>
-                                }
-                                else
-                                {
-                                    @enroll.ResultItem.DevRst
-                                }
-                            </td>
-                            <td class="text-center">
-                                @if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success")
-                                {
-                                    if (@enroll.ResultItem.FileId != null && ViewBag.Approver == ViewBag.Username || (ViewBag.Status == "Success"))
+                                </td>
+                                <td class="text-center">
+                                    @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
+                                (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
                                     {
-                                        <button type="button" class="btn btn-primary">
-                                            <i class="fa-solid fa-file"></i>
-                                        </button>
+                                        @enroll.ResultItem.TypePlan
+                                        <input type="hidden" name="TypePlan_@i" value="@enroll.ResultItem.TypePlan" />
                                     }
-                                    else if (@enroll.ResultItem.FileId != null && ViewBag.Approver != ViewBag.Username)
+                                    else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
                                     {
-                                        <button type="button" class="btn btn-primary">
-                                            <i class="fa-solid fa-file"></i>
-                                        </button>
-                                        <input type="file" name="File_@i" value="@enroll.ResultItem.FileId" class="form-control" />
+                                        <select class="form-select" name="TypePlan_@i" id="typeSelect-row-@i">
+                                            <option value="Co" @(enroll.ResultItem.TypePlan == "Co" ? "selected" : "")>ผู้บังคับบัญชา (Coaching)</option>
+                                            <option value="INT" @(enroll.ResultItem.TypePlan == "INT" ? "selected" : "")>อบรมภายใน (Inhous Training)</option>
+                                            <option value="JA" @(enroll.ResultItem.TypePlan == "JA" ? "selected" : "")> การมอบหมายงาน (Job Assignment)</option>
+                                            <option value="EXT" @(enroll.ResultItem.TypePlan == "EXT" ? "selected" : "")>อบรมภายนอก (External Training)</option>
+                                            <option value="PJ" @(enroll.ResultItem.TypePlan == "PJ" ? "selected" : "")>การมอบหมายโครงการ (Project Assignment)</option>
+                                            <option value="SS" @(enroll.ResultItem.TypePlan == "SS" ? "selected" : "")>การให้ศึกษาเอง (Self- Study)</option>
+                                            <option value="OJT" @(enroll.ResultItem.TypePlan == "OJT" ? "selected" : "")>การสอนงานหน้างาน (On The Job Training)</option>
+                                        </select>
                                     }
-                                    else if(ViewBag.Approver == ViewBag.Username)
+                                </td>
+                                <td>
+                                    @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
+                                (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
                                     {
-
+                                        @enroll.ResultItem.DevPlan
+                                        <input type="hidden" name="DevPlan_@i" value="@enroll.ResultItem.DevPlan" />
+                                    }
+                                    else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
+                                    {
+                                        <textarea class="form-control" name="DevPlan_@i" id="devPlanSelect-row-@i" style="min-width: 100%;">@enroll.ResultItem.DevPlan</textarea>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
+                                (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
+                                    {
+                                        if (enroll.ResultItem.Q1 == "1")
+                                        {
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                            <input type="hidden" name="Q1_@i" value="@enroll.ResultItem.Q1" />
+                                        }
+                                    }
+                                    else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
+                                    {
+                                        <input class="form-check-input" type="checkbox" name="Q1_@i" id="Q1select-row-@i" value="1" @(enroll.ResultItem.Q1 == "1" ? "checked" : "") />
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
+                                (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
+                                    {
+                                        if (enroll.ResultItem.Q2 == "1")
+                                        {
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                            <input type="hidden" name="Q2_@i" value="@enroll.ResultItem.Q2" />
+                                        }
+                                    }
+                                    else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
+                                    {
+                                        <input class="form-check-input" type="checkbox" name="Q2_@i" id="Q1select-row-@i" value="1" @(enroll.ResultItem.Q2 == "1" ? "checked" : "") />
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
+                                (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
+                                    {
+                                        if (enroll.ResultItem.Q3 == "1")
+                                        {
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                            <input type="hidden" name="Q3_@i" value="@enroll.ResultItem.Q3" />
+                                        }
+                                    }
+                                    else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
+                                    {
+                                        <input class="form-check-input" type="checkbox" name="Q3_@i" id="Q1select-row-@i" value="1" @(enroll.ResultItem.Q3 == "1" ? "checked" : "") />
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
+                                (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
+                                    {
+                                        if (enroll.ResultItem.Q4 == "1")
+                                        {
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                            <input type="hidden" name="Q4_@i" value="@enroll.ResultItem.Q4" />
+                                        }
+                                    }
+                                    else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
+                                    {
+                                        <input class="form-check-input" type="checkbox" name="Q4_@i" id="Q1select-row-@i" value="1" @(enroll.ResultItem.Q4 == "1" ? "checked" : "") />
+                                    }
+                                </td>
+                                <td>
+                                    @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating") && ViewBag.Approver != ViewBag.Username)
+                                    {
+                                        <textarea class="form-control" name="DevRst_@i" id="devRstSelect-row-@i" style="min-width: 100%;">@enroll.ResultItem.DevRst</textarea>
                                     }
                                     else
                                     {
-                                        <input type="file" name="File_@i" value="@enroll.ResultItem.FileId" class="form-control" />
+                                        @enroll.ResultItem.DevRst
                                     }
-                                }
-                                <input type="hidden" name="FileEdit_@i" value="@enroll.ResultItem.FileId"/>
-                            </td>
-                            <td class="text-center">
-                                @if (ViewBag.Status == "Self" || ViewBag.Status == "1st Evaluating" || ViewBag.Status == "Developing")
-                                {
-                                    <button id="actual2Button" onchange="calculateGap2(this)" type="button" class="btn active-link-competency m-1 disabled" data-bs-toggle="modal" style="background-color: @backgroundColor2; color: @color2; width: auto; font-size: 20px;" data-bs-target="#Detail2Pl-@enroll.IDPGroupItem.CompetencyId">
-                                        <strong>@(enroll.ResultItem.Actual2 >= 0 ? enroll.ResultItem.Actual2.ToString() : "?")</strong>
-                                    </button>
-                                }
-                                else if (ViewBag.Status == "2nd Evaluating" && (ViewBag.Approver == ViewBag.Username))
-                                {
-                                    <button id="actual2Button" onchange="calculateGap2(this)" type="button" class="btn active-link-competency m-1 disabled" data-bs-toggle="modal" style="background-color: @backgroundColor2; color: @color2; width: auto; font-size: 20px;" data-bs-target="#Detail2Pl-@enroll.IDPGroupItem.CompetencyId">
-                                        <strong>@(enroll.ResultItem.Actual2 >= 0 ? enroll.ResultItem.Actual2.ToString() : "?")</strong>
-                                    </button>
-                                }
-                                else if (ViewBag.Status == "Success")
-                                {
-                                    @enroll.ResultItem.Actual2
-                                }
-                                else
-                                {
-                                    <button id="actual2Button" onchange="calculateGap2(this)" type="button" class="btn active-link-competency m-1" data-bs-toggle="modal" style="background-color: @backgroundColor2; color: @color2; width: auto; font-size: 20px;" data-bs-target="#Detail2Pl-@enroll.IDPGroupItem.CompetencyId">
-                                        <strong>@(enroll.ResultItem.Actual2 >= 0 ? enroll.ResultItem.Actual2.ToString() : "?")</strong>
-                                    </button>
-                                }
-                                <div class="modal modal2 fade modal-xl" id="Detail2Pl-@enroll.IDPGroupItem.CompetencyId" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-scrollable">
-                                        <div class="modal-content">
-                                            <div class="modal-header text-center">
-                                                <h5 class="modal-title fs-4">
-                                                    รหัส Competency: <code>@enroll.IDPGroupItem.CompetencyId</code>
-                                                    <br />
-                                                    ชื่อ Competency: <code>@enroll.Competency.CompetencyNameTH</code>
-                                                    <br />
-                                                    ความต้องการ: @enroll.IDPGroupItem.Pl
-                                                </h5>
-                                            </div>
-                                            <div class="modal-body">
-                                                <h5 class="text-center">PL1</h5>
-                                                @if (@enroll.Competency.Pl1 != null)
-                                                {
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="modalRadio2[@i]" id="modalRadioButton1-@i" value="1" @(enroll.ResultItem.Actual2 == 1 ? "checked" : "") />
-                                                        <label class="form-check-label text-start" for="modalRadioButton1-@i">
-                                                            @enroll.Competency.Pl1
-                                                        </label>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <h5 class="text-center">ไม่มี PL1</h5>
-                                                }
-                                                <hr />
-                                                <h5 class="text-center">PL2</h5>
-                                                @if (@enroll.Competency.Pl2 != null)
-                                                {
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="modalRadio2[@i]" id="modalRadioButton2-@i" value="2" @(enroll.ResultItem.Actual2 == 2 ? "checked" : "") />
-                                                        <label class="form-check-label text-start" for="modalRadioButton2-@i">
-                                                            @enroll.Competency.Pl2
-                                                        </label>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <h5 class="text-center">ไม่มี PL2</h5>
-                                                }
-                                                <hr />
-                                                <h5 class="text-center">PL3</h5>
-                                                @if (@enroll.Competency.Pl3 != null)
-                                                {
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="modalRadio2[@i]" id="modalRadioButton3-@i" value="3" @(enroll.ResultItem.Actual2 == 3 ? "checked" : "") />
-                                                        <label class="form-check-label text-start" for="modalRadioButton3-@i">
-                                                            @enroll.Competency.Pl3
-                                                        </label>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <h5 class="text-center">ไม่มี PL3</h5>
-                                                }
-                                                <hr />
-                                                <h5 class="text-center">PL4</h5>
-                                                @if (@enroll.Competency.Pl4 != null)
-                                                {
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="modalRadio2[@i]" id="modalRadioButton4-@i" value="4" @(enroll.ResultItem.Actual2 == 4 ? "checked" : "") />
-                                                        <label class="form-check-label text-start" for="modalRadioButton4-@i">
-                                                            @enroll.Competency.Pl4
-                                                        </label>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <h5 class="text-center">ไม่มี PL4</h5>
-                                                }
-                                                <hr />
-                                                <h5 class="text-center">PL5</h5>
-                                                @if (@enroll.Competency.Pl5 != null)
-                                                {
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="radio" name="modalRadio2[@i]" id="modalRadioButton5-@i" value="5" @(enroll.ResultItem.Actual2 == 5 ? "checked" : "") />
-                                                        <label class="form-check-label text-start" for="modalRadioButton5-@i">
-                                                            @enroll.Competency.Pl5
-                                                        </label>
-                                                    </div>
-                                                }
-                                                else
-                                                {
-                                                    <h5 class="text-center">ไม่มี PL5</h5>
-                                                }
+                                </td>
+                                <td class="text-center">
+                                    @if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success")
+                                    {
+                                        if (@enroll.ResultItem.FileId != null && ViewBag.Approver == ViewBag.Username || (ViewBag.Status == "Success"))
+                                        {
+                                            <button type="button" class="btn btn-primary">
+                                                <i class="fa-solid fa-file"></i>
+                                            </button>
+                                        }
+                                        else if (@enroll.ResultItem.FileId != null && ViewBag.Approver != ViewBag.Username)
+                                        {
+                                            <button type="button" class="btn btn-primary">
+                                                <i class="fa-solid fa-file"></i>
+                                            </button>
+                                            <input type="file" name="File_@i" value="@enroll.ResultItem.FileId" class="form-control" />
+                                        }
+                                        else if (ViewBag.Approver == ViewBag.Username)
+                                        {
 
-                                            </div>
-                                            <div class="modal-footer flex-nowrap p-0">
-                                                <button type="button" class="btn btn-lg col-12 text-decoration-none py-3 rounded-0 m-0 " style="background-color: #D893A3; color: #B30021" data-bs-dismiss="modal"><strong>ปิด</strong></button>
+                                        }
+                                        else
+                                        {
+                                            <input type="file" name="File_@i" value="@enroll.ResultItem.FileId" class="form-control" />
+                                        }
+                                    }
+                                    <input type="hidden" name="FileEdit_@i" value="@enroll.ResultItem.FileId" />
+                                </td>
+                                <td class="text-center">
+                                    @if (ViewBag.Status == "Self" || ViewBag.Status == "1st Evaluating" || ViewBag.Status == "Developing")
+                                    {
+                                        <button id="actual2Button" onchange="calculateGap2(this)" type="button" class="btn active-link-competency m-1 disabled" data-bs-toggle="modal" style="background-color: @backgroundColor2; color: @color2; width: auto; font-size: 20px;" data-bs-target="#Detail2Pl-@enroll.IDPGroupItem.CompetencyId">
+                                            <strong>@(enroll.ResultItem.Actual2 >= 0 ? enroll.ResultItem.Actual2.ToString() : "?")</strong>
+                                        </button>
+                                    }
+                                    else if (ViewBag.Status == "2nd Evaluating" && (ViewBag.Approver == ViewBag.Username))
+                                    {
+                                        <button id="actual2Button" onchange="calculateGap2(this)" type="button" class="btn active-link-competency m-1 disabled" data-bs-toggle="modal" style="background-color: @backgroundColor2; color: @color2; width: auto; font-size: 20px;" data-bs-target="#Detail2Pl-@enroll.IDPGroupItem.CompetencyId">
+                                            <strong>@(enroll.ResultItem.Actual2 >= 0 ? enroll.ResultItem.Actual2.ToString() : "?")</strong>
+                                        </button>
+                                    }
+                                    else if (ViewBag.Status == "Success")
+                                    {
+                                        @enroll.ResultItem.Actual2
+                                    }
+                                    else
+                                    {
+                                        <button id="actual2Button" onchange="calculateGap2(this)" type="button" class="btn active-link-competency m-1" data-bs-toggle="modal" style="background-color: @backgroundColor2; color: @color2; width: auto; font-size: 20px;" data-bs-target="#Detail2Pl-@enroll.IDPGroupItem.CompetencyId">
+                                            <strong>@(enroll.ResultItem.Actual2 >= 0 ? enroll.ResultItem.Actual2.ToString() : "?")</strong>
+                                        </button>
+                                    }
+                                    <div class="modal modal2 fade modal-xl" id="Detail2Pl-@enroll.IDPGroupItem.CompetencyId" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-scrollable">
+                                            <div class="modal-content">
+                                                <div class="modal-header text-center">
+                                                    <h5 class="modal-title fs-4">
+                                                        รหัส Competency: <code>@enroll.IDPGroupItem.CompetencyId</code>
+                                                        <br />
+                                                        ชื่อ Competency: <code>@enroll.Competency.CompetencyNameTH</code>
+                                                        <br />
+                                                        ความต้องการ: @enroll.IDPGroupItem.Pl
+                                                    </h5>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <h5 class="text-center">PL1</h5>
+                                                    @if (@enroll.Competency.Pl1 != null)
+                                                    {
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio2[@i]" id="modalRadioButton1-@i" value="1" @(enroll.ResultItem.Actual2 == 1 ? "checked" : "") />
+                                                            <label class="form-check-label text-start" for="modalRadioButton1-@i">
+                                                                @enroll.Competency.Pl1
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5 class="text-center">ไม่มี PL1</h5>
+                                                    }
+                                                    <hr />
+                                                    <h5 class="text-center">PL2</h5>
+                                                    @if (@enroll.Competency.Pl2 != null)
+                                                    {
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio2[@i]" id="modalRadioButton2-@i" value="2" @(enroll.ResultItem.Actual2 == 2 ? "checked" : "") />
+                                                            <label class="form-check-label text-start" for="modalRadioButton2-@i">
+                                                                @enroll.Competency.Pl2
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5 class="text-center">ไม่มี PL2</h5>
+                                                    }
+                                                    <hr />
+                                                    <h5 class="text-center">PL3</h5>
+                                                    @if (@enroll.Competency.Pl3 != null)
+                                                    {
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio2[@i]" id="modalRadioButton3-@i" value="3" @(enroll.ResultItem.Actual2 == 3 ? "checked" : "") />
+                                                            <label class="form-check-label text-start" for="modalRadioButton3-@i">
+                                                                @enroll.Competency.Pl3
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5 class="text-center">ไม่มี PL3</h5>
+                                                    }
+                                                    <hr />
+                                                    <h5 class="text-center">PL4</h5>
+                                                    @if (@enroll.Competency.Pl4 != null)
+                                                    {
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio2[@i]" id="modalRadioButton4-@i" value="4" @(enroll.ResultItem.Actual2 == 4 ? "checked" : "") />
+                                                            <label class="form-check-label text-start" for="modalRadioButton4-@i">
+                                                                @enroll.Competency.Pl4
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5 class="text-center">ไม่มี PL4</h5>
+                                                    }
+                                                    <hr />
+                                                    <h5 class="text-center">PL5</h5>
+                                                    @if (@enroll.Competency.Pl5 != null)
+                                                    {
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="radio" name="modalRadio2[@i]" id="modalRadioButton5-@i" value="5" @(enroll.ResultItem.Actual2 == 5 ? "checked" : "") />
+                                                            <label class="form-check-label text-start" for="modalRadioButton5-@i">
+                                                                @enroll.Competency.Pl5
+                                                            </label>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <h5 class="text-center">ไม่มี PL5</h5>
+                                                    }
+
+                                                </div>
+                                                <div class="modal-footer flex-nowrap p-0">
+                                                    <button type="button" class="btn btn-lg col-12 text-decoration-none py-3 rounded-0 m-0 " style="background-color: #D893A3; color: #B30021" data-bs-dismiss="modal"><strong>ปิด</strong></button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <input type="hidden" name="Actual2_@i" value="@enroll.ResultItem.Actual2" />
-                            </td>
-                            <td class="text-center">
-                                @if (gap2 < 0)
-                                {
-                                    @gap2
-                                }
-                                else
-                                {
+                                    <input type="hidden" name="Actual2_@i" value="@enroll.ResultItem.Actual2" />
+                                </td>
+                                <td class="text-center">
+                                    @if (gap2 < 0)
+                                    {
+                                        @gap2
+                                    }
+                                    else
+                                    {
 
-                                }
-                            </td>
-                            <td class="text-center">
-                                @if (gap2 >= 0)
-                                {
-                                    @gap2
-                                }
-                                else
-                                {
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (gap2 >= 0)
+                                    {
+                                        @gap2
+                                    }
+                                    else
+                                    {
 
-                                }
-                            </td>
-                        </tr>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        foreach (var enroll in Model)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    @if (enroll.IDPGroupItem.Critical == false)
+                                    {
+                                        <text></text>
+                                    }
+                                    else
+                                    {
+                                        <img src="~/Images/hexagon_icon.png" width="25" height="25" />
+                                    }
+                                </td>
+                                <td>@enroll.Competency.CompetencyNameTH</td>
+                                <td class="text-center">@enroll.IDPGroupItem.Pl</td>
+                                <td class="text-center">@enroll.ResultItem.Actual1</td>
+                                <td class="text-center">
+                                    <span>
+                                        @if (enroll.ResultItem.Gap1 < 0)
+                                        {
+                                            @enroll.ResultItem.Gap1
+                                        }
+                                        else
+                                        {
+
+                                        }
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span>
+                                        @if (enroll.ResultItem.Gap1 >= 0)
+                                        {
+                                            @enroll.ResultItem.Gap1
+                                        }
+                                        else
+                                        {
+
+                                        }
+                                    </span>
+                                </td>
+                                <td class="text-center">@enroll.ResultItem.Priority</td>
+                                <td class="text-center">@enroll.ResultItem.TypePlan</td>
+                                <td>@enroll.ResultItem.DevPlan</td>
+                                <td class="text-center">
+                                    @if (enroll.ResultItem.Q1 == "1")
+                                    {
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (enroll.ResultItem.Q2 == "1")
+                                    {
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (enroll.ResultItem.Q3 == "1")
+                                    {
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    @if (enroll.ResultItem.Q4 == "1")
+                                    {
+                                        <i class="fa fa-check" aria-hidden="true"></i>
+                                    }
+                                </td>
+                                <td>@enroll.ResultItem.DevRst</td>
+                                <td class="text-center"></td>
+                                <td class="text-center">@enroll.ResultItem.Actual2</td>
+                                <td class="text-center">
+                                    <span>
+                                        @if (enroll.ResultItem.Gap2 < 0)
+                                        {
+                                            @enroll.ResultItem.Gap2
+                                        }
+                                        else
+                                        {
+
+                                        }
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <span>
+                                        @if (enroll.ResultItem.Gap2 >= 0)
+                                        {
+                                            @enroll.ResultItem.Gap2
+                                        }
+                                        else
+                                        {
+
+                                        }
+                                    </span>
+                                </td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>

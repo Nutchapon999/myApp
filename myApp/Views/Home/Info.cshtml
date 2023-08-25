@@ -63,42 +63,38 @@
     </div>
     <div class="container justify-content-center mt-4">
         <div class="row align-items-center">
-            <div class="col-6">
-                <table class="table table-striped" id="myTable" width="80px">
-                    <tr class="text-center">
-                        <th style="background-color: #ee2a7b; color: #ffd8ec; ">Competency All</th>
-                        <td>@emp.CompetencyAll</td>
-                    </tr>
-                    <tr class="text-center">
-                        <th style="background-color: #ee2a7b; color: #ffd8ec ">Competency Pass</th>
-                        <td>@emp.CompetencyPass</td>
-                    </tr>
-                    <tr class="text-center">
-                        <th style="background-color: #ee2a7b; color: #ffd8ec ">% Competency</th>
-                        <td>@emp.CompetencyPer%</td>
-                    </tr>
-                    <tr class="text-center">
-                        <th style="background-color: #ee2a7b; color: #ffd8ec ">>100%</th>
-                        <td>
-                        </td>
-                    </tr>
-                    <tr class="text-center">
-                        <th style="background-color: #ee2a7b; color: #ffd8ec ">>70%&#60;100%</th>
-                        <td>
-                            @emp.Rank
-                        </td>
-                    </tr>
-                    <tr class="text-center">
-                        <th style="background-color: #ee2a7b; color: #ffd8ec ">&#60;70%</th>
-                        <td>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <div class="col-6">
-                <canvas id="chart"></canvas>
 
-            </div>
+            <table class="table table-striped" id="myTable" width="80px">
+                <tr class="text-center">
+                    <th style="background-color: #C8E8FF; color: #2D4686; ">Competency All</th>
+                    <td>@ViewBag.All</td>
+                </tr>
+                <tr class="text-center">
+                    <th style="background-color: #C8E8FF; color: #2D4686;">Competency Pass</th>
+                    <td>@ViewBag.Pass</td>
+                </tr>
+                <tr class="text-center">
+                    <th style="background-color: #C8E8FF; color: #2D4686; ">% Competency</th>
+                    <td>@ViewBag.Per%</td>
+                </tr>
+                <tr class="text-center">
+                    <th style="background-color: #C8E8FF; color: #2D4686; ">>100%</th>
+                    <td>
+                    </td>
+                </tr>
+                <tr class="text-center">
+                    <th style="background-color: #C8E8FF; color: #2D4686; ">>70%&#60;100%</th>
+                    <td>
+                        @ViewBag.Rank
+                    </td>
+                </tr>
+                <tr class="text-center">
+                    <th style="background-color: #C8E8FF; color: #2D4686; ">&#60;70%</th>
+                    <td>
+                    </td>
+                </tr>
+            </table>
+
         </div>
     </div>
 
@@ -1024,6 +1020,12 @@ var pieChart = new Chart(document.getElementById('pieChart-TC_CC'), {
 
 </script>
 <style>
+    #myTable {
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
+    }
+
     .card-container,
     .table-container {
         overflow: hidden;
