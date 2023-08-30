@@ -448,12 +448,12 @@ namespace myApp.Controllers
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
                     
-                    else if (string.IsNullOrEmpty(criticalResultItem.DevRst) && (status == "2nd Evaluating" || status == "Developing"))
+                    else if (string.IsNullOrEmpty(criticalResultItem.DevRst) && (status == "2nd Evaluating" || status == "Developing") && criticalResultItem.Actual1 < criticalResultItem.Requirement)
                     {
                         TempData["ErrorMessage"] = "มี Competency ที่มี Critical แต่ยังไม่ได้ระบุ Development Result";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
-                    else if (string.IsNullOrEmpty(criticalResultItem.FileId) && (status == "2nd Evaluating" || status == "Developing"))
+                    else if (string.IsNullOrEmpty(criticalResultItem.FileId) && (status == "2nd Evaluating" || status == "Developing") && criticalResultItem.Actual1 < criticalResultItem.Requirement)
                     {
                         TempData["ErrorMessage"] = "มี Competency ที่มี Critical แต่ยังไม่ได้อัปโหลด File Attachment";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });

@@ -52,7 +52,7 @@
                 else if (ViewBag.Status == "Self" || ViewBag.Status == "Developing")
                 {
                     <button type="button" class="btn btn-lg active-link-send" data-bs-toggle="modal" data-bs-target="#sendModal">
-                        <i class="fa fa-send gradient-icon-send"></i><strong class="gradient-icon-send"> ส่งตรวจ</strong>
+                        <i class="fa fa-send gradient-icon-send"></i><strong class="gradient-icon-send"> ส่งแบบประเมิน</strong>
                     </button>
 
                     <button type="submit" class="btn btn-lg active-link-submit" id="liveToastBtn" name="isSave" value="true">
@@ -682,7 +682,7 @@
                             คุณต้องการที่จะส่งแบบประเมินนี้ให้ผู้บังคับบัญชาหรือไม่?
                         </div>
                         <button type="submit" class="btn btn-lg active-link-send" data-bs-toggle="modal" data-bs-target="#exampleModal" style="width: 100%;" id="sendButton" name="isSave" value="false"  data-bs-dismiss="modal">
-                            <i class="fa fa-send gradient-icon-send"></i><strong class="gradient-icon-send"> ส่งตรวจ</strong>
+                            <i class="fa fa-send gradient-icon-send"></i><strong class="gradient-icon-send"> ส่งแบบประเมิน</strong>
                         </button>
                     </div>
                 </div>
@@ -948,8 +948,8 @@ else if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating")
 
         function calculateGap2(button) {
             var row = button.closest('tr');
-            var negativeGapCell2 = row.querySelector("td:nth-child(17)");
-            var positiveGapCell2 = row.querySelector("td:nth-child(18)");
+            var negativeGapCell2 = row.querySelector("td:nth-child(16)");
+            var positiveGapCell2 = row.querySelector("td:nth-child(17)");
 
             var requirement = parseFloat(row.querySelector("td:nth-child(3) input").value);
             var actual1 = parseFloat(row.querySelector("td:nth-child(4) input").value);

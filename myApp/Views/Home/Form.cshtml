@@ -101,7 +101,6 @@
                         <th class="text-center" rowspan="2" width="8%">Development Plan</th>
                         <th class="text-center" colspan="4" width="1%">Quarter</th>
                         <th class="text-center" rowspan="2" width="8%" style="background-color: #C8E8FF; color: #2D4686">Development Result</th>
-                        <th class="text-center" rowspan="2" width="8%" style="background-color: #C8E8FF; color: #2D4686">File</th>
                         <th class="text-center" rowspan="2" width="1%" style="background-color: #C8E8FF; color: #2D4686">A2</th>
                         <th class="text-center" colspan="2" width="2%" style="background-color: #C8E8FF; color: #2D4686">GAP</th>
                     </tr>
@@ -285,6 +284,7 @@
                             </td>
                             <td class="text-center">
                                 <select class="form-select" name="Priority_@i" id="prioritySelect-row-@i">
+                                    <option value="" @(enroll.ResultItem.Priority == "" ? "selected" : "")>-</option>
                                     <option value="A" @(enroll.ResultItem.Priority == "A" ? "selected" : "")>A</option>
                                     <option value="B" @(enroll.ResultItem.Priority == "B" ? "selected" : "")>B</option>
                                     <option value="C" @(enroll.ResultItem.Priority == "C" ? "selected" : "")>C</option>
@@ -292,6 +292,7 @@
                             </td>
                             <td class="text-center">
                                 <select class="form-select" name="TypePlan_@i" id="typeSelect-row-@i">
+                                    <option value="" @(enroll.ResultItem.TypePlan == "" ? "selected" : "")>-</option>
                                     <option value="Co" @(enroll.ResultItem.TypePlan == "Co" ? "selected" : "")>ผู้บังคับบัญชา (Coaching)</option>
                                     <option value="INT" @(enroll.ResultItem.TypePlan == "INT" ? "selected" : "")>อบรมภายใน (Inhous Training)</option>
                                     <option value="JA" @(enroll.ResultItem.TypePlan == "JA" ? "selected" : "")> การมอบหมายงาน (Job Assignment)</option>
@@ -318,16 +319,6 @@
                             </td>
                             <td>
                                 <textarea class="form-control" name="DevRst_@i" id="devRstSelect-row-@i" style="min-width: 100%;">@enroll.ResultItem.DevRst</textarea>
-                            </td>
-                            <td class="text-center">
-                                @if (enroll.ResultItem.FileId != null)
-                                {
-                                    <button type="button" class="btn btn-primary">
-                                        <i class="fa-solid fa-file"></i>
-                                    </button>
-                                }
-                                <input type="file" name="File_@i" value="@enroll.ResultItem.FileId" class="form-control" />
-                                <input type="hidden" name="FileEdit_@i" value="@enroll.ResultItem.FileId" />
                             </td>
                             <td class="text-center">
                                 <button id="actual2Button" onchange="calculateGap2(this)" type="button" class="btn active-link-competency m-1" data-bs-toggle="modal" style="background-color: @backgroundColor2; color: @color2; width: auto; font-size: 20px;" data-bs-target="#Detail2Pl-@enroll.IDPGroupItem.CompetencyId">
@@ -682,8 +673,8 @@
 
         function calculateGap2(button) {
             var row = button.closest('tr');
-            var negativeGapCell2 = row.querySelector("td:nth-child(17)");
-            var positiveGapCell2 = row.querySelector("td:nth-child(18)");
+            var negativeGapCell2 = row.querySelector("td:nth-child(16)");
+            var positiveGapCell2 = row.querySelector("td:nth-child(17)");
 
             var requirement = parseFloat(row.querySelector("td:nth-child(3) input").value);
             var actual1 = parseFloat(row.querySelector("td:nth-child(4) input").value);
