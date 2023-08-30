@@ -26,9 +26,12 @@ namespace myApp.Models
         public DateTime CompeletedOn { get; set; }
         public string CurrentApprover { get; set;}
         public int CompetencyAll { get; set; }
-        public int CompetencyPass { get; set;}
-        public float CompetencyPer { get; set;}
-        public string Rank { get; set; }
+        public int CompetencyPass1 { get; set;}
+        public int CompetencyPass2 { get; set; }
+        public float CompetencyPer1 { get; set;}
+        public float CompetencyPer2 { get; set; }
+        public string Rank1 { get; set; }
+        public string Rank2 { get; set; }
         public string Year { get; set; }
 
         public virtual ResultItem ResultItem { get; set; }

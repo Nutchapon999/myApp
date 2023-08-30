@@ -321,7 +321,6 @@ namespace myApp.Controllers
                 var Q4Key = "Q4_" + i;
                 var devRstKey = "DevRst_" + i;
                 var fileKey = "File_" + i;
-                //var fileEditKey = "FileEdit_" + i;
                 var actual2Key = "Actual2_" + i;
 
                 var criticalValue = form[criticalKey];
@@ -338,7 +337,6 @@ namespace myApp.Controllers
                 var devRstValue = form[devRstKey];
                 var actual2Value = form[actual2Key];
                 var fileValue = Request.Files[fileKey];
-                //var fileEditValue = form[fileEditKey];
                 
 
                 int parsedRequire = Convert.ToInt32(requireValue);
@@ -453,11 +451,6 @@ namespace myApp.Controllers
                         TempData["ErrorMessage"] = "มี Competency ที่มี Critical แต่ยังไม่ได้ระบุ Development Result";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
-                    else if (string.IsNullOrEmpty(criticalResultItem.FileId) && (status == "2nd Evaluating" || status == "Developing") && criticalResultItem.Actual1 < criticalResultItem.Requirement)
-                    {
-                        TempData["ErrorMessage"] = "มี Competency ที่มี Critical แต่ยังไม่ได้อัปโหลด File Attachment";
-                        return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
-                    }
                 }
                 foreach(var hasGapResultItem in hasGap)
                 {
@@ -531,7 +524,15 @@ namespace myApp.Controllers
             }
 
             int all = app.GetCompetencyAllByGuid(Guid);
-            int pass = app.GetCompetencyPassByGuid(Guid);
+            int pass;
+            if (status != "2nd Evaluating" && status != "Success" && status != "Decline")
+            {
+                 pass = app.GetCompetencyPassByGap1(Guid);
+            }
+            else
+            {
+                 pass = app.GetCompetencyPassByGap2(Guid);
+            }
 
             //CALCULATE VALUES FOR RESULT
             float per = (float)pass / all * 100;
@@ -550,7 +551,14 @@ namespace myApp.Controllers
                     break;
             }
 
-            app.UpdateResult(Guid, pass, per, rank);
+            if (status != "2nd Evaluating" && status != "Success" && status != "Decline")
+            {
+                app.UpdateResultA1(Guid, pass, per, rank);
+            }
+            else
+            {
+                app.UpdateResultA2(Guid, pass, per, rank);
+            }
 
             return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
         }
@@ -744,9 +752,12 @@ namespace myApp.Controllers
                 Result result = app.GetResult(guid);
 
                 ViewBag.All = result.CompetencyAll;
-                ViewBag.Pass = result.CompetencyPass;
-                ViewBag.Per = result.CompetencyPer;
-                ViewBag.Rank = result.Rank;
+                ViewBag.Pass1 = result.CompetencyPass1;
+                ViewBag.Pass2 = result.CompetencyPass2;
+                ViewBag.Per1 = result.CompetencyPer1;
+                ViewBag.Per2 = result.CompetencyPer2;
+                ViewBag.Rank1 = result.Rank1;
+                ViewBag.Rank2 = result.Rank2;
 
                 ViewBag.Remark = remarkHs;
 

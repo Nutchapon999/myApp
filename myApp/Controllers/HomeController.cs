@@ -1449,7 +1449,15 @@ namespace myApp.Controllers
            
 
             int all = app.GetCompetencyAllByGuid(Guid);
-            int pass = app.GetCompetencyPassByGuid(Guid);
+            int pass;
+            if (status != "2nd Evaluating" && status != "Success" && status != "Decline")
+            {
+                pass = app.GetCompetencyPassByGap1(Guid);
+            }
+            else
+            {
+                pass = app.GetCompetencyPassByGap2(Guid);
+            }
 
             //CALCULATE VALUES FOR RESULT
             float per = (float)pass / all * 100;
@@ -1468,8 +1476,14 @@ namespace myApp.Controllers
                     break;
             }
 
-            app.UpdateResult(Guid, pass, per, rank);
-
+            if (status != "2nd Evaluating" && status != "Success" && status != "Decline")
+            {
+                app.UpdateResultA1(Guid, pass, per, rank);
+            }
+            else
+            {
+                app.UpdateResultA2(Guid, pass, per, rank);
+            }
             return RedirectToAction("Form", "Home", new { user = userLogin, idpGroupId = IDPGroupId, guid = Guid });
         }
         #endregion
@@ -1516,9 +1530,12 @@ namespace myApp.Controllers
                 Result result = app.GetResult(guid);
 
                 ViewBag.All = result.CompetencyAll;
-                ViewBag.Pass = result.CompetencyPass;
-                ViewBag.Per = result.CompetencyPer;
-                ViewBag.Rank = result.Rank;
+                ViewBag.Pass1 = result.CompetencyPass1;
+                ViewBag.Pass2 = result.CompetencyPass2;
+                ViewBag.Per1 = result.CompetencyPer1;
+                ViewBag.Per2 = result.CompetencyPer2;
+                ViewBag.Rank1 = result.Rank1;
+                ViewBag.Rank2 = result.Rank2;
 
                 ViewBag.Remark = remarkHs;
 

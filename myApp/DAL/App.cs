@@ -1380,7 +1380,7 @@ namespace myApp.DAL
 
             return idpGroupName;
         }
-        public int GetCompetencyPassByGuid(string guid)
+        public int GetCompetencyPassByGap1(string guid)
         {
             int enrolled = 0;
 
@@ -1403,13 +1403,58 @@ namespace myApp.DAL
 
             return enrolled;
         }
-        public void UpdateResult(string guid, int pass, float per, string rank)
+        public int GetCompetencyPassByGap2(string guid)
+        {
+            int enrolled = 0;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand("SELECT COUNT(*) " +
+                "FROM IDP_RESULT R " +
+                "JOIN IDP_RESULT_ITEM RI ON R.GUID = RI.GUID " +
+                "WHERE R.GUID = @GUID AND RI.GAP2 >= 0", connection))
+            {
+                command.Parameters.AddWithValue("@GUID", guid);
+
+                connection.Open();
+
+                object result = command.ExecuteScalar();
+                if (result != null && int.TryParse(result.ToString(), out int count))
+                {
+                    enrolled = count;
+                }
+            }
+
+            return enrolled;
+        }
+        public void UpdateResultA1(string guid, int pass, float per, string rank)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 connection.Open();
 
-                string updateQuery = "UPDATE IDP_RESULT SET COMPETENCY_PASS = @Pass, COMPETENCY_PER = @Per, RANK = @Rank WHERE GUID = @GUID";
+                string updateQuery = "UPDATE IDP_RESULT SET COMPETENCY_PASS1 = @Pass, COMPETENCY_PER1 = @Per, RANK1 = @Rank WHERE GUID = @GUID";
+
+                using (SqlCommand updateCommand = new SqlCommand(updateQuery, connection))
+                {
+
+
+                    updateCommand.Parameters.AddWithValue("@GUID", guid);
+                    updateCommand.Parameters.AddWithValue("@Per", per);
+                    updateCommand.Parameters.AddWithValue("@Pass", pass);
+                    updateCommand.Parameters.AddWithValue("@Rank", rank);
+
+                    updateCommand.ExecuteNonQuery();
+
+                }
+            }
+        }
+        public void UpdateResultA2(string guid, int pass, float per, string rank)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string updateQuery = "UPDATE IDP_RESULT SET COMPETENCY_PASS2 = @Pass, COMPETENCY_PER2 = @Per, RANK2 = @Rank WHERE GUID = @GUID";
 
                 using (SqlCommand updateCommand = new SqlCommand(updateQuery, connection))
                 {
@@ -2283,7 +2328,7 @@ namespace myApp.DAL
             {
                 connection.Open();
 
-                string updateQuery = "UPDATE IDP_RESULT SET COMPELETED_ON = GETDATE() WHERE GUID = @Guid";
+                string updateQuery = "UPDATE IDP_RESULT SET COMPLETED_ON = GETDATE() WHERE GUID = @Guid";
 
                 using (SqlCommand updateCommand = new SqlCommand(updateQuery, connection))
                 {
@@ -2487,11 +2532,11 @@ namespace myApp.DAL
                 {
                     int competencyAll = GetCompetencyAll(user.Id, idpGroupId);
 
-                    string resultQuery = "INSERT INTO IDP_RESULT (GUID, K2_NO, FORM_TYPE, FORM_ID, IDP_GROUP_ID, ID, COMPETENCY_ALL, COMPETENCY_PASS, COMPETENCY_PER, " +
-                                            "YEAR, RANK, SUBJECT, PLANT, DEPARTMENT, COMPANY_CODE, REQUISITIONER, REQUISITIONER_EMAIL, " +
+                    string resultQuery = "INSERT INTO IDP_RESULT (GUID, K2_NO, FORM_TYPE, FORM_ID, IDP_GROUP_ID, ID, COMPETENCY_ALL, COMPETENCY_PASS1, COMPETENCY_PASS2, COMPETENCY_PER1, COMPETENCY_PER2, " +
+                                            "YEAR, RANK1, RANK2, SUBJECT, PLANT, DEPARTMENT, COMPANY_CODE, REQUISITIONER, REQUISITIONER_EMAIL, " +
                                             "CREATED_BY, CREATED_ON, STARTEDWF_ON, COMPLETED_ON, CURRENT_APPROVER, GR_LEVEL) " +
-                                            "VALUES (@Guid, NULL, 'IDP', 'IDP01', @IDPGroupId, @Id, @All, 0, 0, " +
-                                            "@Year, NULL, @Subject, NULL, @Department, NULL, NULL, NULL, @CreateBy, GETDATE(), NULL, NULL, NULL, NULL)";
+                                            "VALUES (@Guid, NULL, 'IDP', 'IDP01', @IDPGroupId, @Id, @All, 0, 0, 0, 0, " +
+                                            "@Year, NULL, NULL, @Subject, NULL, @Department, NULL, NULL, NULL, @CreateBy, GETDATE(), NULL, NULL, NULL, NULL)";
 
                     using (SqlCommand resultCommand = new SqlCommand(resultQuery, connection))
                     {
@@ -3769,16 +3814,27 @@ namespace myApp.DAL
                         Result result = new Result();
 
                         result.CompetencyAll = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_ALL")) ? 0 : (int)reader["COMPETENCY_ALL"];
-                        result.CompetencyPass = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_PASS")) ? 0 : (int)reader["COMPETENCY_PASS"];
-                        if (reader.IsDBNull(reader.GetOrdinal("COMPETENCY_PER")))
+                        result.CompetencyPass1 = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_PASS1")) ? 0 : (int)reader["COMPETENCY_PASS1"];
+                        result.CompetencyPass2 = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_PASS2")) ? 0 : (int)reader["COMPETENCY_PASS2"];
+
+                        if (reader.IsDBNull(reader.GetOrdinal("COMPETENCY_PER1")))
                         {
-                            result.CompetencyPer = 0;
+                            result.CompetencyPer1 = 0;
                         }
-                        else if (float.TryParse(reader["COMPETENCY_PER"].ToString(), out float competencyPer))
+                        else if (float.TryParse(reader["COMPETENCY_PER1"].ToString(), out float competencyPer))
                         {
-                            result.CompetencyPer = (float)Math.Round(competencyPer, 2);
+                            result.CompetencyPer1 = (float)Math.Round(competencyPer, 2);
                         }
-                        result.Rank = reader.IsDBNull(reader.GetOrdinal("RANK")) ? null : (string)reader["RANK"];
+                        if (reader.IsDBNull(reader.GetOrdinal("COMPETENCY_PER2")))
+                        {
+                            result.CompetencyPer2 = 0;
+                        }
+                        else if (float.TryParse(reader["COMPETENCY_PER2"].ToString(), out float competencyPer))
+                        {
+                            result.CompetencyPer2 = (float)Math.Round(competencyPer, 2);
+                        }
+                        result.Rank1 = reader.IsDBNull(reader.GetOrdinal("RANK1")) ? null : (string)reader["RANK1"];
+                        result.Rank2 = reader.IsDBNull(reader.GetOrdinal("RANK2")) ? null : (string)reader["RANK2"];
                         result.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
 
                         ResultItem resultItem = new ResultItem();
@@ -3847,16 +3903,27 @@ namespace myApp.DAL
                         {
                             Result result = new Result();
                             result.CompetencyAll = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_ALL")) ? 0 : (int)reader["COMPETENCY_ALL"];
-                            result.CompetencyPass = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_PASS")) ? 0 : (int)reader["COMPETENCY_PASS"];
-                            if (reader.IsDBNull(reader.GetOrdinal("COMPETENCY_PER")))
+                            result.CompetencyPass1 = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_PASS1")) ? 0 : (int)reader["COMPETENCY_PASS1"];
+                            result.CompetencyPass2 = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_PASS2")) ? 0 : (int)reader["COMPETENCY_PASS2"];
+
+                            if (reader.IsDBNull(reader.GetOrdinal("COMPETENCY_PER1")))
                             {
-                                result.CompetencyPer = 0;
+                                result.CompetencyPer1 = 0;
                             }
-                            else if (float.TryParse(reader["COMPETENCY_PER"].ToString(), out float competencyPer))
+                            else if (float.TryParse(reader["COMPETENCY_PER1"].ToString(), out float competencyPer))
                             {
-                                result.CompetencyPer = (float)Math.Round(competencyPer, 2);
+                                result.CompetencyPer1 = (float)Math.Round(competencyPer, 2);
                             }
-                            result.Rank = reader.IsDBNull(reader.GetOrdinal("RANK")) ? null : (string)reader["RANK"];
+                            if (reader.IsDBNull(reader.GetOrdinal("COMPETENCY_PER2")))
+                            {
+                                result.CompetencyPer2 = 0;
+                            }
+                            else if (float.TryParse(reader["COMPETENCY_PER2"].ToString(), out float competencyPer))
+                            {
+                                result.CompetencyPer2 = (float)Math.Round(competencyPer, 2);
+                            }
+                            result.Rank1 = reader.IsDBNull(reader.GetOrdinal("RANK1")) ? null : (string)reader["RANK1"];
+                            result.Rank2 = reader.IsDBNull(reader.GetOrdinal("RANK2")) ? null : (string)reader["RANK2"];
 
                             return result;
                         }
