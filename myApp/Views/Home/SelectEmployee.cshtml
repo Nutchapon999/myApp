@@ -36,26 +36,25 @@
         <div class="card border-0 m-3">
             <div class="card-body mt-4 border-0">
                 <div class="row">
-                    <div class="col-3">
-
+                    <div class="col-3  d-flex align-items-center">
+                        <label for="exampleDataList" class="form-label me-2 mt-2 "> แผนก:</label>
+                        <input class="form-control" list="selectType" id="exampleDataList" placeholder="Type to search..." style="width: 200px">
+                        <datalist id="selectType">
+                            <option value="">ทั้งหมด</option>
+                            @foreach (var dpt in Model.Where(d => d.DepartmentName != null)
+                                                        .Select(d => d.DepartmentName)
+                                                        .Distinct())
+                            {
+                                <option value="@dpt"></option>
+                            }
+                        </datalist>
                     </div>
                     <div class="col-6 text-center topic-title">
                         <h2 class="mt-2 ">เพิ่มพนักงาน</h2>
                     </div>
                     <div class="col-3 text-end">
                         <div class="row">
-                            <div class="col-2">
-                                <label for="selectType" class="form-label me-2 mt-2"> แผนก:</label>
-                            </div>
-                            <div class="col-10 text-end">
-                                <select class="form-select" id="selectType">
-                                    <option value="">ทั้งหมด</option>
-                                    @foreach (var dpt in Model.Select(dpt => dpt.DepartmentName).Distinct())
-                                    {
-                                        <option value="@dpt">@dpt</option>
-                                    }
-                                </select>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
@@ -184,7 +183,7 @@
     js(document).ready(function () {
         js('#myTable').DataTable({
             info: false,
-            paging: false,
+            paging: true,
             order: [[5, 'asc']],
             language: {
                 search: '',
@@ -204,7 +203,7 @@
     });
 
     document.addEventListener('DOMContentLoaded', function () {
-        const filterSelect = document.getElementById('selectType');
+        const filterSelect = document.getElementById('exampleDataList');
         const tableRows = document.querySelectorAll('#myTable tbody tr');
 
         function filterTableByType() {

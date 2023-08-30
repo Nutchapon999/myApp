@@ -118,7 +118,6 @@
                         <th class="text-center" rowspan="2" width="8%">Development Plan</th>
                         <th class="text-center" colspan="4" width="1%">Quarter</th>
                         <th class="text-center" rowspan="2" width="8%" style="background-color: #C8E8FF; color: #2D4686">Development Result</th>
-                        <th class="text-center" rowspan="2" width="8%" style="background-color: #C8E8FF; color: #2D4686">File</th>
                         <th class="text-center" rowspan="2" width="1%" style="background-color: #C8E8FF; color: #2D4686">A2</th>
                         <th class="text-center" colspan="2" width="2%" style="background-color: #C8E8FF; color: #2D4686">GAP</th>
                     </tr>
@@ -320,11 +319,12 @@
                                     }
                                     else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
                                     {
-                                        <select class="form-select" name="Priority_@i" id="prioritySelect-row-@i">
-                                            <option value="A" @(enroll.ResultItem.Priority == "A" ? "selected" : "")>A</option>
-                                            <option value="B" @(enroll.ResultItem.Priority == "B" ? "selected" : "")>B</option>
-                                            <option value="C" @(enroll.ResultItem.Priority == "C" ? "selected" : "")>C</option>
-                                        </select>
+                                <select class="form-select" name="Priority_@i" id="prioritySelect-row-@i">
+                                    <option value="" @(enroll.ResultItem.Priority == "" ? "selected" : "")>-</option>
+                                    <option value="A" @(enroll.ResultItem.Priority == "A" ? "selected" : "")>A</option>
+                                    <option value="B" @(enroll.ResultItem.Priority == "B" ? "selected" : "")>B</option>
+                                    <option value="C" @(enroll.ResultItem.Priority == "C" ? "selected" : "")>C</option>
+                                </select>
                                     }
                                 </td>
                                 <td class="text-center">
@@ -336,15 +336,16 @@
                                     }
                                     else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
                                     {
-                                        <select class="form-select" name="TypePlan_@i" id="typeSelect-row-@i">
-                                            <option value="Co" @(enroll.ResultItem.TypePlan == "Co" ? "selected" : "")>ผู้บังคับบัญชา (Coaching)</option>
-                                            <option value="INT" @(enroll.ResultItem.TypePlan == "INT" ? "selected" : "")>อบรมภายใน (Inhous Training)</option>
-                                            <option value="JA" @(enroll.ResultItem.TypePlan == "JA" ? "selected" : "")> การมอบหมายงาน (Job Assignment)</option>
-                                            <option value="EXT" @(enroll.ResultItem.TypePlan == "EXT" ? "selected" : "")>อบรมภายนอก (External Training)</option>
-                                            <option value="PJ" @(enroll.ResultItem.TypePlan == "PJ" ? "selected" : "")>การมอบหมายโครงการ (Project Assignment)</option>
-                                            <option value="SS" @(enroll.ResultItem.TypePlan == "SS" ? "selected" : "")>การให้ศึกษาเอง (Self- Study)</option>
-                                            <option value="OJT" @(enroll.ResultItem.TypePlan == "OJT" ? "selected" : "")>การสอนงานหน้างาน (On The Job Training)</option>
-                                        </select>
+                                <select class="form-select" name="TypePlan_@i" id="typeSelect-row-@i">
+                                    <option value="" @(enroll.ResultItem.TypePlan == "" ? "selected" : "")>-</option>
+                                    <option value="Co" @(enroll.ResultItem.TypePlan == "Co" ? "selected" : "")>ผู้บังคับบัญชา (Coaching)</option>
+                                    <option value="INT" @(enroll.ResultItem.TypePlan == "INT" ? "selected" : "")>อบรมภายใน (Inhous Training)</option>
+                                    <option value="JA" @(enroll.ResultItem.TypePlan == "JA" ? "selected" : "")> การมอบหมายงาน (Job Assignment)</option>
+                                    <option value="EXT" @(enroll.ResultItem.TypePlan == "EXT" ? "selected" : "")>อบรมภายนอก (External Training)</option>
+                                    <option value="PJ" @(enroll.ResultItem.TypePlan == "PJ" ? "selected" : "")>การมอบหมายโครงการ (Project Assignment)</option>
+                                    <option value="SS" @(enroll.ResultItem.TypePlan == "SS" ? "selected" : "")>การให้ศึกษาเอง (Self- Study)</option>
+                                    <option value="OJT" @(enroll.ResultItem.TypePlan == "OJT" ? "selected" : "")>การสอนงานหน้างาน (On The Job Training)</option>
+                                </select>
                                     }
                                 </td>
                                 <td>
@@ -428,33 +429,6 @@
                                     {
                                         @enroll.ResultItem.DevRst
                                     }
-                                </td>
-                                <td class="text-center">
-                                    @if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success")
-                                    {
-                                        if (@enroll.ResultItem.FileId != null && ViewBag.Approver == ViewBag.Username || (ViewBag.Status == "Success"))
-                                        {
-                                            <button type="button" class="btn btn-primary">
-                                                <i class="fa-solid fa-file"></i>
-                                            </button>
-                                        }
-                                        else if (@enroll.ResultItem.FileId != null && ViewBag.Approver != ViewBag.Username)
-                                        {
-                                            <button type="button" class="btn btn-primary">
-                                                <i class="fa-solid fa-file"></i>
-                                            </button>
-                                            <input type="file" name="File_@i" value="@enroll.ResultItem.FileId" class="form-control" />
-                                        }
-                                        else if (ViewBag.Approver == ViewBag.Username)
-                                        {
-
-                                        }
-                                        else
-                                        {
-                                            <input type="file" name="File_@i" value="@enroll.ResultItem.FileId" class="form-control" />
-                                        }
-                                    }
-                                    <input type="hidden" name="FileEdit_@i" value="@enroll.ResultItem.FileId" />
                                 </td>
                                 <td class="text-center">
                                     @if (ViewBag.Status == "Self" || ViewBag.Status == "1st Evaluating" || ViewBag.Status == "Developing")
@@ -669,7 +643,6 @@
                                     }
                                 </td>
                                 <td>@enroll.ResultItem.DevRst</td>
-                                <td class="text-center"></td>
                                 <td class="text-center">@enroll.ResultItem.Actual2</td>
                                 <td class="text-center">
                                     <span>

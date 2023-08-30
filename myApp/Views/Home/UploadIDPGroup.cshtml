@@ -81,6 +81,10 @@
                         <i class="fa fa-database" aria-hidden="true"></i>
                         <strong>อัปโหลด</strong>
                     </button>
+                    <button type="button" onclick="downloadExcel()" class="btn btn-success mt-3 btn-lg">
+                        <i class="fa fa-download" aria-hidden="true"></i>
+                        <strong>ตัวอย่าง</strong>
+                    </button>
                 </div>
             </form>
 
@@ -146,6 +150,20 @@
             reader.readAsArrayBuffer(file);
         }
     });
+
+    var header = ["IDP_GROUP_ID", "IDP_GROUP_NAME", "YEAR", ""];
+
+    var dataRow = ["MC-G1", "Operation", "2566", "****Example****"];
+
+    function downloadExcel() {
+        var csvContent = "data:text/csv;charset=utf-8," + header.join(",") + "\n" + dataRow.join(",") + "\n";
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "idp groups.csv");
+        document.body.appendChild(link);
+        link.click();
+    }
 </script>
 <style>
     .card {

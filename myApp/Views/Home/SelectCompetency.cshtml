@@ -36,8 +36,15 @@
         <div class="card border-0 m-3">
             <div class="card-body border-0 mt-4">
                 <div class="row">
-                    <div class="col-3">
-
+                    <div class="col-3  d-flex align-items-center ">
+                        <label for="selectType" class="form-label me-2 mt-2">ชนิด:</label>
+                        <select class="form-select" id="selectType" style="width: 100px;">
+                            <option value="">ทั้งหมด</option>
+                            <option value="CC">CC</option>
+                            <option value="FC">FC</option>
+                            <option value="MC">MC</option>
+                            <option value="TC">TC</option>
+                        </select>
                     </div>
                     <div class="col-6 text-center topic-title">
                         <h2 class="mt-2 ">เพิ่ม Competency</h2>
@@ -176,6 +183,29 @@
                 js('#myTable_length label').addClass('entries-label');
             }
         });
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const filterSelect = document.getElementById('selectType');
+        const tableRows = document.querySelectorAll('#myTable tbody tr');
+
+        function filterTableByType() {
+            const selectedType = filterSelect.value;
+
+            tableRows.forEach((row) => {
+                const rowType = row.cells[2].textContent.trim();
+
+                if (selectedType === '' || rowType === selectedType) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        filterSelect.addEventListener('change', filterTableByType);
+
+        filterTableByType();
     });
 </script>
 <style>

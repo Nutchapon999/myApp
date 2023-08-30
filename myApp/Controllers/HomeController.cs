@@ -1543,7 +1543,7 @@ namespace myApp.Controllers
                 bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
                 bool isGood = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Goodness");
 
-                List<User> users = app.GetUsers();
+                List<User> users = app.GetEmployeeAtActive();
 
                 ViewBag.isAdmin = isAdmin;
                 ViewBag.isGood = isGood;

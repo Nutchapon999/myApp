@@ -1302,7 +1302,7 @@ namespace myApp.DAL
                 connection.Open();
 
                 string updateQuery = "UPDATE IDP_RESULT_ITEM SET REQUIREMENT = @Requirement, ACTUAL1 = @Actual1, GAP1 = @Gap1, PRIORITY = @Priority, TYPE_PLAN = @Type, DEV_PLAN = @DevPlan, " +
-                                    "Q1 = @Q1, Q2 = @Q2, Q3 = @Q3, Q4 = @Q4, DEV_RST = @DevRst, ACTUAL2 = @Actual2, GAP2 = @Gap2, FILE_ID = @FileId " +
+                                    "Q1 = @Q1, Q2 = @Q2, Q3 = @Q3, Q4 = @Q4, DEV_RST = @DevRst, ACTUAL2 = @Actual2, GAP2 = @Gap2, FILE_ID = NULL " +
                                     "WHERE GUID = @Guid AND RESULT_ITEM = @ResultItem";
 
                 using (SqlCommand updateCommand = new SqlCommand(updateQuery, connection))
@@ -1315,15 +1315,14 @@ namespace myApp.DAL
                         updateCommand.Parameters.AddWithValue("@Requirement", (object)resultItem.Requirement ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@Actual1", (object)resultItem.Actual1 ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@Gap1", resultItem.Actual1 - resultItem.Requirement);
-                        updateCommand.Parameters.AddWithValue("@Priority", resultItem.Priority ?? (object)DBNull.Value);
-                        updateCommand.Parameters.AddWithValue("@Type", (object)resultItem.TypePlan ?? DBNull.Value);
+                        updateCommand.Parameters.AddWithValue("@Priority", string.IsNullOrEmpty(resultItem.Priority) ? (object)DBNull.Value : resultItem.Priority);
+                        updateCommand.Parameters.AddWithValue("@Type", string.IsNullOrEmpty(resultItem.TypePlan) ? (object)DBNull.Value : resultItem.TypePlan);
                         updateCommand.Parameters.AddWithValue("@DevPlan", (object)resultItem.DevPlan ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@Q1", (object)resultItem.Q1 ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@Q2", (object)resultItem.Q2 ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@Q3", (object)resultItem.Q3 ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@Q4", (object)resultItem.Q4 ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@DevRst", (object)resultItem.DevRst ?? DBNull.Value);
-                        updateCommand.Parameters.AddWithValue("@FileId", (object)resultItem.FileId ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@Actual2", (object)resultItem.Actual2 ?? DBNull.Value);
                         updateCommand.Parameters.AddWithValue("@Gap2", resultItem.Actual2 - resultItem.Requirement);
                         updateCommand.Parameters.AddWithValue("@ResultItem", i + 1); 

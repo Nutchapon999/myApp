@@ -81,6 +81,10 @@
                         <i class="fa fa-database" aria-hidden="true"></i>
                         <strong>อัปโหลด</strong>
                     </button>
+                    <button type="button" onclick="downloadExcel()" class="btn btn-success mt-3 btn-lg">
+                        <i class="fa fa-download" aria-hidden="true"></i>
+                        <strong>ตัวอย่าง</strong>
+                    </button>
                 </div>
             </form>
 
@@ -97,6 +101,7 @@
     }
 </script>
 <script src="~/JS/unpkg.com_xlsx@0.18.5_dist_xlsx.full.min.js"></script>
+
 <script>
     document.getElementById("file").addEventListener("change", function () {
         var file = this.files[0];
@@ -146,6 +151,22 @@
             reader.readAsArrayBuffer(file);
         }
     });
+
+    var header = ["COMPETENCY_ID", "TYPE", "COMPETENCY_NAME_TH", "COMPETENCY_NAME_EN", "COMPETENCY_DESC",
+        "PL1", "PL2", "PL3", "PL4", "PL5", "ACTIVE", "DELETED", ""];
+
+    var dataRow = ["TCxxxx", "TC CC FC MC", "Name in TH", "Name in EN", "Definition",
+        "xxxxxx", "xxxxxx", "xxxxxx", "xxxxxx", "xxxxxx", "1 *1 = Active 0 = Not Active*", "1 *1 = Not Deleted 0 = Deleted*", "****Example****"];
+
+    function downloadExcel() {
+        var csvContent = "data:text/csv;charset=utf-8," + header.join(",") + "\n" + dataRow.join(",") + "\n";
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "competencies.csv");
+        document.body.appendChild(link);
+        link.click();
+    }
 </script>
 <style>
     .card {
@@ -214,6 +235,7 @@
         text-align: center;
         transition: color .2s ease-in-out;
     }
+
     .topic-title {
         background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
         -webkit-background-clip: text;

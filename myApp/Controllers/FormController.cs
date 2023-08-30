@@ -321,7 +321,7 @@ namespace myApp.Controllers
                 var Q4Key = "Q4_" + i;
                 var devRstKey = "DevRst_" + i;
                 var fileKey = "File_" + i;
-                var fileEditKey = "FileEdit_" + i;
+                //var fileEditKey = "FileEdit_" + i;
                 var actual2Key = "Actual2_" + i;
 
                 var criticalValue = form[criticalKey];
@@ -338,44 +338,8 @@ namespace myApp.Controllers
                 var devRstValue = form[devRstKey];
                 var actual2Value = form[actual2Key];
                 var fileValue = Request.Files[fileKey];
-                var fileEditValue = form[fileEditKey];
-                var fileId = "";
-                {
-                    if (fileValue != null && fileValue.ContentLength > 0)
-                    {
-                        HttpPostedFileBase f = fileValue;
-                        string fname;
-                        if (f.FileName.Contains("\\"))
-                        {
-                            string[] testfiles = f.FileName.Split(new char[] { '\\' });
-                            fname = testfiles[testfiles.Length - 1];
-                        }
-                        else
-                        {
-                            fname = f.FileName;
-                        }
-                        string Type = string.Empty;
-                        var splitName = fname.Split('.');
-                        Type = splitName[splitName.Length - 1];
-
-                        int j = i + 1;
-
-                        var user = username.Replace(".", "-");
-                        var filenameGuid = "IDP_" + Guid + "_" + j;
-                        fileId = filenameGuid;
-
-                        //string filePath = Path.Combine(fileUploadPath, fileId);
-                        //f.SaveAs(filePath);
-                    }
-                    else if(fileEditValue != "")
-                    {
-                        fileId = fileEditValue;
-                    }
-                    else
-                    {
-                        fileId = null;
-                    }
-                }
+                //var fileEditValue = form[fileEditKey];
+                
 
                 int parsedRequire = Convert.ToInt32(requireValue);
                 int parsedActual1 = Convert.ToInt32(actual1Value);
@@ -397,7 +361,6 @@ namespace myApp.Controllers
                     Q3 = Q3Value,
                     Q4 = Q4Value,
                     DevRst = devRstValue,
-                    FileId = fileId,
                     Actual2 = parsedActual2
 
                 };
@@ -470,7 +433,7 @@ namespace myApp.Controllers
                 }
                 foreach (var criticalResultItem in criticalRes)
                 {
-                    if (string.IsNullOrEmpty(criticalResultItem.DevPlan))
+                    if (string.IsNullOrEmpty(criticalResultItem.DevPlan) && criticalResultItem.Actual1 < criticalResultItem.Requirement)
                     {
                         TempData["ErrorMessage"] = "มี Competency ที่มี Critical แต่ยังไม่ได้ระบุ Development Plan";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
@@ -478,7 +441,8 @@ namespace myApp.Controllers
                     else if (string.IsNullOrEmpty(criticalResultItem.Q1) &&
                             string.IsNullOrEmpty(criticalResultItem.Q2) &&
                             string.IsNullOrEmpty(criticalResultItem.Q3) &&
-                            string.IsNullOrEmpty(criticalResultItem.Q4))
+                            string.IsNullOrEmpty(criticalResultItem.Q4) &&
+                            criticalResultItem.Actual1 < criticalResultItem.Requirement)
                     {
                         TempData["ErrorMessage"] = "มี Competency ที่มี Critical แต่ยังไม่ได้ระบุ Quarter";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
@@ -499,7 +463,17 @@ namespace myApp.Controllers
                 {
                     if(hasGapResultItem.Actual1 < hasGapResultItem.Requirement)
                     {
-                        if (string.IsNullOrEmpty(hasGapResultItem.DevPlan))
+                        if (string.IsNullOrEmpty(hasGapResultItem.Priority))
+                        {
+                            TempData["ErrorMessage"] = "มี Competency ที่มี Gap แต่ยังไม่ได้ระบุ Priority";
+                            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                        }
+                        else if (string.IsNullOrEmpty(hasGapResultItem.TypePlan))
+                        {
+                            TempData["ErrorMessage"] = "มี Competency ที่มี Gap แต่ยังไม่ได้ระบุ TypePlan";
+                            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                        }
+                        else if (string.IsNullOrEmpty(hasGapResultItem.DevPlan))
                         {
                             TempData["ErrorMessage"] = "มี Competency ที่มี Gap แต่ยังไม่ได้ระบุ Development Plan";
                             return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
@@ -516,11 +490,6 @@ namespace myApp.Controllers
                         else if (string.IsNullOrEmpty(hasGapResultItem.DevRst) && (status == "2nd Evaluating" || status == "Developing"))
                         {
                             TempData["ErrorMessage"] = "มี Competency ที่มี Gap แต่ยังไม่ได้ระบุ Development Result";
-                            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
-                        }
-                        else if (string.IsNullOrEmpty(hasGapResultItem.FileId) && (status == "2nd Evaluating" || status == "Developing"))
-                        {
-                            TempData["ErrorMessage"] = "มี Competency ที่มี Gap แต่ยังไม่ได้อัปโหลด File Attachment";
                             return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                         }
                     }
