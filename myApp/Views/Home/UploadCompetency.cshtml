@@ -101,7 +101,7 @@
     }
 </script>
 <script src="~/JS/unpkg.com_xlsx@0.18.5_dist_xlsx.full.min.js"></script>
-
+@*<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>*@
 <script>
     document.getElementById("file").addEventListener("change", function () {
         var file = this.files[0];
@@ -159,14 +159,23 @@
         "xxxxxx", "xxxxxx", "xxxxxx", "xxxxxx", "xxxxxx", "1 *1 = Active 0 = Not Active*", "1 *1 = Not Deleted 0 = Deleted*", "****Example****"];
 
     function downloadExcel() {
-        var csvContent = "data:text/csv;charset=utf-8," + header.join(",") + "\n" + dataRow.join(",") + "\n";
-        var encodedUri = encodeURI(csvContent);
+        var workbook = XLSX.utils.book_new();
+        var sheetData = [header, dataRow]; 
+
+        var worksheet = XLSX.utils.aoa_to_sheet(sheetData);
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+        var excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+        var blob = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+
         var link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "competencies.csv");
+        link.href = URL.createObjectURL(blob);
+        link.download = "competencies.xlsx"; 
         document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
     }
+
 </script>
 <style>
     .card {
