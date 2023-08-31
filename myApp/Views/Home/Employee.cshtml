@@ -158,7 +158,7 @@
         js('#myTable').DataTable({
             searching: true,
             info: false,
-            //paging: false,
+            paging: false,
             order: [[4, 'asc']],
             language: {
                 search: '',
@@ -197,11 +197,19 @@
                 const rowType = row.cells[6].textContent.trim()
 
                 if (selectedType === '' || rowType === selectedType) {
+ 
                     row.style.display = '';
                 } else {
                     row.style.display = 'none';
                 }
             });
+
+            const tbody = document.querySelector('#myTable tbody');
+            if (selectedType === '') {
+                tbody.style.display = 'none';
+            } else {
+                tbody.style.display = '';
+            }
         }
 
         filterSelect.addEventListener('change', filterTableByType);
@@ -223,16 +231,17 @@
         overflow: hidden;
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
     }
+       
 
-    .background-container {
-        background-color: white; /* Set the white background */
-        display: inline-block; /* Display the container as an inline block to wrap the icon */
-        border-radius: 50%; /* Apply a circular shape to the container */
-        padding: 1rem; /* Add padding around the icon */
-        overflow: hidden; /* Hide any overflow from the circular container */
-        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px; /* Add a box shadow */
-        margin-top: -50px;
-    }
+        .background-container {
+            background-color: white; /* Set the white background */
+            display: inline-block; /* Display the container as an inline block to wrap the icon */
+            border-radius: 50%; /* Apply a circular shape to the container */
+            padding: 1rem; /* Add padding around the icon */
+            overflow: hidden; /* Hide any overflow from the circular container */
+            box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px; /* Add a box shadow */
+            margin-top: -50px;
+        }
 
     .topic-icon {
         background: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
