@@ -545,6 +545,37 @@ namespace myApp.DAL
                 }
             }
         }
+        public List<IDPGroup> getIDPGroupByYear(string year)
+        {
+            List<IDPGroup> iDPGroups = new List<IDPGroup>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT * FROM IDP_GROUP WHERE YEAR = @Year";
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@Year", year);
+
+                connection.Open();
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    IDPGroup iDPGroup = new IDPGroup();
+
+                    iDPGroup.IDPGroupId = (string)reader["IDP_GROUP_ID"];
+                    iDPGroup.IDPGroupName = reader.IsDBNull(reader.GetOrdinal("IDP_GROUP_NAME")) ? null : (string)reader["IDP_GROUP_NAME"];
+                    iDPGroup.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
+
+                    iDPGroups.Add(iDPGroup);
+                }
+                reader.Close();
+            }
+
+            return iDPGroups;
+        }
         #endregion
 
         #region IDP GROUP ITEM

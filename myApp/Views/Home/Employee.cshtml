@@ -25,22 +25,22 @@
 
 </div>
 <main>
-
     <div class="card shadow border-0 m-3">
         <div class="card-body border-0 mt-4">
             <div class="row mb-2">
                 <div class="col-4 d-flex align-items-center ">
                     <label for="exampleDataList" class="form-label me-2 mt-2 "> แผนก:</label>
-                    <input class="form-control" list="selectType" id="exampleDataList" placeholder="Type to search..." style="width: 200px" >
+                    <input class="form-control" list="selectType" id="exampleDataList" placeholder="Type to search..." style="width: 200px">
                     <datalist id="selectType">
                         <option value="">ทั้งหมด</option>
-                        @foreach (var dpt in Model.Where(d => d.DepartmentName != null)
-                                                  .Select(d => d.DepartmentName)
-                                                  .Distinct())
+                        @foreach (var item in Model.Where(d => d.DepartmentName != null)
+                                                   .Select(d => new { d.DepartmentName})
+                                                   .Distinct())
                         {
-                            <option value="@dpt"></option>
+                            <option value="@item.DepartmentName"></option>
                         }
                     </datalist>
+
                 </div>
                 <div class="col-4 text-center topic-title">
                     <h1>พนักงาน</h1>
@@ -125,6 +125,7 @@
         });
 
         function buildTable(users) {
+            js('#myTable').DataTable().destroy();
             var tableHtml = "";
 
             for (var i = 0; i < users.length; i++) {
@@ -171,6 +172,33 @@
             }
 
             $("#tableContainer").html(tableHtml);
+
+            js('#myTable').DataTable({
+                searching: true,
+                info: false,
+                paging: false,
+                order: [[4, 'asc']],
+                language: {
+                    search: '',
+                    searchPlaceholder: 'ค้นหา',
+                    lengthMenu: '_MENU_',
+                    paginate: {
+                        next: 'ถัดไป <i class="fa fa-angle-double-right"></i>',
+                        previous: '<i class="fa fa-angle-double-left"></i> ก่อนหน้า'
+                    },
+                    info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
+                },
+                columnDefs: [{
+                    targets: 8,
+                    orderable: false
+                }, {
+                    targets: 9,
+                    orderable: false
+                }],
+                initComplete: function () {
+                    js('#myTable_length label').addClass('entries-label');
+                }
+            });
         }
     });
 

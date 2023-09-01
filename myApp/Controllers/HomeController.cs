@@ -22,6 +22,7 @@ using DocumentFormat.OpenXml.Office2010.Excel;
 using System.Web.Services.Description;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System.Security.Cryptography;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace myApp.Controllers
 {
@@ -318,6 +319,17 @@ namespace myApp.Controllers
             {
                 return RedirectToAction("Index", "Form");
             }
+        }
+        [HttpPost]
+        public ActionResult GetYear(string selectedValue)
+        {
+            List<IDPGroup> IDPGroups = app.getIDPGroupByYear(selectedValue);
+            foreach (var idpGroup in IDPGroups)
+            {
+                idpGroup.EmployeeEnrollmentCount = app.GetCountEmployee(idpGroup.IDPGroupId);
+                idpGroup.EmployeeCompetencyCount = app.GetCountCompetency(idpGroup.IDPGroupId);
+            }
+            return Json(IDPGroups, JsonRequestBehavior.AllowGet);
         }
         #endregion
 
