@@ -517,6 +517,24 @@ namespace myApp.Controllers
             return null;
 
         }
+        public ActionResult GetDepartment(string selectedValue)
+        {
+            List<User> users = app.getEmployeeByDepartment(selectedValue);
+            foreach (var user in users)
+            {
+                if (user.Id == null) user.Id = "";
+                if (user.Prefix == null) user.Prefix = "";
+                if (user.FirstNameTH == null) user.FirstNameTH = "";
+                if (user.LastNameTH == null) user.LastNameTH = "";
+                if (user.Status == null) user.Status = "";
+                if (user.Position == null) user.Position = "";
+                if (user.JobLevel == null) user.JobLevel = "";
+                if (user.CostCenter == null) user.CostCenter = "";
+                if (user.DepartmentName == null) user.DepartmentName = "";
+                if (user.Company == null) user.Company = "";
+            }
+            return Json(users, JsonRequestBehavior.AllowGet);
+        }
         #endregion
 
         #region IDP GROUP ITEM

@@ -64,86 +64,8 @@
                         <th width="5%" class="text-center"></th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach (var emp in Model)
-                    {
-                        <tr>
-                            <th scope="row">@emp.Id</th>
-                            @if (emp.Prefix == "นาง" || emp.Prefix == "นางสาว")
-                            {
-                                <td>
-                                    <i class="fa-solid fa-person-dress" style="color:palevioletred; font-size:large" aria-hidden="true"></i>
-                                    @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
-                                </td>
-                            }
-                            else if (emp.Prefix == "นาย" || emp.Prefix == " นาย")
-                            {
-                                <td>
-                                    <i class="fa-solid fa-person" style="color:cornflowerblue; font-size:large" aria-hidden="true"></i>
-                                    @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
-                                </td>
-                            }
-                            else
-                            {
-                                <td>
-                                    @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
-                                </td>
-                            }
-                            <td class="text-center fw-bold">
-                                @if (emp.Status == "ทำงาน")
-                                {
-                                    <p style="padding: 3px; border-radius: 3rem; background-color: #D5F8EF; color: #14B789; width: auto ">
-                                        @emp.Status
-                                    </p>
-                                }
-                                else
-                                {
-                                    <p style="padding: 3px; border-radius: 3rem; background-color: #FFE5F4; color: #E50087; width: auto">
-                                        @emp.Status
-                                    </p>
-                                }
-                            </td>
-
-                            <td>@emp.Position</td>
-                            <td class="text-center">@emp.JobLevel</td>
-                            <td class="text-center">@emp.CostCenter</td>
-                            <td>@emp.DepartmentName</td>
-                            <td>@emp.Company</td>
-                            <td class="text-center">
-                                <div class="btn-group me-2" role="group" aria-label="Second group">
-                                    <a id="link" href="@Url.Action("SelectForm", new { user = emp.UserLogin, year = (DateTime.Now.Year + 543).ToString() })" class="btn active-link-form" title="แบบประเมิน">
-                                        <i class="fa fa-file-text gradient-icon-form" aria-hidden="true"></i>
-                                    </a>
-                                </div>
-                                <div class="modal fade" id="deleteModal-@emp.Id" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-4">ต้องการที่จะลบ<strong>พนักงาน</strong>คนนี้หรือไม่?</h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <h5>รหัสพนักงาน: @emp.Id</h5>
-                                                <h5>ชื่อพนักงาน: @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)</h5>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
-                                                <a href="@Url.Action("DeleteEmployee", new { id = emp.Id })" class="btn btn-danger">ยืนยัน</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="text-center">
-                                @if (emp.Status == "ทำงาน")
-                                {
-                                    <a id="link" href="@Url.Action("AddIDPGroup", new { id = emp.Id })" class="btn active-link-add" title="เพิ่ม IDP Group">
-                                        <i class="fa fa-book gradient-icon-add" aria-hidden="true"></i>
-                                    </a>
-                                }
-                            </td>
-                        </tr>
-                    }
+                <tbody id="tableContainer">
+                    
                 </tbody>
             </table>
         </div>
@@ -183,7 +105,68 @@
         });
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
+    js(document).ready(function () {
+        $("#exampleDataList").change(function () {
+            var selectedValue = $(this).val();
+            console.log(selectedValue);
+            $.ajax({
+                url: "/Home/GetDepartment",
+                type: "POST",
+                data: { selectedValue: selectedValue },
+                success: function (response) {
+                    console.log(response);
+                    buildTable(response);
+                    $("#exampleDataList").val("");
+                },
+                error: function () {
+
+                }
+            });
+        });
+
+        function buildTable(users) {
+            var tableHtml = "";
+
+            for (var i = 0; i < users.length; i++) {
+                var user = users[i];
+                var iconHtml = "";
+                var buttonHtml = "";
+
+                if (user.Prefix === "นาง" || user.Prefix === "นางสาว") {
+                    iconHtml = "<i class='fa-solid fa-person-dress' style='color:palevioletred; font-size:large' aria-hidden='true'></i>";
+                } else if (user.Prefix === "นาย") {
+                    iconHtml = "<i class='fa-solid fa-person' style='color:cornflowerblue; font-size:large' aria-hidden='true'></i>";
+                }
+
+                if (user.Status === "ทำงาน"){
+                    buttonHtml = "<a id="link" href="@Url.Action("AddIDPGroup", new { id = emp.Id })" class="btn active-link-add" title="เพิ่ม IDP Group">" + 
+                        <i class="fa fa-book gradient-icon-add" aria-hidden="true"></i>
+                    </a>
+                }
+
+                var rowHtml = "<tr>" +
+                    "<td>" + user.Id + "</td>" +
+                    "<td>" + iconHtml + " " + user.Prefix + " " + user.FirstNameTH + " " + user.LastNameTH + "</td>" +
+                    "<td>" + user.Status + "</td>" +
+                    "<td>" + user.Position + "</td>" +
+                    "<td>" + user.JobLevel + "</td>" +
+                    "<td>" + user.CostCenter + "</td>" +
+                    "<td>" + user.DepartmentName + "</td>" +
+                    "<td>" + user.Company + "</td>" +
+                    "<td><a href='#'>แก้ไข</a></td>" +
+                    "<td><a href='#'>ลบ</a></td>" +
+                    "</tr>";
+
+                tableHtml += rowHtml; // Append the row HTML to the table HTML
+            }
+
+            // Now you can use the generated 'tableHtml' in your HTML document
+
+            $("#tableContainer").html(tableHtml);
+        }
+    });
+
+    @*document.addEventListener('DOMContentLoaded', function () {
         const filterSelect = document.getElementById('exampleDataList');
         const tableRows = document.querySelectorAll('#myTable tbody tr');
 
@@ -197,7 +180,7 @@
                 const rowType = row.cells[6].textContent.trim()
 
                 if (selectedType === '' || rowType === selectedType) {
- 
+
                     row.style.display = '';
                 } else {
                     row.style.display = 'none';
@@ -215,7 +198,7 @@
         filterSelect.addEventListener('change', filterTableByType);
 
         filterTableByType();
-    });
+    });*@
 </script>
 <style>
     p {
