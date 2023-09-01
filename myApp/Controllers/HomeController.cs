@@ -341,6 +341,11 @@ namespace myApp.Controllers
                 return RedirectToAction("Index", "Form");
             }
         }
+        public ActionResult GetDepartment(string selectedValue)
+        {
+            List<User> users = app.getEmployeeByDepartment(selectedValue);
+            return Json(users, JsonRequestBehavior.AllowGet);
+        }
         public ActionResult DeleteEmployee(string id)
         {
             app.DeleteEmployee(id);

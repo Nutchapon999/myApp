@@ -455,6 +455,7 @@
     <Content Include="Content\DataTables\swf\flashExport.swf" />
     <Content Include="CSS\cdnjs.cloudflare.com_ajax_libs_font-awesome_6.4.0_css_all.min.css" />
     <Content Include="CSS\fonts.googleapis.com_css2_family=Sarabun_wght%40500&amp;display=swap.css" />
+    <Content Include="CSS\select2%404.1.0.min.css" />
     <Content Include="fonts\Font.css" />
     <Content Include="CSS\Style.css" />
     <Content Include="favicon.ico" />
@@ -484,9 +485,11 @@
     <Content Include="JS\cdn.jsdelivr.net_npm_chart.js" />
     <Content Include="JS\cdnjs.cloudflare.com_ajax_libs_html2canvas_0.4.1_html2canvas.min.js" />
     <Content Include="JS\code.jquery.com_jquery-3.6.0.min.js" />
+    <Content Include="JS\DropDown.js" />
     <Content Include="JS\Form.js" />
     <Content Include="JS\kit.fontawesome.com_b88261c7eb.js" />
     <Content Include="JS\print.js" />
+    <Content Include="JS\select2%404.1.0.min.js" />
     <Content Include="JS\unpkg.com_xlsx%400.18.5_dist_xlsx.full.min.js" />
     <Content Include="JS\unpkg_exceljs.min.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />

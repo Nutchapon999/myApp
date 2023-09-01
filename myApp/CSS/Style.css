@@ -22,18 +22,18 @@
     .dataTables_wrapper .dataTables_filter input[type="search"]:focus {
         width: 280px;
     }
+    
 
-
-.dataTables_wrapper .dataTables_length label {
-    color: #2D4686;
-    font-weight: bold;
-    padding: 0.3rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-    border-radius: 7px;
-    background-color: #C8E8FF;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-}
+    .dataTables_wrapper .dataTables_length label {
+        color: #2D4686;
+        font-weight: bold;
+        padding: 0.3rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        border-radius: 7px;
+        background-color: #C8E8FF;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
 
     .dataTables_wrapper .dataTables_length label select {
         border: none;

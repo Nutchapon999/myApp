@@ -1,0 +1,2 @@
+COMPETENCY_ID,TYPE,COMPETENCY_NAME_TH,COMPETENCY_NAME_EN,COMPETENCY_DESC,PL1,PL2,PL3,PL4,PL5,ACTIVE,DELETED,
+TCxxxx,TC CC FC MC,Name in TH,Name in EN,Definition,xxxxxx,xxxxxx,xxxxxx,xxxxxx,xxxxxx,1 *1 = Active 0 = Not Active*,1 *1 = Not Deleted 0 = Deleted*,****Example****

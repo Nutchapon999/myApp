@@ -183,7 +183,7 @@
     js(document).ready(function () {
         js('#myTable').DataTable({
             info: false,
-            paging: true,
+            //paging: true,
             order: [[5, 'asc']],
             language: {
                 search: '',
@@ -218,6 +218,13 @@
                     row.style.display = 'none';
                 }
             });
+
+            const tbody = document.querySelector('#myTable tbody');
+            if (selectedType === '') {
+                tbody.style.display = 'none';
+            } else {
+                tbody.style.display = '';
+            }
         }
 
         filterSelect.addEventListener('change', filterTableByType);
