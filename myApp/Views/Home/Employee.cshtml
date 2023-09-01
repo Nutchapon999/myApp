@@ -129,8 +129,14 @@
 
             for (var i = 0; i < users.length; i++) {
                 var user = users[i];
+                var d = new Date();
+                var year = d.getFullYear();
+                var addIDPGroup = '@Url.Action("AddIDPGroup", "Home")' + '?id=' + user.Id;
+                var selectForm = '@Url.Action("SelectForm", "Home")' + '?user=' + user.Id + '&year=' + year+543;
                 var iconHtml = "";
-                var buttonHtml = "";
+                var buttonHtml1 = "";
+                var buttonHtml2 = "";
+                var statusHtml = "";
 
                 if (user.Prefix === "นาง" || user.Prefix === "นางสาว") {
                     iconHtml = "<i class='fa-solid fa-person-dress' style='color:palevioletred; font-size:large' aria-hidden='true'></i>";
@@ -138,29 +144,31 @@
                     iconHtml = "<i class='fa-solid fa-person' style='color:cornflowerblue; font-size:large' aria-hidden='true'></i>";
                 }
 
-                if (user.Status === "ทำงาน"){
-                    buttonHtml = "<a id="link" href="@Url.Action("AddIDPGroup", new { id = emp.Id })" class="btn active-link-add" title="เพิ่ม IDP Group">" + 
-                        <i class="fa fa-book gradient-icon-add" aria-hidden="true"></i>
-                    </a>
+                if (user.Status === "ทำงาน") {
+                    statusHtml = "<p style='padding: 3px; border-radius: 3rem; background-color: #D5F8EF; color: #14B789; width: auto'>" + user.Status + "</p>";
+                    buttonHtml2 = "<a id='link' href='" + addIDPGroup + "' class='btn active-link-add' title='เพิ่ม IDP Group'><i class='fa fa-book gradient-icon-add' aria-hidden='true'></i></a>";
                 }
+                else { 
+                    statusHtml = "<p style='padding: 3px; border-radius: 3rem; background-color: #FFE5F4; color: #E50087; width: auto'>" + user.Status + "</p>";
+                }
+                buttonHtml1 = "<a id='link' href='" + selectForm + "' class='btn active-link-form' title='แบบประเมิน'><i class='fa fa-file-text gradient-icon-form' aria-hidden='true'></i></a>";
+
 
                 var rowHtml = "<tr>" +
-                    "<td>" + user.Id + "</td>" +
+                    "<td class='text-center'>" + user.Id + "</td>" +
                     "<td>" + iconHtml + " " + user.Prefix + " " + user.FirstNameTH + " " + user.LastNameTH + "</td>" +
-                    "<td>" + user.Status + "</td>" +
+                    "<td class='text-center fw-bold'>" + statusHtml + "</td>" +
                     "<td>" + user.Position + "</td>" +
-                    "<td>" + user.JobLevel + "</td>" +
-                    "<td>" + user.CostCenter + "</td>" +
+                    "<td class='text-center'>" + user.JobLevel + "</td>" +
+                    "<td class='text-center'>" + user.CostCenter + "</td>" +
                     "<td>" + user.DepartmentName + "</td>" +
-                    "<td>" + user.Company + "</td>" +
-                    "<td><a href='#'>แก้ไข</a></td>" +
-                    "<td><a href='#'>ลบ</a></td>" +
+                    "<td class='text-center'>" + user.Company + "</td>" +
+                    "<td class='text-center'>" + buttonHtml1 + "</td>" +
+                    "<td class='text-center'>" + buttonHtml2 + "</td>" +
                     "</tr>";
 
-                tableHtml += rowHtml; // Append the row HTML to the table HTML
+                tableHtml += rowHtml;
             }
-
-            // Now you can use the generated 'tableHtml' in your HTML document
 
             $("#tableContainer").html(tableHtml);
         }
@@ -204,7 +212,7 @@
     p {
         margin-bottom: 0;
     }
-
+    
     main {
         margin-top: -50px;
     }
