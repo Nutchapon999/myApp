@@ -101,60 +101,8 @@
                             <th width="18%" class="text-center">บริษัท</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach (var emp in Model)
-                        {
-                            <tr>
-                                <td>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="userIds" value="@emp.Id" />
-                                    </div>
-                                </td>
-                                <td>@emp.Id</td>
-                                @if (emp.Prefix == "นาง" || emp.Prefix == "นางสาว")
-                                {
-                                    <td>
-                                        <i class="fa fa-female" style="color:palevioletred; font-size:large" aria-hidden="true"></i>
-                                        @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
+                    <tbody id="tableContainer">
 
-                                    </td>
-                                }
-                                else if (emp.Prefix == "นาย" || emp.Prefix == " นาย")
-                                {
-                                    <td>
-                                        <i class="fa fa-male" style="color:cornflowerblue; font-size:large" aria-hidden="true"></i>
-                                        @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
-
-                                    </td>
-                                }
-                                else
-                                {
-                                    <td>
-                                        @(emp.Prefix) @(emp.FirstNameTH) @(emp.LastNameTH)
-
-                                    </td>
-                                }
-                                <td class="text-center fw-bold">
-                                    @if (emp.Status == "ทำงาน")
-                                    {
-                                        <p style="padding: 3px; border-radius: 3rem; background-color: #D5F8EF; color: #14B789; width: auto ">
-                                            @emp.Status
-                                        </p>
-                                    }
-                                    else
-                                    {
-                                        <p style="padding: 3px; border-radius: 3rem; background-color: #FFE5F4; color: #E50087; width: auto">
-                                            @emp.Status
-                                        </p>
-                                    }
-                                </td>
-                                <td>@emp.Position</td>
-                                <td class="text-center">@emp.JobLevel</td>
-                                <td class="text-center">@emp.CostCenter</td>
-                                <td>@emp.DepartmentName</td>
-                                <td>@emp.Company</td>
-                            </tr>
-                        }
                     </tbody>
                 </table>
                 <div class="row mt-3">
@@ -191,8 +139,8 @@
                 lengthMenu: '_MENU_',
             },
              columnDefs: [{
-                targets: 0, 
-                orderable: false 
+                targets: 0,
+                orderable: false
             }],
             initComplete: function () {
                 js('#myTable_length label').addClass('entries-label');
@@ -202,28 +150,106 @@
 
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const filterSelect = document.getElementById('exampleDataList');
-        const tableRows = document.querySelectorAll('#myTable tbody tr');
+    js(document).ready(function () {
+        var send = '@Url.Action("GetDepartment", "Home")';
 
-        function filterTableByType() {
-            const selectedType = filterSelect.value;
+        //var selectedValue = localStorage.getItem("Employee");
 
-            tableRows.forEach((row) => {
-                const rowType = row.cells[7].textContent.trim();
+        //if (selectedValue) {
+        //    $("#selectType").val(selectedValue);
+        //}
 
-                if (selectedType === '' || rowType === selectedType) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
+
+        $("#exampleDataList").change(function () {
+            var selectedValue = $(this).val();
+            console.log(selectedValue);
+            //localStorage.setItem("Employee", selectedValue);
+            $.ajax({
+                url: send,
+                type: "POST",
+                data: { selectedValue: selectedValue },
+                success: function (response) {
+                    console.log(response);
+                    buildTable(response);
+                    $("#exampleDataList").val("");
+                },
+                error: function () {
+
                 }
             });
+        });
+    });
+
+    function buildTable(users) {
+        js('#myTable').DataTable().destroy();
+        var tableHtml = "";
+
+        for (var i = 0; i < users.length; i++) {
+            var user = users[i];
+            var d = new Date();
+            var year = d.getFullYear();
+            var addIDPGroup = '@Url.Action("AddIDPGroup", "Home")' + '?id=' + user.Id;
+            var selectForm = '@Url.Action("SelectForm", "Home")' + '?user=' + user.Id + '&year=' + year+543;
+            var iconHtml = "";
+            var buttonHtml1 = "";
+            var buttonHtml2 = "";
+            var statusHtml = "";
+
+            if (user.Prefix === "นาง" || user.Prefix === "นางสาว") {
+                iconHtml = "<i class='fa-solid fa-person-dress' style='color:palevioletred; font-size:large' aria-hidden='true'></i>";
+            } else if (user.Prefix === "นาย") {
+                iconHtml = "<i class='fa-solid fa-person' style='color:cornflowerblue; font-size:large' aria-hidden='true'></i>";
+            }
+
+            if (user.Status === "ทำงาน") {
+                statusHtml = "<p style='padding: 3px; border-radius: 3rem; background-color: #D5F8EF; color: #14B789; width: auto'>" + user.Status + "</p>";
+                buttonHtml2 = "<a id='link' href='" + addIDPGroup + "' class='btn active-link-add' title='เพิ่ม IDP Group'><i class='fa fa-book gradient-icon-add' aria-hidden='true'></i></a>";
+            }
+            else {
+                statusHtml = "<p style='padding: 3px; border-radius: 3rem; background-color: #FFE5F4; color: #E50087; width: auto'>" + user.Status + "</p>";
+            }
+            buttonHtml1 = "<a id='link' href='" + selectForm + "' class='btn active-link-form' title='แบบประเมิน'><i class='fa fa-file-text gradient-icon-form' aria-hidden='true'></i></a>";
+
+
+            var rowHtml = "<tr>" +
+                "<td>" +
+                    "<div class='form-check'>" +
+                        "<input class='form-check-input' type='checkbox' name='userIds' value='" + user.Id + "' />" +
+                    "</div>" +
+                "</td>" +
+                "<td class='text-center'>" + user.Id + "</td>" +
+                "<td>" + iconHtml + " " + user.Prefix + " " + user.FirstNameTH + " " + user.LastNameTH + "</td>" +
+                "<td class='text-center fw-bold'>" + statusHtml + "</td>" +
+                "<td>" + user.Position + "</td>" +
+                "<td class='text-center'>" + user.JobLevel + "</td>" +
+                "<td class='text-center'>" + user.CostCenter + "</td>" +
+                "<td>" + user.DepartmentName + "</td>" +
+                "<td class='text-center'>" + user.Company + "</td>" +
+                "</tr>";
+
+            tableHtml += rowHtml;
         }
 
-        filterSelect.addEventListener('change', filterTableByType);
+        $("#tableContainer").html(tableHtml);
 
-        filterTableByType();
-    });
+        js('#myTable').DataTable({
+            info: false,
+            paging: true,
+            order: [[5, 'asc']],
+            language: {
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
+            },
+            columnDefs: [{
+                targets: 0,
+                orderable: false
+            }],
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
+        });
+    }
 </script>
 <style>
     .form-check-input[type="checkbox"] {

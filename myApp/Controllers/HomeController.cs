@@ -134,6 +134,22 @@ namespace myApp.Controllers
             app.DeleteCompetency(CompetencyId);
             return null;
         }
+        public ActionResult GetCompetency(string selectedValue)
+        {
+            List<Competency> competencies = app.GetCompetencyByType(selectedValue);
+            foreach (var competency in competencies)
+            {
+                if (competency.CompetencyNameTH == null) competency.CompetencyNameTH = "";
+                if (competency.CompetencyNameEN == null) competency.CompetencyNameEN = "";
+                if (competency.CompetencyDesc == null) competency.CompetencyDesc = "";
+                if (competency.Pl1 == null) competency.Pl1 = "";
+                if (competency.Pl2 == null) competency.Pl2 = "";
+                if (competency.Pl3 == null) competency.Pl3 = "";
+                if (competency.Pl4 == null) competency.Pl4 = "";
+                if (competency.Pl5 == null) competency.Pl5 = "";
+            }
+            return Json(competencies, JsonRequestBehavior.AllowGet);
+        }
         #endregion
 
         #region IDP GROUP
@@ -632,7 +648,7 @@ namespace myApp.Controllers
         {
             if (competencyIds == null)
             {
-                return RedirectToAction("AddCompetency", new { id = idpGroupId });
+                return RedirectToAction("AddCompetency", new { idpGroupId = idpGroupId });
             }
 
             List<Competency> selectedCompetencies = new List<Competency>();

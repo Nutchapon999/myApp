@@ -106,11 +106,35 @@
     });
 
     js(document).ready(function () {
+        var send = '@Url.Action("GetDepartment", "Home")';
+
+        var selectedValue = localStorage.getItem("Employee");
+
+        if (selectedValue) {
+            $("#selectType").val(selectedValue);
+        }
+
+        if (selectedValue) {
+            $.ajax({
+                url: send,
+                type: "POST",
+                data: { selectedValue: selectedValue },
+                success: function (response) {
+                    console.log(response);
+                    buildTable(response);
+                },
+                error: function () {
+
+                }
+            });
+        }
+
         $("#exampleDataList").change(function () {
             var selectedValue = $(this).val();
             console.log(selectedValue);
+            localStorage.setItem("Employee", selectedValue);
             $.ajax({
-                url: "/Home/GetDepartment",
+                url: send,
                 type: "POST",
                 data: { selectedValue: selectedValue },
                 success: function (response) {
@@ -123,118 +147,86 @@
                 }
             });
         });
-
-        function buildTable(users) {
-            js('#myTable').DataTable().destroy();
-            var tableHtml = "";
-
-            for (var i = 0; i < users.length; i++) {
-                var user = users[i];
-                var d = new Date();
-                var year = d.getFullYear();
-                var addIDPGroup = '@Url.Action("AddIDPGroup", "Home")' + '?id=' + user.Id;
-                var selectForm = '@Url.Action("SelectForm", "Home")' + '?user=' + user.Id + '&year=' + year+543;
-                var iconHtml = "";
-                var buttonHtml1 = "";
-                var buttonHtml2 = "";
-                var statusHtml = "";
-
-                if (user.Prefix === "นาง" || user.Prefix === "นางสาว") {
-                    iconHtml = "<i class='fa-solid fa-person-dress' style='color:palevioletred; font-size:large' aria-hidden='true'></i>";
-                } else if (user.Prefix === "นาย") {
-                    iconHtml = "<i class='fa-solid fa-person' style='color:cornflowerblue; font-size:large' aria-hidden='true'></i>";
-                }
-
-                if (user.Status === "ทำงาน") {
-                    statusHtml = "<p style='padding: 3px; border-radius: 3rem; background-color: #D5F8EF; color: #14B789; width: auto'>" + user.Status + "</p>";
-                    buttonHtml2 = "<a id='link' href='" + addIDPGroup + "' class='btn active-link-add' title='เพิ่ม IDP Group'><i class='fa fa-book gradient-icon-add' aria-hidden='true'></i></a>";
-                }
-                else { 
-                    statusHtml = "<p style='padding: 3px; border-radius: 3rem; background-color: #FFE5F4; color: #E50087; width: auto'>" + user.Status + "</p>";
-                }
-                buttonHtml1 = "<a id='link' href='" + selectForm + "' class='btn active-link-form' title='แบบประเมิน'><i class='fa fa-file-text gradient-icon-form' aria-hidden='true'></i></a>";
-
-
-                var rowHtml = "<tr>" +
-                    "<td class='text-center'>" + user.Id + "</td>" +
-                    "<td>" + iconHtml + " " + user.Prefix + " " + user.FirstNameTH + " " + user.LastNameTH + "</td>" +
-                    "<td class='text-center fw-bold'>" + statusHtml + "</td>" +
-                    "<td>" + user.Position + "</td>" +
-                    "<td class='text-center'>" + user.JobLevel + "</td>" +
-                    "<td class='text-center'>" + user.CostCenter + "</td>" +
-                    "<td>" + user.DepartmentName + "</td>" +
-                    "<td class='text-center'>" + user.Company + "</td>" +
-                    "<td class='text-center'>" + buttonHtml1 + "</td>" +
-                    "<td class='text-center'>" + buttonHtml2 + "</td>" +
-                    "</tr>";
-
-                tableHtml += rowHtml;
-            }
-
-            $("#tableContainer").html(tableHtml);
-
-            js('#myTable').DataTable({
-                searching: true,
-                info: false,
-                paging: false,
-                order: [[4, 'asc']],
-                language: {
-                    search: '',
-                    searchPlaceholder: 'ค้นหา',
-                    lengthMenu: '_MENU_',
-                    paginate: {
-                        next: 'ถัดไป <i class="fa fa-angle-double-right"></i>',
-                        previous: '<i class="fa fa-angle-double-left"></i> ก่อนหน้า'
-                    },
-                    info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
-                },
-                columnDefs: [{
-                    targets: 8,
-                    orderable: false
-                }, {
-                    targets: 9,
-                    orderable: false
-                }],
-                initComplete: function () {
-                    js('#myTable_length label').addClass('entries-label');
-                }
-            });
-        }
     });
 
-    @*document.addEventListener('DOMContentLoaded', function () {
-        const filterSelect = document.getElementById('exampleDataList');
-        const tableRows = document.querySelectorAll('#myTable tbody tr');
+    function buildTable(users) {
+        js('#myTable').DataTable().destroy();
+        var tableHtml = "";
 
-        console.log(filterSelect);
-        console.log(tableRows);
+        for (var i = 0; i < users.length; i++) {
+            var user = users[i];
+            var d = new Date();
+            var year = d.getFullYear();
+            var addIDPGroup = '@Url.Action("AddIDPGroup", "Home")' + '?id=' + user.Id;
+            var selectForm = '@Url.Action("SelectForm", "Home")' + '?user=' + user.Id + '&year=' + year+543;
+            var iconHtml = "";
+            var buttonHtml1 = "";
+            var buttonHtml2 = "";
+            var statusHtml = "";
 
-        function filterTableByType() {
-            const selectedType = filterSelect.value;
-            console.log(selectedType);
-            tableRows.forEach((row) => {
-                const rowType = row.cells[6].textContent.trim()
-
-                if (selectedType === '' || rowType === selectedType) {
-
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-
-            const tbody = document.querySelector('#myTable tbody');
-            if (selectedType === '') {
-                tbody.style.display = 'none';
-            } else {
-                tbody.style.display = '';
+            if (user.Prefix === "นาง" || user.Prefix === "นางสาว") {
+                iconHtml = "<i class='fa-solid fa-person-dress' style='color:palevioletred; font-size:large' aria-hidden='true'></i>";
+            } else if (user.Prefix === "นาย") {
+                iconHtml = "<i class='fa-solid fa-person' style='color:cornflowerblue; font-size:large' aria-hidden='true'></i>";
             }
+
+            if (user.Status === "ทำงาน") {
+                statusHtml = "<p style='padding: 3px; border-radius: 3rem; background-color: #D5F8EF; color: #14B789; width: auto'>" + user.Status + "</p>";
+                buttonHtml2 = "<a id='link' href='" + addIDPGroup + "' class='btn active-link-add' title='เพิ่ม IDP Group'><i class='fa fa-book gradient-icon-add' aria-hidden='true'></i></a>";
+            }
+            else {
+                statusHtml = "<p style='padding: 3px; border-radius: 3rem; background-color: #FFE5F4; color: #E50087; width: auto'>" + user.Status + "</p>";
+            }
+            buttonHtml1 = "<a id='link' href='" + selectForm + "' class='btn active-link-form' title='แบบประเมิน'><i class='fa fa-file-text gradient-icon-form' aria-hidden='true'></i></a>";
+
+
+            var rowHtml = "<tr>" +
+                "<td class='text-center'>" + user.Id + "</td>" +
+                "<td>" + iconHtml + " " + user.Prefix + " " + user.FirstNameTH + " " + user.LastNameTH + "</td>" +
+                "<td class='text-center fw-bold'>" + statusHtml + "</td>" +
+                "<td>" + user.Position + "</td>" +
+                "<td class='text-center'>" + user.JobLevel + "</td>" +
+                "<td class='text-center'>" + user.CostCenter + "</td>" +
+                "<td>" + user.DepartmentName + "</td>" +
+                "<td class='text-center'>" + user.Company + "</td>" +
+                "<td class='text-center'>" + buttonHtml1 + "</td>" +
+                "<td class='text-center'>" + buttonHtml2 + "</td>" +
+                "</tr>";
+
+            tableHtml += rowHtml;
         }
 
-        filterSelect.addEventListener('change', filterTableByType);
+        $("#tableContainer").html(tableHtml);
 
-        filterTableByType();
-    });*@
+        js('#myTable').DataTable({
+            searching: true,
+            info: false,
+            paging: false,
+            order: [[4, 'asc']],
+            language: {
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
+                paginate: {
+                    next: 'ถัดไป <i class="fa fa-angle-double-right"></i>',
+                    previous: '<i class="fa fa-angle-double-left"></i> ก่อนหน้า'
+                },
+                info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
+            },
+            columnDefs: [{
+                targets: 8,
+                orderable: false
+            }, {
+                targets: 9,
+                orderable: false
+            }],
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
+        });
+    }
+
+
 </script>
 <style>
     p {

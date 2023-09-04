@@ -42,6 +42,7 @@
                         <div class="col-auto d-flex align-items-center">
                             <label for="selectType" class="form-label me-2 mt-2"> ปี:</label>
                             <select class="form-select" id="selectType" style="width: 100px">
+                                <option>-</option>
                                 @foreach (var year in Model.Select(y => y.Year).Distinct())
                                 {
                                     <option value="@year">@year</option>
@@ -186,9 +187,14 @@
 
     js(document).ready(function () {
         var send = '@Url.Action("GetYear", "Home")';
-        $("#selectType").change(function () {
-            var selectedValue = $(this).val();
-            console.log(selectedValue);
+
+        var selectedValue = localStorage.getItem("IDPGroup");
+
+        if (selectedValue) {
+            $("#selectType").val(selectedValue);
+        }
+
+        if (selectedValue) {
             $.ajax({
                 url: send,
                 type: "POST",
@@ -198,67 +204,89 @@
                     buildTable(response);
                 },
                 error: function () {
+                    
+                }
+            });
+        }
 
+        $("#selectType").change(function () {
+            var selectedValue = $(this).val();
+            console.log(selectedValue);
+           
+            localStorage.setItem("IDPGroup", selectedValue);
+
+            $.ajax({
+                url: send,
+                type: "POST",
+                data: { selectedValue: selectedValue },
+                success: function (response) {
+                    console.log(response);
+                    buildTable(response);
+                },
+                error: function () {
+                    
                 }
             });
         });
+    });
 
-        function buildTable(idpgroups) {
-            js('#myTable').DataTable().destroy();
-            var tableHtml = "";
 
-            for (var i = 0; i < idpgroups.length; i++) {
-                var idpgroup = idpgroups[i];
-                var d = new Date();
-                var year = d.getFullYear();
-                var detail = '@Url.Action("DetailIDPGroup", "Home")' + '?idpGroupId=' + idpgroup.IDPGroupId;
-                var addCompetency = '@Url.Action("AddCompetency", "Home")' + '?idpGroupId=' + idpgroup.IDPGroupId;
-                var addEmployee = '@Url.Action("AddEmployee", "Home")' + '?idpGroupId=' + idpgroup.IDPGroupId;
-                var editIDPGroup = '@Url.Action("EditIDPGroup", "Home")';
-                var copyIDPGroup = '@Url.Action("CopyIDPGroup", "Home")';
-                var deleteIDPGroup = '@Url.Action("DeleteIDPGroup", "Home")';
+    function buildTable(idpgroups) {
+        js('#myTable').DataTable().destroy();
+        var tableHtml = "";
 
-                var rowHtml = "<tr>" +
-                    "<td class='text-center'>" + idpgroup.IDPGroupId + "</td>" +
-                    "<td>" + idpgroup.IDPGroupName + "</td>" +
-                    "<td class='text-end'>" + idpgroup.EmployeeEnrollmentCount + "</td>" +
-                    "<td class='text-end'>" + idpgroup.EmployeeCompetencyCount + "</td>" +
-                    "<td class='text-center'>" + idpgroup.Year + "</td>" +
-                    "<td class='text-center'>" +
-                    "<div class='btn-group' role='group' aria-label='Second group'>" +
-                        "<button id='link' type='button' class='btn active-link-edit' title='แก้ไข' data-bs-toggle='modal' data-bs-target='#editModal-'" + idpgroup.IDPGroupId + "'>" +
-                            "<i class='fa-solid fa-pencil gradient-text-edit' aria-hidden='true'></i>" +
-                        "</button>" +
-                         "<button id='link' type='button' class='btn active-link-copy' data-bs-toggle='modal' data-bs-target='#copyModal-'" + idpgroup.IDPGroupId + "' title='คัดลอก' style='background-color: white'>" +
-                            "<i class='fa-solid fa-clone' aria-hidden='true'></i>" +
-                        "</button>" +
-                        "<a id='link' href='" + detail + "' class='btn active-link-detail' title='รายละเอียด'>" +
-                            "<i class='fa-solid fa-eye gradient-text-detail' aria-hidden='true'></i>" +
-                        "</a>" +
-                        "<a id='link' href='" + addCompetency + "' class='btn active-link-competency' title='เพิ่ม competency' style='background-color: white'>" +
-                            "<i class='fa fa-solid fa-layer-group gradient-text-competency' aria-hidden='true'></i>" +
-                        "</a>" +
-                        "<a id='link' href='" + addEmployee + "' class='btn active-link-employee' title='เพิ่มพนักงาน' style='background-color: white'>" +
-                            "<i class='fa fa-graduation-cap gradient-text-employee' aria-hidden='true'></i>" +
-                        "</a>" +
-                        "<button id='link' type='button' class='btn active-link-delete' data-bs-toggle='modal' data-bs-target='#deleteModal-" + idpgroup.IDPGroupId + "' title='ลบ' style='background-color: white'>" +
-                            "<i class='fa fa-trash gradient-text-delete' aria-hidden='true'></i>" +
-                        "</button>" +
-                    "</div>" +
-                    "<div class='modal fade' id='editModal-idpgroup.IDPGroupId' aria-labelledby='editModalLabel' aria-hidden='true'>" +
-                        "<div class='modal-dialog modal-dialog-centered'>" +
-                            "<div class='modal-content'>" +
-                                "<div class='modal-header'>" +
-                                    "<h1 class='modal-title fs-3 fw-bold' id='staticBackdropLabel'>" +
-                                        "<i class='fa-solid fa-pencil gradient-text-edit'></i> แก้ไข IDP Group" +
-                                    "</h1>" +
-                                    "<button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>" +
-                                "</div>" +
-                                "<form method='post' action='" + editIDPGroup + "'>" +
-                                "<input type='hidden' name='IDPGroupId' value='" + idpgroup.IDPGroupId + "' />" +
-                                "<div class='modal-body'>" +
-                                    "<h3><i class='fa-solid fa-key'></i> " + idpgroup.IDPGroupId + "</h3>" +
-                                     "<div class='input-group input-group-lg mt-3 d-flex justify-content-center'>" +
+        for (var i = 0; i < idpgroups.length; i++) {
+            var idpgroup = idpgroups[i];
+            var d = new Date();
+            var year = d.getFullYear();
+            var detail = '@Url.Action("DetailIDPGroup", "Home")' + '?idpGroupId=' + idpgroup.IDPGroupId;
+            var addCompetency = '@Url.Action("AddCompetency", "Home")' + '?idpGroupId=' + idpgroup.IDPGroupId;
+            var addEmployee = '@Url.Action("AddEmployee", "Home")' + '?idpGroupId=' + idpgroup.IDPGroupId;
+            var editIDPGroup = '@Url.Action("EditIDPGroup", "Home")';
+            var copyIDPGroup = '@Url.Action("CopyIDPGroup", "Home")';
+            var deleteIDPGroup = '@Url.Action("DeleteIDPGroup", "Home")';
+
+            var rowHtml = "<tr>" +
+                "<td class='text-center'>" + idpgroup.IDPGroupId + "</td>" +
+                "<td>" + idpgroup.IDPGroupName + "</td>" +
+                "<td class='text-end'>" + idpgroup.EmployeeEnrollmentCount + "</td>" +
+                "<td class='text-end'>" + idpgroup.EmployeeCompetencyCount + "</td>" +
+                "<td class='text-center'>" + idpgroup.Year + "</td>" +
+                "<td class='text-center'>" +
+                "<div class='btn-group' role='group' aria-label='Second group'>" +
+                    "<button id='link' type='button' class='btn active-link-edit' title='แก้ไข' data-bs-toggle='modal' data-bs-target='#editModal-" + idpgroup.IDPGroupId + "'>" +
+                        "<i class='fa-solid fa-pencil gradient-text-edit' aria-hidden='true'></i>" +
+                    "</button>" +
+                        "<button id='link' type='button' class='btn active-link-copy' data-bs-toggle='modal' data-bs-target='#copyModal-" + idpgroup.IDPGroupId + "' title='คัดลอก' style='background-color: white'>" +
+                        "<i class='fa-solid fa-clone' aria-hidden='true'></i>" +
+                    "</button>" +
+                    "<a id='link' href='" + detail + "' class='btn active-link-detail' title='รายละเอียด'>" +
+                        "<i class='fa-solid fa-eye gradient-text-detail' aria-hidden='true'></i>" +
+                    "</a>" +
+                    "<a id='link' href='" + addCompetency + "' class='btn active-link-competency' title='เพิ่ม competency' style='background-color: white'>" +
+                        "<i class='fa fa-solid fa-layer-group gradient-text-competency' aria-hidden='true'></i>" +
+                    "</a>" +
+                    "<a id='link' href='" + addEmployee + "' class='btn active-link-employee' title='เพิ่มพนักงาน' style='background-color: white'>" +
+                        "<i class='fa fa-graduation-cap gradient-text-employee' aria-hidden='true'></i>" +
+                    "</a>" +
+                    "<button id='link' type='button' class='btn active-link-delete' data-bs-toggle='modal' data-bs-target='#deleteModal-" + idpgroup.IDPGroupId + "' title='ลบ' style='background-color: white'>" +
+                        "<i class='fa fa-trash gradient-text-delete' aria-hidden='true'></i>" +
+                    "</button>" +
+                "</div>" +
+                "<div class='modal fade' id='editModal-" + idpgroup.IDPGroupId + "' aria-labelledby='editModalLabel' aria-hidden='true'>" +
+                    "<div class='modal-dialog modal-dialog-centered'>" +
+                        "<div class='modal-content'>" +
+                            "<div class='modal-header'>" +
+                                "<h1 class='modal-title fs-3 fw-bold' id='staticBackdropLabel'>" +
+                                    "<i class='fa-solid fa-pencil gradient-text-edit'></i> แก้ไข IDP Group" +
+                                "</h1>" +
+                                "<button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>" +
+                            "</div>" +
+                            "<form method='post' action='" + editIDPGroup + "'>" +
+                            "<input type='hidden' name='IDPGroupId' value='" + idpgroup.IDPGroupId + "' />" +
+                            "<div class='modal-body'>" +
+                                "<h3><i class='fa-solid fa-key'></i> " + idpgroup.IDPGroupId + "</h3>" +
+                                    "<div class='input-group input-group-lg mt-3 d-flex justify-content-center'>" +
                                     "<span class='input-group-text'>" +
                                         "<i class='fa-solid fa-tag fs-4' aria-hidden='true'></i>" +
                                     "</span>" +
@@ -269,56 +297,132 @@
                                         "<i class='fa-solid fa-calendar-days fs-4' aria-hidden='true'></i>" +
                                     "</span>" +
                                     "<select class='form-select' id='Year 'name='Year'>";
-                                    for (var i = 541; i <= 545; i++) {
-                                        rowHtml += "<option value='" + (year + i) + "' " + ((year + i) === parseInt(idpgroup.Year) ? "selected" : "") + ">" + (year + i) + "</option>";
+                                    for (var j = 541; j <= 545; j++) {
+                                        rowHtml += "<option value='" + (year + j) + "' " + ((year + j) === parseInt(idpgroup.Year) ? "selected" : "") + ">" + (year + j) + "</option>";
                                     }
                         rowHtml += "</select>" +
                                 "</div>" +
                             "</div>" +
                             "<div class='modal-footer flex-nowrap p-0'>" +
-                            "<button type='button' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel' data-bs-dismiss='modal'>" +
-                                "<i class='fa-solid fa-ban gradient-icon-back fs-4'></i> <strong class='gradient-icon-back fs-4'>ยกเลิก</strong>" +
-                            "</button>" +
-                            "<button type='submit' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit'>" +
-                                "<i class='fa-solid fa-save gradient-icon-submit fs-4'></i> <strong class='gradient-icon-submit fs-4'>บันทึก</strong>" +
-                            "</button>" +
+                                "<button type='button' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel' data-bs-dismiss='modal'>" +
+                                    "<i class='fa-solid fa-ban gradient-icon-back fs-4'></i> <strong class='gradient-icon-back fs-4'>ยกเลิก</strong>" +
+                                "</button>" +
+                                "<button type='submit' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit'>" +
+                                    "<i class='fa-solid fa-save gradient-icon-submit fs-4'></i> <strong class='gradient-icon-submit fs-4'>บันทึก</strong>" +
+                                "</button>" +
+                            "</div>" +
+                            "</form>" +
                         "</div>" +
-                        "</form>" +
                     "</div>" +
+                "</div>" +
+                "<div class='modal fade' id='copyModal-" + idpgroup.IDPGroupId + "' tabindex='-1' aria-labelledby='copyModalLabel' aria-hidden='true'>" +
+                    "<div class='modal-dialog modal-dialog-centered'>" +
+                        "<div class='modal-content'>" +
+                            "<div class='modal-header'>" +
+                                "<h1 class='modal-title fs-4 fw-bold'><i class='fa-solid fa-clone'></i> คัดลอก IDP Group ('" + idpgroup.IDPGroupId + "')</h1>" +
+                                "<button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>" +
+                            "</div >" +
+                            "<form method='post' action='" + copyIDPGroup + "'>" +
+                            "<input type='hidden' name='IDPGroupIdCopy' value='" + idpgroup.IDPGroupId + "' />" +
+                            "<div class='modal-body'>" +
+                                "<div class='input-group input-group-lg mt-3 d-flex justify-content-center'>" +
+                                    "<span class='input-group-text'>" +
+                                        "<i class='fa-solid fa-key fs-4' aria-hidden='true'></i>" +
+                                    "</span>" +
+                                    "<input type='text' class='form-control' placeholder='รหัส IDP Group' name='IDPGroupId' id='IDPGroupId' required>" +
+                                "</div>" +
+                            "<div class='input-group input-group-lg mt-3 d-flex justify-content-center'>" +
+                                "<span class='input-group-text'>" +
+                                    "<i class='fa-solid fa-tag fs-4' aria-hidden='true'></i>" +
+                                "</span>" +
+                                "<input type='text' class='form-control' placeholder='ชื่อ IDP Group' name='IDPGroupName' id='IDPGroupName' value='" + idpgroup.IDPGroupName + "'>" +
+                            "</div>" +
+                            "<div class='input-group input-group-lg mt-3 d-flex justify-content-center'>" +
+                                "<span class='input-group-text'>" +
+                                    "<i class='fa-solid fa-calendar-days fs-4' aria-hidden='true'></i>" +
+                                "</span>" +
+                                "<select class='form-select' id='Year' name='Year'>";
+                                for (var j = 541; j <= 545; j++) {
+                                    rowHtml += "<option value='" + (year + j) + "' " + ((year + j) === parseInt(idpgroup.Year) ? "selected" : "") + ">" + (year + j) + "</option>";
+                                }
+                        rowHtml += "</select>" +
+                            "</div>" +
+                            "<hr />" +
+                            "<div class='input-group mt-3 d-flex justify-content-center'>" +
+                                "<div class='input-group-text'>" +
+                                    "<input class='form-check-input mt-0' type='checkbox' name='Emp' value='true' aria-label='Checkbox for following text input'>" +
+                                "</div>" +
+                                "<input type='text' class='form-control' aria-label='Text input with checkbox' value='พนักงาน' disabled>" +
+                            "</div>" +
+                            "<div class='input-group mb-3 d-flex justify-content-center'>" +
+                                "<div class='input-group-text'>" +
+                                    "<input class='form-check-input mt-0' type='checkbox' name='Cmpt' value='true' aria-label='Checkbox for following text input'>" +
+                                "</div>" +
+                                    "<input type='text' class='form-control' aria-label='Text input with checkbox' value='Competency' disabled>" +
+                                "</div>" +
+                            "</div>" +
+                            "<div class='modal-footer flex-nowrap p-0'>" +
+                                "<button type='button' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel' data-bs-dismiss='modal'><i class='fa-solid fa-ban gradient-icon-back fs-4'></i> <strong class='gradient-icon-back fs-4'>ยกเลิก</strong></button>" +
+                                "<button type='submit' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit'><i class='fa-solid fa-save gradient-icon-submit fs-4'></i> <strong class='gradient-icon-submit fs-4'>บันทึก</strong></button>" +
+                            "</div>" +
+                            "</form>" +
+                        "</div>" +
                     "</div>" +
+                "</div>" +
+                "<div class='modal fade' id='deleteModal-" + idpgroup.IDPGroupId + "' aria-labelledby='deleteModalLabel' aria-hidden='true'>" +
+                    "<div class='modal-dialog modal-dialog-centered'>" +
+                        "<div class='modal-content'>" +
+                            "<div class='modal-header'>" +
+                                "<h1 class='modal-title fs-3 fw-bold'><i class='fa-solid fa-trash-can gradient-text-delete'></i> ลบ IDP Group</h1>" +
+                                "<button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>" +
+                            "</div>" +
+                            "<form method='post' action='" + deleteIDPGroup + "'>" +
+                            "<div class='modal-body'>" +
+                                "<h5> คุณต้องการที่จะ<strong class='gradient-text-delete'>ลบ</strong> IDP Group: <strong>" + idpgroup.IDPGroupId + "</strong> นี้หรือไม่?</h5>" +
+                            "</div>" +
+                            "<div class='modal-footer flex-nowrap p-0'>" +
+                                "<button type='button' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit' data-bs-dismiss='modal'>" +
+                                    "<i class='fa-solid fa-ban gradient-icon-submit fs-4'></i> <strong class='gradient-icon-submit fs-4'>ยกเลิก</strong>" +
+                                "</button>" +
+                                "<button type='button' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel' onclick=\"deleteForm(" + idpgroup.IDPGroupId + ")\">" +
+                                    "<i class='fa-solid fa-trash-can gradient-icon-back fs-4'></i> <strong class='gradient-icon-back fs-4'>ลบ</strong>" +
+                                "</button>" +
+                            "</div>" +
+                            "</form>" +
+                        "</div>" +
                     "</div>" +
-                    "</td>" +
-                    "</tr>";
+                "</div>" +
+                "</td>" +
+                "</tr>";
 
-                tableHtml += rowHtml;
-            }
-
-            $("#tableContainer").html(tableHtml);
-
-            js('#myTable').DataTable({
-                info: false,
-                paging: false,
-                language: {
-                    search: '',
-                    searchPlaceholder: 'ค้นหา',
-                    lengthMenu: '_MENU_',
-                    paginate: {
-                        next: 'ถัดไป <i class="fa fa-angle-right"></i>',
-                        previous: '<i class="fa fa-angle-left"></i> ก่อนหน้า'
-                    },
-                    info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
-                },
-                columnDefs: [{
-                    targets: 5,
-                    orderable: false
-                }],
-
-                initComplete: function () {
-                    js('#myTable_length label').addClass('entries-label');
-                }
-            });
+            tableHtml += rowHtml;
         }
-    });
+
+        $("#tableContainer").html(tableHtml);
+
+        js('#myTable').DataTable({
+            info: false,
+            paging: false,
+            language: {
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
+                paginate: {
+                    next: 'ถัดไป <i class="fa fa-angle-right"></i>',
+                    previous: '<i class="fa fa-angle-left"></i> ก่อนหน้า'
+                },
+                info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
+            },
+            columnDefs: [{
+                targets: 5,
+                orderable: false
+            }],
+
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
+        });
+    }
 
     function deleteForm(idpGroupId) {
         var formData = $('#myForm').serialize();

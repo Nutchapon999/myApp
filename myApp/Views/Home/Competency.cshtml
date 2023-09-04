@@ -67,164 +67,8 @@
                         <th class="text-center" width="5%"></th>
                     </tr>
                 </thead>
-                <tbody>
-                    @foreach (var cmpty in Model)
-                    {
-                        <tr>
-                            <th scope="row">@cmpty.Type</th>
-                            <th scope="row">@cmpty.CompetencyId</th>
-                            <td style="@(cmpty.Active ? "background-color: #D5F2E3; color: #006f57;" : "background-color: #F8D7DA; color: #9B0008")">@(cmpty.Active ? "ใช้" : "ไม่ใช้")</td>
-                            <td style="font-size: 14px">@cmpty.CompetencyNameTH</td>
-                            <td style="font-size: 14px">@cmpty.CompetencyNameEN</td>
-                            <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.CompetencyDesc</textarea></td>
-                            <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl1</textarea></td>
-                            <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl2</textarea></td>
-                            <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl3</textarea></td>
-                            <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl4</textarea></td>
-                            <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl5</textarea></td>
-                            <td>
-                                <div class="btn-group me-2" role="group" aria-label="Second group">
-                                    <button id="link" type="button" class="btn active-link-edit" title="แก้ไข" data-bs-toggle="modal" data-bs-target="#editModal-@cmpty.CompetencyId">
-                                        <i class="fa fa-pencil gradient-text-edit" aria-hidden="true"></i>
-                                    </button>
-                                    <button id="link" type="button" class="btn active-link-delete" data-bs-toggle="modal" data-bs-target="#deleteModal-@cmpty.CompetencyId" title="ลบ">
-                                        <i class="fa fa-trash gradient-text-delete" aria-hidden="true"></i>
-                                    </button>
-                                </div>
-                                <div class="modal fade modal-xl" id="editModal-@cmpty.CompetencyId" aria-labelledby="editModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog  modal-dialog-centered">
-                                        <div class="modal-content rounded-3 shadow">
-                                            @using (Html.BeginForm("EditCompetency", "Home", FormMethod.Post))
-                                            {
-                                                <input type="hidden" name="CompetencyId" value="@cmpty.CompetencyId" />
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-5 fw-bold" id="CreateIDPGroupLabel">
-                                                        <i class="fa-solid fa-layer-group gradient-icon-add fs-3"></i> แก้ไข Competency (@cmpty.CompetencyId)
-                                                    </h1>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <div class="row">
-                                                        <div class="col-5">
-                                                            <div class="input-group mt-3 d-flex justify-content-center">
-                                                                <span class="input-group-text">
-                                                                    <i class="fa-solid fa-tag fs-4" aria-hidden="true"></i>
-                                                                </span>
-                                                                <select class="form-select" id="createType" name="Type" style="min-width: 80%">
-                                                                    <option value="CC" @(cmpty.Type == "CC" ? "selected" : "")>CC</option>
-                                                                    <option value="FC" @(cmpty.Type == "FC" ? "selected" : "")>FC</option>
-                                                                    <option value="MC" @(cmpty.Type == "MC" ? "selected" : "")>MC</option>
-                                                                    <option value="TC" @(cmpty.Type == "TC" ? "selected" : "")>TC</option>
-                                                                </select>
-                                                            </div>
-                                                            <div class="input-group mt-3 d-flex justify-content-center">
-                                                                <span class="input-group-text">
-                                                                    <i class="fa-solid fa-tag fs-4" aria-hidden="true"></i>
-                                                                </span>
-                                                                <textarea type="text" class="form-control" placeholder="Competency TH" name="CompetencyNameTH" style="min-width: 80%">@cmpty.CompetencyNameTH</textarea>
-                                                            </div>
-                                                            <div class="input-group mt-3 d-flex justify-content-center">
-                                                                <span class="input-group-text">
-                                                                    <i class="fa-solid fa-tag fs-4" aria-hidden="true"></i>
-                                                                </span>
-                                                                <textarea type="text" class="form-control" placeholder="Competency EN" name="CompetencyNameEN" style="min-width: 80%">@cmpty.CompetencyNameEN</textarea>
-                                                            </div>
-                                                            <div class="input-group mt-3 d-flex justify-content-center">
-                                                                <span class="input-group-text">
-                                                                    <i class="fa-solid fa-file-text fs-4" aria-hidden="true"></i>
-                                                                </span>
-                                                                <textarea type="text" class="form-control" placeholder="ชื่อ IDP Group" name="CompetencyDesc" style="min-width: 80%">@cmpty.CompetencyDesc</textarea>
-                                                            </div>
-                                                            <hr />
-                                                            <div class="input-group-text">
-                                                                <div>ใช้ Competency นี้?</div>
-                                                            </div>
-                                                            <div class="input-group mt-2">
-                                                                <div class="input-group-text">
-                                                                    <input class="form-check-input mt-0" type="radio" value="true" @(cmpty.Active == true ? "checked" : "") name="Active" aria-label="Radio button for following text input">
-                                                                </div>
-                                                                <div class="form-control">ใช้</div>
-                                                            </div>
-                                                            <div class="input-group mt-2">
-                                                                <div class="input-group-text">
-                                                                    <input class="form-check-input mt-0" type="radio" value="false" @(cmpty.Active == false ? "checked" : "") name="Active" aria-label="Radio button for following text input">
-                                                                </div>
-                                                                <div class="form-control">ไม่ใช้</div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-7">
-                                                            <div class="input-group mt-3 d-flex justify-content-center">
-                                                                <span class="input-group-text">
-                                                                    <strong>PL1</strong>
-                                                                </span>
-                                                                <textarea type="text" class="form-control justify-content-center" style="min-width: 80%" name="Pl1">@cmpty.Pl1</textarea>
-                                                            </div>
-                                                            <div class="input-group mt-3 d-flex justify-content-center">
-                                                                <span class="input-group-text">
-                                                                    <strong>PL2</strong>
-                                                                </span>
-                                                                <textarea type="text" class="form-control justify-content-center" style="min-width: 80%" name="Pl2">@cmpty.Pl2</textarea>
-                                                            </div>
-                                                            <div class="input-group mt-3 d-flex justify-content-center">
-                                                                <span class="input-group-text">
-                                                                    <strong>PL3</strong>
-                                                                </span>
-                                                                <textarea type="text" class="form-control justify-content-center" style="min-width: 80%" name="Pl3">@cmpty.Pl3</textarea>
-                                                            </div>
-                                                            <div class="input-group mt-3 d-flex justify-content-center">
-                                                                <span class="input-group-text">
-                                                                    <strong>PL4</strong>
-                                                                </span>
-                                                                <textarea type="text" class="form-control justify-content-center" style="min-width: 80%" name="Pl4">@cmpty.Pl4</textarea>
-                                                            </div>
-                                                            <div class="input-group mt-3 d-flex justify-content-center">
-                                                                <span class="input-group-text">
-                                                                    <strong>PL5</strong>
-                                                                </span>
-                                                                <textarea type="text" class="form-control justify-content-center" style="min-width: 80%" name="Pl5">@cmpty.Pl5</textarea>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="modal-footer flex-nowrap p-0">
-                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" data-bs-dismiss="modal"><i class="fa-solid fa-ban gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ยกเลิก</strong></button>
-                                                    <button type="submit" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit"><i class="fa-solid fa-save gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">บันทึก</strong></button>
-                                                </div>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal fade" id="deleteModal-@cmpty.CompetencyId" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h1 class="modal-title fs-3 fw-bold">
-                                                    <i class="fa-solid fa-trash-can gradient-text-delete"></i> ลบ Competency
-                                                </h1>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            @using (Html.BeginForm("DeleteCompetency", "Home", FormMethod.Post, new { id = "myForm" }))
-                                            {
-                                                <div class="modal-body">
-                                                    <h5 class="text-center">
-                                                        คุณต้องการที่จะ<strong class="gradient-text-delete">ลบ</strong> Competency: <strong>@cmpty.CompetencyId</strong> นี้หรือไม่?
-                                                    </h5>
-                                                </div>
-                                                <div class="modal-footer flex-nowrap p-0">
-                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" data-bs-dismiss="modal">
-                                                        <i class="fa-solid fa-ban gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">ยกเลิก</strong>
-                                                    </button>
-                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" onclick="deleteForm('@cmpty.CompetencyId')">
-                                                        <i class="fa-solid fa-trash-can gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ลบ</strong>
-                                                    </button>
-                                                </div>
-                                            }
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-                        </tr>
-                    }
+                <tbody id="tableContainer">
+                    
                 </tbody>
             </table>
         </div>
@@ -241,6 +85,8 @@
     var js = jQuery.noConflict(true);
     js(document).ready(function () {
         js('#myTable').DataTable({
+            info: false,
+            paging: false,
             scrollX: true,
             language: {
                 search: '',
@@ -277,28 +123,236 @@
         });
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const filterSelect = document.getElementById('selectType');
-        const tableRows = document.querySelectorAll('#myTable tbody tr');
+    js(document).ready(function () {
+        var send = '@Url.Action("GetCompetency", "Home")';
 
-        function filterTableByType() {
-            const selectedType = filterSelect.value;
+        var selectedValue = localStorage.getItem("Competency");
 
-            tableRows.forEach((row) => {
-                const rowType = row.cells[0].textContent.trim();
+        if (selectedValue) {
+            $("#selectType").val(selectedValue);
+        }
 
-                if (selectedType === '' || rowType === selectedType) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
+        if (selectedValue) {
+            $.ajax({
+                url: send,
+                type: "POST",
+                data: { selectedValue: selectedValue },
+                success: function (response) {
+                    console.log(response);
+                    buildTable(response);
+                },
+                error: function () {
+
                 }
             });
         }
 
-        filterSelect.addEventListener('change', filterTableByType);
+        $("#selectType").change(function () {
+            var selectedValue = $(this).val();
+            console.log(selectedValue);
+            localStorage.setItem("Competency", selectedValue);
+            $.ajax({
+                url: send,
+                type: "POST",
+                data: { selectedValue: selectedValue },
+                success: function (response) {
+                    console.log(response);
+                    buildTable(response);
+                    $("#selectType").val("");
+                },
+                error: function () {
 
-        filterTableByType();
+                }
+            });
+        });
     });
+
+    function buildTable(compties) {
+        js('#myTable').DataTable().destroy();
+        var tableHtml = "";
+
+
+        for (var i = 0; i < compties.length; i++) {
+            var compty = compties[i];
+            var editCompetency = '@Url.Action("EditCompetency", "Home")' + '?id=' + compty.CompetencyId;
+            var deleteCompetency = '@Url.Action("DeleteCompetency", "Home")' + '?CompetencyId=' + compty.CompetencyId;
+
+            var rowHtml = "<tr>" +
+                            "<th scope='row'>" + compty.Type + "</th>" +
+                            "<th scope='row'>" + compty.CompetencyId + "</th>" +
+                            "<td style='" + (compty.Active ? "background-color: #D5F2E3; color: #006f57;" : "background-color: #F8D7DA; color: #9B0008") + "'>" + (compty.Active ? "ใช้" : "ไม่ใช้") + "</td>" +
+                            "<td style='font-size: 14px'>" + compty.CompetencyNameTH + "</td>" +
+                            "<td style='font-size: 14px'>" + compty.CompetencyNameEN + "</td>" +
+                            "<td><textarea style='height: 100px; font-size: 12px' class='form-control' readonly>" + compty.CompetencyDesc + "</textarea></td>" +
+                            "<td><textarea style='height: 100px; font-size: 12px' class='form-control' readonly>" + compty.Pl1 + "</textarea></td>" +
+                            "<td><textarea style='height: 100px; font-size: 12px' class='form-control' readonly>" + compty.Pl2 + "</textarea></td>" +
+                            "<td><textarea style='height: 100px; font-size: 12px' class='form-control' readonly>" + compty.Pl3 + "</textarea></td>" +
+                            "<td><textarea style='height: 100px; font-size: 12px' class='form-control' readonly>" + compty.Pl4 + "</textarea></td>" +
+                            "<td><textarea style='height: 100px; font-size: 12px' class='form-control' readonly>" + compty.Pl5 + "</textarea></td>" +
+                            "<td>" +
+                                "<div class='btn-group me-2' role='group' aria-label='Second group'>" +
+                                    "<button id='link' type='button' class='btn active-link-edit' title='แก้ไข' data-bs-toggle='modal' data-bs-target='#editModal-" + compty.CompetencyId + "'>" +
+                                        "<i class='fa fa-pencil gradient-text-edit' aria-hidden='true'></i>" +
+                                    "</button>" +
+                                    "<button id='link' type='button' class='btn active-link-delete' data-bs-toggle='modal' data-bs-target='#deleteModal-" + compty.CompetencyId + "' title='ลบ'>" +
+                                        "<i class='fa fa-trash gradient-text-delete' aria-hidden='true'></i>" +
+                                    "</button>" +
+                                "</div>" +
+                                "<div class='modal fade modal-xl' id='editModal-" + compty.CompetencyId + "' aria-labelledby='editModalLabel' aria-hidden='true'>" +
+                                    "<div class='modal-dialog  modal-dialog-centered'>" +
+                                        "<div class='modal-content rounded-3 shadow'>" +
+                                        "<form method='post' action='" + editCompetency + "'>" +
+                                                "<input type='hidden' name='CompetencyId' value='" + compty.CompetencyId + "' />" +
+                                                "<div class='modal-header'>" +
+                                                    "<h1 class='modal-title fs-5 fw-bold' id='CreateIDPGroupLabel'>" +
+                                                        "<i class='fa-solid fa-layer-group gradient-icon-add fs-3'></i> แก้ไข Competency (" + compty.CompetencyId + ")" +
+                                                    "</h1>" +
+                                                    "<button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>" +
+                                                "</div>" +
+                                                "<div class='modal-body'>" +
+                                                    "<div class='row'>" +
+                                                        "<div class='col-5'>" +
+                                                            "<div class='input-group mt-3 d-flex justify-content-center'>" +
+                                                                "<span class='input-group-text'>" +
+                                                                    "<i class='fa-solid fa-tag fs-4' aria-hidden='true'></i>" +
+                                                                "</span>" +
+                                                                "<select class='form-select' id='createType' name='Type' style='min-width: 80%'>" +
+                                                                    "<option value='CC' " + (compty.Type === "CC" ? "selected" : "") + ")>CC</option>" +
+                                                                    "<option value='FC' " + (compty.Type === "FC" ? "selected" : "") + ">FC</option>" +
+                                                                    "<option value='MC' " + (compty.Type === "MC" ? "selected" : "") + ">MC</option>" +
+                                                                    "<option value='TC' " + (compty.Type === "TC" ? "selected" : "") + ">TC</option>" +
+                                                                "</select>" +
+                                                            "</div>" +
+                                                            "<div class='input-group mt-3 d-flex justify-content-center'>" +
+                                                                "<span class='input-group-text'>" +
+                                                                    "<i class='fa-solid fa-tag fs-4' aria-hidden='true'></i>" +
+                                                                "</span>" +
+                                                                "<textarea type='text' class='form-control' placeholder='Competency TH' name='CompetencyNameTH' style='min-width: 80%'>" + compty.CompetencyNameTH + "</textarea>" +
+                                                            "</div>" +
+                                                            "<div class='input-group mt-3 d-flex justify-content-center'>" +
+                                                                "<span class='input-group-text'>" +
+                                                                    "<i class='fa-solid fa-tag fs-4' aria-hidden='true'></i>" +
+                                                                "</span>" +
+                                                                "<textarea type='text' class='form-control' placeholder='Competency EN' name='CompetencyNameEN' style='min-width: 80%'>" + compty.CompetencyNameEN + "</textarea>" +
+                                                            "</div>" +
+                                                            "<div class='input-group mt-3 d-flex justify-content-center'>" +
+                                                                "<span class='input-group-text'>" +
+                                                                    "<i class='fa-solid fa-file-text fs-4' aria-hidden='true'></i>" +
+                                                                "</span>" +
+                                                                "<textarea type='text' class='form-control' placeholder='ชื่่อ IDP Group' name='CompetencyDesc' style='min-width: 80%'>" + compty.CompetencyDesc  + "</textarea>" +
+                                                            "</div>" +
+                                                            "<hr />" +
+                                                            "<div class='input-group-text'>" +
+                                                                "<div>ใช้ Competency นี้?</div>" +
+                                                            "</div>" +
+                                                            "<div class='input-group mt-2'>" +
+                                                                "<div class='input-group-text'>" +
+                                                                    "<input class='form-check-input mt-0' type='radio' value='true' " + (compty.Active == true ? 'checked' : '') + " name='Active' aria-label='Radio button for following text input'>" +
+                                                                "</div>" +
+                                                                "<div class='form-control'>ใช้</div>" +
+                                                            "</div>" +
+                                                            "<div class='input-group mt-2'>" +
+                                                                "<div class='input-group-text'>" +
+                                                                    "<input class='form-check-input mt-0' type='radio' value='false' " + (compty.Active == false ? 'checked' : '') + " name='Active' aria-label='Radio button for following text input'>" +
+                                                                "</div>" +
+                                                                "<div class='form-control'>ไม่ใช้</div>" +
+                                                            "</div>" +
+                                                        "</div>" +
+                                                        "<div class='col-7'>" +
+                                                            "<div class='input-group mt-3 d-flex justify-content-center'>" +
+                                                                "<span class='input-group-text'>" +
+                                                                    "<strong>PL1</strong>" +
+                                                                "</span>" +
+                                                                "<textarea type='text' class='form-control justify-content-center' style='min-width: 80%' name='Pl1'>" + compty.Pl1 + "</textarea>" +
+                                                            "</div>" +
+                                                            "<div class='input-group mt-3 d-flex justify-content-center'>" +
+                                                                "<span class='input-group-text'>" +
+                                                                    "<strong>PL2</strong>" +
+                                                                "</span>" +
+                                                                "<textarea type='text' class='form-control justify-content-center' style='min-width: 80%' name='Pl2'>" + compty.Pl2 + "</textarea>" +
+                                                            "</div>" +
+                                                            "<div class='input-group mt-3 d-flex justify-content-center'>" +
+                                                                "<span class='input-group-text'>" +
+                                                                    "<strong>PL3</strong>" +
+                                                                "</span>" +
+                                                                "<textarea type='text' class='form-control justify-content-center' style='min-width: 80%' name='Pl3'>" + compty.Pl3 + "</textarea>" +
+                                                            "</div>" +
+                                                            "<div class='input-group mt-3 d-flex justify-content-center'>" +
+                                                                "<span class='input-group-text'>" +
+                                                                    "<strong>PL4</strong>" +
+                                                                "</span>" +
+                                                                "<textarea type='text' class='form-control justify-content-center' style='min-width: 80%' name='Pl4'>" + compty.Pl4 + "</textarea>" +
+                                                            "</div>" +
+                                                            "<div class='input-group mt-3 d-flex justify-content-center'>" +
+                                                                "<span class='input-group-text'>" +
+                                                                    "<strong>PL5</strong>" +
+                                                                "</span>" +
+                                                                "<textarea type='text' class='form-control justify-content-center' style='min-width: 80%' name='Pl5'>" + compty.Pl5 + "</textarea>" +
+                                                            "</div>" +
+                                                        "</div>" +
+                                                    "</div>" +
+                                                "</div>" +
+                                                "<div class='modal-footer flex-nowrap p-0'>" +
+                                                    "<button type='button' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel' data-bs-dismiss='modal'><i class='fa-solid fa-ban gradient-icon-back fs-4'></i> <strong class='gradient-icon-back fs-4'>ยกเลิก</strong></button>" +
+                                                    "<button type='submit' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit'><i class='fa-solid fa-save gradient-icon-submit fs-4'></i> <strong class='gradient-icon-submit fs-4'>บันทึก</strong></button>" +
+                                                "</div>" +
+                                            "</form>" +
+                                        "</div>" +
+                                    "</div>" +
+                                "</div>" +
+                                "<div class='modal fade' id='deleteModal-" + compty.CompetencyId +"' aria-labelledby='deleteModalLabel' aria-hidden='true'>" +
+                                    "<div class='modal-dialog modal-dialog-centered'>" +
+                                        "<div class='modal-content'>" +
+                                            "<div class='modal-header'>" +
+                                                "<h1 class='modal-title fs-3 fw-bold'>" +
+                                                    "<i class='fa-solid fa-trash-can gradient-text-delete'></i> ลบ Competency" +
+                                                "</h1>" +
+                                                "<button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>" +
+                                            "</div>" +
+                                            "<form method='post' action='" + deleteCompetency + "'>" +
+                                                "<div class='modal-body'>" +
+                                                    "<h5 class='text -center'>คุณต้องการที่จะ<strong class='gradient-text-delete'>ลบ</strong> Competency: <strong>" + compty.CompetencyId + "</strong> นี้หรือไม่?</h5>" +
+                                                "</div>" +
+                                                "<div class='modal-footer flex-nowrap p-0'>" +
+                                                    "<button type='button' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit' data-bs-dismiss='modal'>" +
+                                                        "<i class='fa-solid fa-ban gradient-icon-submit fs-4'></i> <strong class='gradient-icon-submit fs-4'>ยกเลิก</strong>" +
+                                                    "</button>" +
+                                                    "<button type='button' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel' onclick='deleteForm(" + compty.CompetencyId + ")'>" +
+                                                        "<i class='fa-solid fa-trash-can gradient-icon-back fs-4'></i> <strong class='gradient-icon-back fs-4'>ลบ</strong>" +
+                                                    "</button>" +
+                                                "</div>" +
+                                            "</form>" +
+                                        "</div>" +
+                                    "</div>" +
+                                "</div>" +
+                            "</td>" +
+                        "</tr>";
+
+            tableHtml += rowHtml;
+        }
+
+        $("#tableContainer").html(tableHtml);
+
+        js('#myTable').DataTable({
+            info: false,
+            paging: false,
+            scrollX: true,
+            language: {
+                search: '',
+                searchPlaceholder: 'ค้นหา',
+                lengthMenu: '_MENU_',
+                paginate: {
+                    next: 'ถัดไป <i class="fa fa-angle-double-right"></i>',
+                    previous: '<i class="fa fa-angle-double-left"></i> ก่อนหน้า'
+                },
+                info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
+            },
+
+            initComplete: function () {
+                js('#myTable_length label').addClass('entries-label');
+            }
+        });
+    }
 </script>
 <style>
     main {

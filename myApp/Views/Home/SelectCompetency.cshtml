@@ -86,7 +86,6 @@
                                     </label>
                                 </div>
                             </th>
-                            <th width="5%">เลือก PL</th>
                             <th width="5%">ชนิด</th>
                             <th width="5%">รหัส</th>
                             <th width="10%">ชื่อภาษาไทย</th>
@@ -99,36 +98,8 @@
                             <th width="10%">pl5</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach (var cmpty in Model)
-                        {
-                            <tr>
-                                <td>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="competencyIds" value="@cmpty.CompetencyId" />
-                                    </div>
-                                </td>
-                                <td>
-                                    <select class="form-select" name="plValues[@cmpty.CompetencyId]">
-                                        <option value="1">1</option>
-                                        <option value="2">2</option>
-                                        <option value="3">3</option>
-                                        <option value="4">4</option>
-                                        <option value="5">5</option>
-                                    </select>
-                                </td>
-                                <th scope="row">@cmpty.Type</th>
-                                <th scope="row">@cmpty.CompetencyId</th>
-                                <td style="font-size: 14px">@cmpty.CompetencyNameTH</td>
-                                <td style="font-size: 14px">@cmpty.CompetencyNameEN</td>
-                                <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.CompetencyDesc</textarea></td>
-                                <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl1</textarea></td>
-                                <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl2</textarea></td>
-                                <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl3</textarea></td>
-                                <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl4</textarea></td>
-                                <td><textarea style="height: 100px; font-size: 12px" class="form-control" readonly>@cmpty.Pl5</textarea></td>
-                            </tr>
-                        }
+                    <tbody id="tableContainer">
+                        
                     </tbody>
                 </table>
                 <div class="row mt-3">
@@ -150,9 +121,7 @@
 </main>
 <script src="~/Scripts/jquery-3.7.0.min.js"></script>
 <link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
-<link  rel="stylesheet" href="https://cdn.datatables.net/fixedheader/3.4.0/css/fixedHeader.dataTables.min.css"/>
 <script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
-<script src="https://cdn.datatables.net/fixedheader/3.4.0/js/dataTables.fixedHeader.min.js"></script>
 <script type="text/javascript">
     var js = jQuery.noConflict(true);
     js(document).ready(function () {
@@ -185,27 +154,83 @@
         });
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const filterSelect = document.getElementById('selectType');
-        const tableRows = document.querySelectorAll('#myTable tbody tr');
+    js(document).ready(function () {
+        $("#selectType").change(function () {
+            var selectedValue = $(this).val();
+            console.log(selectedValue);
+            $.ajax({
+                url: "/Home/GetCompetency",
+                type: "POST",
+                data: { selectedValue: selectedValue },
+                success: function (response) {
+                    console.log(response);
+                    buildTable(response);
+                    $("#exampleDataList").val("");
+                },
+                error: function () {
 
-        function filterTableByType() {
-            const selectedType = filterSelect.value;
+                }
+            });
+        });
 
-            tableRows.forEach((row) => {
-                const rowType = row.cells[2].textContent.trim();
+        function buildTable(compties) {
+            js('#myTable').DataTable().destroy();
+            var tableHtml = "";
 
-                if (selectedType === '' || rowType === selectedType) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
+            for (var i = 0; i < compties.length; i++) {
+                var compty = compties[i];
+
+                var rowHtml = "<tr>" +
+                    "<td>" +
+                        "<div class='form-check'>" +
+                            "<input class='form-check-input' type='checkbox' name='competencyIds' value='" + compty.CompetencyId +"' />" +
+                        "</div>" +
+                    "</td>" +
+                    "<th scope='row'>" + compty.Type + "</th>" +
+                    "<th scope='row'>" + compty.CompetencyId + "</th>" +
+                    "<td style='font-size: 14px'>" + compty.CompetencyNameTH + "</td>" +
+                    "<td style='font-size: 14px'>" + compty.CompetencyNameEN + "</td>" +
+                    "<td><textarea style='height: 100px; font-size: 12px' class='form-control' readonly>" + compty.CompetencyDesc + "</textarea></td>" +
+                    "<td><textarea style='height: 100px; font-size: 12px' class='form-control' readonly>" + compty.Pl1 + "</textarea></td>" +
+                    "<td><textarea style='height: 100px; font-size: 12px' class='form-control' readonly>" + compty.Pl2 + "</textarea></td>" +
+                    "<td><textarea style='height: 100px; font-size: 12px' class='form-control' readonly>" + compty.Pl3 + "</textarea></td>" +
+                    "<td><textarea style='height: 100px; font-size: 12px' class='form-control' readonly>" + compty.Pl4 + "</textarea></td>" +
+                    "<td><textarea style='height: 100px; font-size: 12px' class='form-control' readonly>" + compty.Pl5 + "</textarea></td>" +
+                    "</tr>";
+
+                tableHtml += rowHtml;
+            }
+
+            $("#tableContainer").html(tableHtml);
+
+            js('#myTable').DataTable({
+                info: false,
+                order: [[1, 'asc']],
+                paging: true,
+                language: {
+                    search: '',
+                    searchPlaceholder: 'ค้นหา',
+                    lengthMenu: '_MENU_',
+                    paginate: {
+                        next: 'ถัดไป <i class="fa fa-angle-right"></i>',
+                        previous: '<i class="fa fa-angle-left"></i> ก่อนหน้า'
+                    },
+                    info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
+                },
+                fixedHeader: {
+                    header: true,
+                    footer: true
+                },
+                columnDefs: [{
+                    targets: 0,
+                    orderable: false
+                }],
+
+                initComplete: function () {
+                    js('#myTable_length label').addClass('entries-label');
                 }
             });
         }
-
-        filterSelect.addEventListener('change', filterTableByType);
-
-        filterTableByType();
     });
 </script>
 <style>
