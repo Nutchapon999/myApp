@@ -376,7 +376,7 @@
                                 "<h1 class='modal-title fs-3 fw-bold'><i class='fa-solid fa-trash-can gradient-text-delete'></i> ลบ IDP Group</h1>" +
                                 "<button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>" +
                             "</div>" +
-                            "<form method='post' action='" + deleteIDPGroup + "'>" +
+                            "<form method='post' action='" + deleteIDPGroup + "' id='myForm'>" +
                             "<div class='modal-body'>" +
                                 "<h5> คุณต้องการที่จะ<strong class='gradient-text-delete'>ลบ</strong> IDP Group: <strong>" + idpgroup.IDPGroupId + "</strong> นี้หรือไม่?</h5>" +
                             "</div>" +
@@ -384,7 +384,7 @@
                                 "<button type='button' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit' data-bs-dismiss='modal'>" +
                                     "<i class='fa-solid fa-ban gradient-icon-submit fs-4'></i> <strong class='gradient-icon-submit fs-4'>ยกเลิก</strong>" +
                                 "</button>" +
-                                "<button type='button' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel' onclick=\"deleteForm(" + idpgroup.IDPGroupId + ")\">" +
+                                "<button type='button' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel' onclick=\"deleteForm('" + idpgroup.IDPGroupId + "')\">" +
                                     "<i class='fa-solid fa-trash-can gradient-icon-back fs-4'></i> <strong class='gradient-icon-back fs-4'>ลบ</strong>" +
                                 "</button>" +
                             "</div>" +

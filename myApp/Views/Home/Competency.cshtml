@@ -175,7 +175,7 @@
         for (var i = 0; i < compties.length; i++) {
             var compty = compties[i];
             var editCompetency = '@Url.Action("EditCompetency", "Home")' + '?id=' + compty.CompetencyId;
-            var deleteCompetency = '@Url.Action("DeleteCompetency", "Home")' + '?CompetencyId=' + compty.CompetencyId;
+            var deleteCompetency = '@Url.Action("DeleteCompetency", "Home")' + '?competencyId=' + compty.CompetencyId;
 
             var rowHtml = "<tr>" +
                             "<th scope='row'>" + compty.Type + "</th>" +
@@ -309,7 +309,7 @@
                                                 "</h1>" +
                                                 "<button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>" +
                                             "</div>" +
-                                            "<form method='post' action='" + deleteCompetency + "'>" +
+                                            "<form method='post' action='" + deleteCompetency + "' id='myForm'>" +
                                                 "<div class='modal-body'>" +
                                                     "<h5 class='text -center'>คุณต้องการที่จะ<strong class='gradient-text-delete'>ลบ</strong> Competency: <strong>" + compty.CompetencyId + "</strong> นี้หรือไม่?</h5>" +
                                                 "</div>" +
@@ -317,7 +317,7 @@
                                                     "<button type='button' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit' data-bs-dismiss='modal'>" +
                                                         "<i class='fa-solid fa-ban gradient-icon-submit fs-4'></i> <strong class='gradient-icon-submit fs-4'>ยกเลิก</strong>" +
                                                     "</button>" +
-                                                    "<button type='button' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel' onclick='deleteForm(" + compty.CompetencyId + ")'>" +
+                                                    "<button type='button' class='btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel' onclick=\"deleteForm('" + compty.CompetencyId + "')\">" +
                                                         "<i class='fa-solid fa-trash-can gradient-icon-back fs-4'></i> <strong class='gradient-icon-back fs-4'>ลบ</strong>" +
                                                     "</button>" +
                                                 "</div>" +

@@ -641,7 +641,7 @@ namespace myApp.DAL
                         idpGroupItem.IDPGroupItemId = (int)reader["IDP_GROUP_ITEM_ID"];
                         idpGroupItem.IDPGroupId = (string)reader["IDP_GROUP_ID"];
                         idpGroupItem.CompetencyId = (string)reader["COMPETENCY_ID"];
-                        idpGroupItem.Pl = (string)reader["PL"];
+                        idpGroupItem.Pl = reader.IsDBNull(reader.GetOrdinal("PL")) ? null : (string)reader["PL"];
                         idpGroupItem.Critical = (bool)reader["CRITICAL"];
 
                         Competency competency = new Competency();
@@ -734,13 +734,12 @@ namespace myApp.DAL
                 foreach (Competency competency in selectedCompetencies)
                 {
                     string query = "INSERT INTO IDP_GROUP_ITEM (COMPETENCY_ID, IDP_GROUP_ID, PL, CRITICAL) " +
-                                    "VALUES (@CompetencyId, @IDPGroupId, @Pl, @Cri)";
+                                    "VALUES (@CompetencyId, @IDPGroupId, '0', @Cri)";
 
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@CompetencyId", competency.CompetencyId);
                         command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
-                        command.Parameters.AddWithValue("@Pl", competency.IDPGroupItem.Pl);
                         command.Parameters.AddWithValue("@Cri", competency.IDPGroupItem.Critical);
 
 

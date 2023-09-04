@@ -129,9 +129,9 @@ namespace myApp.Controllers
             }
             return RedirectToAction("Competency", "Home");
         }
-        public ActionResult DeleteCompetency(string CompetencyId)
+        public ActionResult DeleteCompetency(string competencyId)
         {
-            app.DeleteCompetency(CompetencyId);
+            app.DeleteCompetency(competencyId);
             return null;
         }
         public ActionResult GetCompetency(string selectedValue)
