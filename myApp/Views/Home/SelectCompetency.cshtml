@@ -155,13 +155,17 @@
     });
 
     js(document).ready(function () {
+
+        var send = '@Url.Action("GetSelectCompetency", "Home")';
+
         $("#selectType").change(function () {
             var selectedValue = $(this).val();
+            var idpGroupId = '@ViewBag.IDPGroupId';
             console.log(selectedValue);
             $.ajax({
-                url: "/Home/GetCompetency",
+                url: send,
                 type: "POST",
-                data: { selectedValue: selectedValue },
+                data: { selectedValue: selectedValue, idpGroupId: idpGroupId },
                 success: function (response) {
                     console.log(response);
                     buildTable(response);
@@ -231,6 +235,16 @@
                 }
             });
         }
+    });
+
+    const checkAllCheckbox = document.getElementById('checkAll');
+
+    const checkboxes = document.querySelectorAll('tbody input[name="competencyIds"]');
+
+    checkAllCheckbox.addEventListener('change', function () {
+        checkboxes.forEach(function (checkbox) {
+            checkbox.checked = checkAllCheckbox.checked;
+        });
     });
 </script>
 <style>
@@ -381,18 +395,3 @@
         -webkit-text-fill-color: transparent;
     }
 </style>
-<script>
-    // Get the "checkAll" checkbox element
-    const checkAllCheckbox = document.getElementById('checkAll');
-
-    // Get all checkboxes in the table body
-    const checkboxes = document.querySelectorAll('tbody input[name="competencyIds"]');
-
-    // Add an event listener to the "checkAll" checkbox
-    checkAllCheckbox.addEventListener('change', function () {
-        // Iterate over all checkboxes in the table body and set their checked property
-        checkboxes.forEach(function (checkbox) {
-            checkbox.checked = checkAllCheckbox.checked;
-        });
-    });
-</script>

@@ -131,7 +131,7 @@
     js(document).ready(function () {
         js('#myTable').DataTable({
             info: false,
-            paging: true,
+            paging: false,
             order: [[5, 'asc']],
             language: {
                 search: '',
@@ -151,23 +151,17 @@
     });
 
     js(document).ready(function () {
-        var send = '@Url.Action("GetDepartment", "Home")';
-
-        //var selectedValue = localStorage.getItem("Employee");
-
-        //if (selectedValue) {
-        //    $("#selectType").val(selectedValue);
-        //}
-
+        var send = '@Url.Action("GetSelectDepartment", "Home")';
 
         $("#exampleDataList").change(function () {
             var selectedValue = $(this).val();
+            var idpGroupId = '@ViewBag.IDPGroupId';
+
             console.log(selectedValue);
-            //localStorage.setItem("Employee", selectedValue);
             $.ajax({
                 url: send,
                 type: "POST",
-                data: { selectedValue: selectedValue },
+                data: { selectedValue: selectedValue, idpGroupId: idpGroupId },
                 success: function (response) {
                     console.log(response);
                     buildTable(response);
@@ -186,13 +180,7 @@
 
         for (var i = 0; i < users.length; i++) {
             var user = users[i];
-            var d = new Date();
-            var year = d.getFullYear();
-            var addIDPGroup = '@Url.Action("AddIDPGroup", "Home")' + '?id=' + user.Id;
-            var selectForm = '@Url.Action("SelectForm", "Home")' + '?user=' + user.Id + '&year=' + year+543;
             var iconHtml = "";
-            var buttonHtml1 = "";
-            var buttonHtml2 = "";
             var statusHtml = "";
 
             if (user.Prefix === "นาง" || user.Prefix === "นางสาว") {
@@ -203,13 +191,10 @@
 
             if (user.Status === "ทำงาน") {
                 statusHtml = "<p style='padding: 3px; border-radius: 3rem; background-color: #D5F8EF; color: #14B789; width: auto'>" + user.Status + "</p>";
-                buttonHtml2 = "<a id='link' href='" + addIDPGroup + "' class='btn active-link-add' title='เพิ่ม IDP Group'><i class='fa fa-book gradient-icon-add' aria-hidden='true'></i></a>";
             }
             else {
                 statusHtml = "<p style='padding: 3px; border-radius: 3rem; background-color: #FFE5F4; color: #E50087; width: auto'>" + user.Status + "</p>";
             }
-            buttonHtml1 = "<a id='link' href='" + selectForm + "' class='btn active-link-form' title='แบบประเมิน'><i class='fa fa-file-text gradient-icon-form' aria-hidden='true'></i></a>";
-
 
             var rowHtml = "<tr>" +
                 "<td>" +
@@ -234,7 +219,7 @@
 
         js('#myTable').DataTable({
             info: false,
-            paging: true,
+            paging: false,
             order: [[5, 'asc']],
             language: {
                 search: '',

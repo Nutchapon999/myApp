@@ -5,204 +5,86 @@
 }
 
 <link rel="stylesheet" href="/CSS/Style.css">
-<div class="sticky-header-breadcrumb">
-    <div class="header-breadcrumb" style="background-color: #2D4686;">
-        <nav aria-label="breadcrumb" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='%236c757d'/%3E%3C/svg%3E&#34;);">
-            <ol class="breadcrumb breadcrumb-chevron p-3 bg-body-tertiary">
-                <li class="breadcrumb-item">
-                    <a class="link-body-emphasis text-decoration-none" style="color: #C8E8FF" href="@Url.Action("Download", "Home", new { year = ViewBag.Year })">
-                        <i class="fa-solid fa-download" style="color: #C8E8FF"></i> <strong style="color: #C8E8FF"> ดาวน์โหลด</strong>
-                        <span class="visually-hidden">Home</span>
-                    </a>
-                </li>
-            </ol>
-        </nav>
+<div class="container d-flex mb-5 p-2 card-container">
+    <div class="col-auto d-flex align-items-center ">
+        <label for="selectCompany" class="form-label me-2 mt-2"> บริษัท:</label>
+        <select class="form-select" id="selectCompany" style="width: 100px">
+            <option value="">-</option>
+            @foreach (var dpt in Model.Where(cdt => cdt.Company != null).Select(cdt => cdt.Company).Distinct())
+            {
+                <option value="@dpt">@dpt</option>
+            }
+        </select>
     </div>
-
-    <div class="text-center sticky-header">
-        <div class="background-container">
-            <i class="fa-solid fa-download topic-icon"></i>
-        </div>
+    <div class="col-auto d-flex align-items-center ms-2">
+        <label for="selectYear" class="form-label me-2 mt-2">ปี:</label>
+        <select class="form-select" id="selectYear" style="width: 100px">
+            <option value="">-</option>
+            @foreach (var dpt in Model.Where(cdt => cdt.Result.Year != null).Select(cdt => cdt.Result.Year).Distinct())
+            {
+                <option value="@dpt">@dpt</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto d-flex align-items-center ms-2">
+        <label for="DataListCostcenter" class="form-label me-2 mt-2">Cost Center:</label>
+        <input class="form-control" list="selectCostCenter" id="DataListCostcenter" placeholder="ค้นหา" style="width: 100px">
+        <datalist id="selectCostCenter">
+            @foreach (var costCenter in Model.Where(cdt => cdt.CostCenter != null).Select(cdt => cdt.CostCenter).Distinct())
+            {
+                <option value="@costCenter"></option>
+            }
+        </datalist>
+    </div>
+    <div class="col-auto d-flex align-items-center ms-2">
+        <label for="DataListUserID" class="form-label me-2 mt-2">รหัส:</label>
+        <input class="form-control" list="selectUserId" id="DataListUserID" placeholder="ค้นหา" style="width: 100px">
+        <datalist id="selectUserId">
+            @foreach (var Id in Model.Where(cdt => cdt.Id != null).Select(cdt => cdt.Id).Distinct())
+            {
+                <option value="@Id"></option>
+            }
+        </datalist>
     </div>
 </div>
-<main>
-    <h1 class="text-center topic-title" style="margin-top: 80px;">ดาวน์โหลด</h1>
-    <div class="container d-flex mb-5 p-2 card-container">
-        <div class="col-auto d-flex align-items-center ">
-            <label for="selectCompany" class="form-label me-2 mt-2"> บริษัท:</label>
-            <select class="form-select" id="selectCompany" style="width: 100px">
-                <option value="">-</option>
-                <option value="">ทั้งหมด</option>
-                @foreach (var dpt in Model.Where(cdt => cdt.Company != null).Select(cdt => cdt.Company).Distinct())
-                {
-                    <option value="@dpt">@dpt</option>
-                }
-            </select>
-        </div>
-        <div class="col-auto d-flex align-items-center ms-2">
-            <label for="selectYear" class="form-label me-2 mt-2">ปี:</label>
-            <select class="form-select" id="selectYear" style="width: 100px">
-                <option value="">-</option>
-                <option value="">ทั้งหมด</option>
-                @foreach (var dpt in Model.Where(cdt => cdt.Result.Year != null).Select(cdt => cdt.Result.Year).Distinct())
-                {
-                    <option value="@dpt">@dpt</option>
-                }
-            </select>
-        </div>
-        <div class="col-auto d-flex align-items-center ms-2">
-            <label for="DataListCostcenter" class="form-label me-2 mt-2">Cost Center:</label>
-            <input class="form-control" list="selectCostCenter" id="DataListCostcenter" placeholder="ค้นหา" style="width: 100px">
-            <datalist id="selectCostCenter">
-                @foreach (var costCenter in Model.Where(cdt => cdt.CostCenter != null).Select(cdt => cdt.CostCenter).Distinct())
-                {
-                    <option value="@costCenter"></option>
-                }
-            </datalist>
-        </div>
-        <div class="col-auto d-flex align-items-center ms-2">
-            <label for="DataListUserID" class="form-label me-2 mt-2">รหัส:</label>
-            <input class="form-control" list="selectUserId" id="DataListUserID" placeholder="ค้นหา" style="width: 100px">
-            <datalist id="selectUserId">
-                @foreach (var Id in Model.Where(cdt => cdt.Id != null).Select(cdt => cdt.Id).Distinct())
-                {
-                    <option value="@Id"></option>
-                }
-            </datalist>
-        </div>
-        <div class="col-auto ms-auto text-end">
-            <button type="button" class="btn btn-lg active-link-excel" onclick="exportFilteredTableToExcel('myTB')">
-                <i class="fa fa-solid fa-file-excel gradient-icon-excel fs-3"></i> <strong class="gradient-icon-excel">Excel</strong>
-            </button>
-        </div>
-    </div>
-    <div class="table-container m-4">
-        <table class="table table-hover table-responsive table-striped" id="myTB">
-            <thead style="background-color: #2D4686; color: #C8E8FF">
-                <tr class="text-center">
-                    <th>ข้อ</th>
-                    <th>รหัส</th>
-                    <th>ชื่อ</th>
-                    <th>ตำแหน่ง</th>
-                    <th>ตำแหน่งขั้น</th>
-                    <th>idp</th>
-                    <th>Critical</th>
-                    <th>Competency Id</th>
-                    <th>R</th>
-                    <th>A1</th>
-                    <th>Gap1</th>
-                    <th>Priority</th>
-                    <th>Type</th>
-                    <th>Development Plan</th>
-                    <th>Q1</th>
-                    <th>Q2</th>
-                    <th>Q3</th>
-                    <th>Q4</th>
-                    <th>Development Result</th>
-                    <th>A2</th>
-                    <th>Gap2</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var groupedIDPGroup in Model.GroupBy(u => u.ResultItem.IDPGroupId))
-                {
-                    foreach (var nestedGroupedUser in groupedIDPGroup.GroupBy(u => u.Id))
-                    {
-                        var user = nestedGroupedUser.First();
-
-                        foreach (var resultItem in nestedGroupedUser.Select(u => u.ResultItem))
-                        {
-                            <tr data-company="@user.Company" data-year="@user.Result.Year" data-costcenter="@user.CostCenter" data-idpgroup="@user.ResultItem.IDPGroupId" data-id="@user.Id" id="list">
-                                @if (resultItem == user.ResultItem)
-                                {
-                                    <td class="text-center">@resultItem.ResultItemId</td>
-                                    <td class="text-center">@user.Id</td>
-                                    <td>@user.FirstNameTH @user.LastNameTH</td>
-                                    <td>@user.Position</td>
-                                    <td class="text-center">@user.JobLevel</td>
-                                    <td class="text-center">@resultItem.IDPGroupId</td>
-                                    <td class="text-center">
-                                        @if (resultItem.Critical == false)
-                                        {
-
-                                            <text></text>
-                                        }
-                                        else
-                                        {
-
-                                            <img src="~/Images/hexagon_icon.png" width="25" height="25" />
-                                        }
-                                    </td>
-                                    <td class="text-center">@resultItem.CompetencyId</td>
-                                    <td class="text-center">@resultItem.Requirement</td>
-                                    <td class="text-center">@resultItem.Actual1</td>
-                                    <td class="text-center">@resultItem.Gap1</td>
-                                    <td class="text-center">@resultItem.Priority</td>
-                                    <td class="text-center">@resultItem.TypePlan</td>
-                                    <td>@resultItem.DevPlan</td>
-                                    <td class="text-center">@resultItem.Q1</td>
-                                    <td class="text-center">@resultItem.Q2</td>
-                                    <td class="text-center">@resultItem.Q3</td>
-                                    <td class="text-center">@resultItem.Q4</td>
-                                    <td>@resultItem.DevRst</td>
-                                    <td class="text-center">@resultItem.Actual2</td>
-                                    <td class="text-center">@resultItem.Gap2</td>
-
-                                }
-                                else
-                                {
-                                    <td class="text-center">@resultItem.ResultItemId</td>
-                                    <td class="text-center">@user.Id</td>
-                                    <td>@user.FirstNameTH @user.LastNameTH</td>
-                                    <td>@user.Position</td>
-                                    <td class="text-center">@user.JobLevel</td>
-                                    <td class="text-center">@resultItem.IDPGroupId</td>
-                                    <td class="text-center">
-                                        @if (resultItem.Critical == false)
-                                        {
-
-                                            <text></text>
-                                        }
-                                        else
-                                        {
-
-                                            <img src="~/Images/hexagon_icon.png" width="25" height="25" />
-                                        }
-                                    </td>
-                                    <td class="text-center">@resultItem.CompetencyId</td>
-                                    <td class="text-center">@resultItem.Requirement</td>
-                                    <td class="text-center">@resultItem.Actual1</td>
-                                    <td class="text-center">@resultItem.Gap1</td>
-                                    <td class="text-center">@resultItem.Priority</td>
-                                    <td class="text-center">@resultItem.TypePlan</td>
-                                    <td>@resultItem.DevPlan</td>
-                                    <td class="text-center">@resultItem.Q1</td>
-                                    <td class="text-center">@resultItem.Q2</td>
-                                    <td class="text-center">@resultItem.Q3</td>
-                                    <td class="text-center">@resultItem.Q4</td>
-                                    <td>@resultItem.DevRst</td>
-                                    <td class="text-center">@resultItem.Actual2</td>
-                                    <td class="text-center">@resultItem.Gap2</td>
-                                }
-                            </tr>
-                        }
-                    }
-                }
-            </tbody>
-        </table>
-    </div>
-</main>
+<table class="table table-hover table-responsive table-striped" id="myTB">
+    <thead style="background-color: #2D4686; color: #C8E8FF">
+        <tr class='text-center'>
+            <th>ข้อ</th>
+            <th>รหัส</th>
+            <th>ชื่อ</th>
+            <th>ตำแหน่ง</th>
+            <th>ตำแหน่งขั้น</th>
+            <th>idp</th>
+            <th>Critical</th>
+            <th>Competency Id</th>
+            <th>R</th>
+            <th>A1</th>
+            <th>Gap1</th>
+            <th>Priority</th>
+            <th>Type</th>
+            <th>Development Plan</th>
+            <th>Q1</th>
+            <th>Q2</th>
+            <th>Q3</th>
+            <th>Q4</th>
+            <th>Development Result</th>
+            <th>A2</th>
+            <th>Gap2</th>
+        </tr>
+    </thead>
+    <tbody id="tableContainer">
+            
+    </tbody>
+</table>
 <script src="~/Scripts/jquery-3.7.0.min.js"></script>
-<script src="~/JS/unpkg_exceljs.min.js"></script>
-<link rel="stylesheet" href="~/Content/DataTables/css/jquery.dataTables.css" />
-<script src="~/Scripts/DataTables/jquery.dataTables.js"></script>
-<script type="text/javascript">
-
+<script>
     $(document).ready(function () {
 
         $("#selectYear, #selectIDPGroup, #selectCompany, #DataListCostcenter, #DataListUserID").change(function () {
             filterTable();
         });
+        var send = '@Url.Action("GetListDownload", "Home")';
 
         function filterTable() {
             var selectedCompany = $("#selectCompany").val();
@@ -210,40 +92,72 @@
             var selectCostCenter = $("#DataListCostcenter").val();
             var selectUserId = $("#DataListUserID").val();
 
-
             console.log(selectedCompany);
             console.log(selectYear);
             console.log(selectCostCenter);
             console.log(selectUserId);
 
+            $.ajax({
+                url: send,
+                type: "POST",
+                data: {
+                    selectedCompany: selectedCompany,
+                    selectYear: selectYear,
+                    selectCostCenter: selectCostCenter,
+                    selectUserId: selectUserId,
+                },
+                success: function (response) {
+                    console.log(response);
+                    buildTable(response);
+                },
+                error: function () {
 
-            $("tbody tr").hide();
-
-            $("tbody tr").each(function () {
-                var company = $(this).data("company");
-                var costCenter = $(this).data("costcenter");
-                var year = $(this).data("year").toString();
-                var id = $(this).data("id").toString();
-
-                if ((selectYear === "" || year === selectYear) &&
-                    (selectedCompany === "" || company === selectedCompany) &&
-                    (selectCostCenter === "" || costCenter === selectCostCenter) &&
-                    (selectUserId === "" || id === selectUserId)) {
-                    $(this).show();
                 }
             });
-            if ($("#selectYear").val() !== "" || $("#selectIDPGroup").val() !== "" ||
-                $("#selectCompany").val() !== "" || $("#DataListCostcenter").val() !== "" ||
-                $("#DataListUserID").val() !== "") {
-                $("#myTB tbody").show();
-            } else {
-                $("#myTB tbody").hide();
-            }
         }
     });
 
+    function buildTable(users) {
+        var tableHtml = "";
+        var src = '/Images/hexagon_icon.png';
 
-    function exportFilteredTableToExcel(tableId) {
+        for (var i = 0; i < users.length; i++) {
+            var user = users[i];
+
+            var rowHtml = "<tr>" +
+                            "<td class='text-center'>" + user.ResultItem.ResultItemId + "</td>" +
+                            "<td class='text-center'>" + user.Id + "</td>" +
+                            "<td>" + user.FirstNameTH + user.LastNameTH + "</td>" +
+                            "<td>" + user.Position + "</td>" +
+                            "<td class='text-center'>" + user.JobLevel + "</td>" +
+                            "<td class='text-center'>" + user.ResultItem.IDPGroupId + "</td>" +
+                            "<td class='text-center'>";
+                                if (user.ResultItem.Critical == true)
+                                    rowHtml += "<img src='" + src + "' width='25' height='25' />";
+                            rowHtml += "</td>" +
+                            "<td class='text-center'>" + user.ResultItem.CompetencyId + "</td>" +
+                            "<td class='text-center'>" + user.ResultItem.Requirement + "</td>" +
+                            "<td class='text-center'>" + user.ResultItem.Actual1 + "</td>" +
+                            "<td class='text-center'>" + user.ResultItem.Gap1 + "</td>" +
+                            "<td class='text-center'>" + user.ResultItem.Priority + "</td>" +
+                            "<td class='text-center'>" + user.ResultItem.TypePlan + "</td>" +
+                            "<td>" + user.ResultItem.DevPlan + "</td>" +
+                            "<td class='text-center'>" + user.ResultItem.Q1 + "</td>" +
+                            "<td class='text-center'>" + user.ResultItem.Q2 + "</td>" +
+                            "<td class='text-center'>" + user.ResultItem.Q3 + "</td>" +
+                            "<td class='text-center'>" + user.ResultItem.Q4 + "</td>" +
+                            "<td>" + user.ResultItem.DevRst + "</td>" +
+                            "<td class='text-center'>" + user.ResultItem.Actual2 + "</td>" +
+                            "<td class='text-center'>" + user.ResultItem.Gap2 + "</td>" +
+                        "</tr>";
+
+            tableHtml += rowHtml;
+        }
+
+        $("#tableContainer").html(tableHtml);
+    }
+
+    function exportTableToExcel(tableId) {
         var table = document.getElementById(tableId);
         var workbook = new ExcelJS.Workbook();
         var worksheet = workbook.addWorksheet('Sheet 1');
@@ -270,87 +184,13 @@
             }
         }
 
-
         workbook.xlsx.writeBuffer().then(function (buffer) {
             var blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
 
             var link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'filtered_table_data.xlsx';
+            link.download = 'IDP_Export.xlsx';
             link.click();
         });
     }
 </script>
-
-<style>
-    main {
-        margin-top: -50px;
-    }
-
-    #myTB tbody {
-        display: none;
-    }
-
-    .background-container {
-        background-color: white; /* Set the white background */
-        display: inline-block; /* Display the container as an inline block to wrap the icon */
-        border-radius: 50%; /* Apply a circular shape to the container */
-        padding: 1rem; /* Add padding around the icon */
-        overflow: hidden; /* Hide any overflow from the circular container */
-        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px; /* Add a box shadow */
-        margin-top: -50px;
-    }
-
-    .topic-icon {
-        background: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
-        -webkit-background-clip: text; /* Clip the background to the text */
-        -webkit-text-fill-color: transparent; /* Make the text transparent to show the background gradient */
-        font-size: 45px;
-        /* Any other styles for the icon, if needed */
-    }
-
-    .sticky-header-breadcrumb {
-        position: sticky;
-        border-radius: 0px;
-        z-index: 10;
-        top: 85px;
-    }
-
-    .sticky-header {
-        position: sticky;
-        z-index: 20;
-    }
-
-    .table-container {
-        overflow: hidden;
-        border-radius: 10px;
-        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
-    }
-
-    .gradient-icon-excel {
-        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-
-    .active-link-excel {
-        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
-    }
-
-        .active-link-excel:hover {
-            border: 2px solid #006f57;
-            transform: scale(.95);
-        }
-
-    .card-container {
-        border-radius: 10px;
-        box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
-    }
-
-    .topic-title {
-        background-image: linear-gradient( 0deg, hsl(168deg 84% 12%) 0%, hsl(168deg 86% 13%) 11%, hsl(168deg 89% 14%) 22%, hsl(168deg 91% 15%) 33%, hsl(167deg 93% 16%) 44%, hsl(167deg 94% 18%) 56%, hsl(167deg 96% 19%) 67%, hsl(167deg 98% 20%) 78%, hsl(167deg 99% 21%) 89%, hsl(167deg 100% 22%) 100% );
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        font-weight: bold;
-    }
-</style>

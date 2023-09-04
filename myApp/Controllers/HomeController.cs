@@ -148,8 +148,10 @@ namespace myApp.Controllers
                 if (competency.Pl4 == null) competency.Pl4 = "";
                 if (competency.Pl5 == null) competency.Pl5 = "";
             }
+
             return Json(competencies, JsonRequestBehavior.AllowGet);
         }
+        
         #endregion
 
         #region IDP GROUP
@@ -349,7 +351,7 @@ namespace myApp.Controllers
         }
         #endregion
 
-        #region USER
+        #region EMPLOYEE
         public ActionResult Employee()
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
@@ -643,6 +645,29 @@ namespace myApp.Controllers
                 return RedirectToAction("Index", "Form");
             }
         }
+        public ActionResult GetSelectCompetency(string selectedValue, string idpGroupId)
+        {
+            List<Competency> competencies = app.GetCompetencyByType(selectedValue);
+            foreach (var competency in competencies)
+            {
+                if (competency.CompetencyNameTH == null) competency.CompetencyNameTH = "";
+                if (competency.CompetencyNameEN == null) competency.CompetencyNameEN = "";
+                if (competency.CompetencyDesc == null) competency.CompetencyDesc = "";
+                if (competency.Pl1 == null) competency.Pl1 = "";
+                if (competency.Pl2 == null) competency.Pl2 = "";
+                if (competency.Pl3 == null) competency.Pl3 = "";
+                if (competency.Pl4 == null) competency.Pl4 = "";
+                if (competency.Pl5 == null) competency.Pl5 = "";
+            }
+
+            List<string> enrolledSubjectCodes = app.GetCheckedCompetencyId(idpGroupId);
+
+            List<Competency> availableSubjects = competencies.Where(c => !enrolledSubjectCodes.Contains(c.CompetencyId)).ToList();
+
+            availableSubjects.ForEach(c => c.IDPGroupItem = new IDPGroupItem());
+
+            return Json(availableSubjects, JsonRequestBehavior.AllowGet);
+        }
         [HttpPost]
         public ActionResult SelectedCompetency(List<string> competencyIds, string idpGroupId, Dictionary<string, string> plValues, Dictionary<string, string> priorityValues)
         {
@@ -833,6 +858,31 @@ namespace myApp.Controllers
             {
                 return RedirectToAction("Index", "Form");
             }
+        }
+        public ActionResult GetSelectDepartment(string selectedValue, string idpGroupId)
+        {
+            List<User> users = app.getEmployeeByDepartment(selectedValue);
+            foreach (var user in users)
+            {
+                if (user.Id == null) user.Id = "";
+                if (user.Prefix == null) user.Prefix = "";
+                if (user.FirstNameTH == null) user.FirstNameTH = "";
+                if (user.LastNameTH == null) user.LastNameTH = "";
+                if (user.Status == null) user.Status = "";
+                if (user.Position == null) user.Position = "";
+                if (user.JobLevel == null) user.JobLevel = "";
+                if (user.CostCenter == null) user.CostCenter = "";
+                if (user.DepartmentName == null) user.DepartmentName = "";
+                if (user.Company == null) user.Company = "";
+            }
+
+            List<string> enrolledIds = app.GetCheckedId(idpGroupId);
+
+            List<User> availableIds = users.Where(u => !enrolledIds.Contains(u.Id)).ToList();
+
+            availableIds.ForEach(u => u.Enrollment = new Enrollment());
+
+            return Json(availableIds, JsonRequestBehavior.AllowGet);
         }
         [HttpPost]
         public ActionResult SelectedEmployee(List<string> userIds, string idpGroupId)
@@ -1738,6 +1788,26 @@ namespace myApp.Controllers
             {
                 return RedirectToAction("Index", "Form");
             }
+        }
+        public ActionResult GetListDownload(string selectedCompany, string selectYear, string selectCostCenter, string selectUserId)
+        {
+            if (selectedCompany == "") selectedCompany = null;
+            if (selectYear == "") selectYear = null;
+            if (selectCostCenter == "") selectCostCenter = null;
+            if (selectUserId == "") selectUserId = null;
+            List<User> listDownloads = app.GetListDownloadByFilter(selectedCompany, selectYear, selectCostCenter, selectUserId);
+            foreach (var download in listDownloads)
+            {
+                if (download.ResultItem.Priority == null) download.ResultItem.Priority = "";
+                if (download.ResultItem.TypePlan == null) download.ResultItem.TypePlan = "";
+                if (download.ResultItem.DevPlan == null) download.ResultItem.DevPlan = "";
+                if (download.ResultItem.Q1 == null) download.ResultItem.Q1 = "";
+                if (download.ResultItem.Q2 == null) download.ResultItem.Q2 = "";
+                if (download.ResultItem.Q3 == null) download.ResultItem.Q3 = "";
+                if (download.ResultItem.Q4 == null) download.ResultItem.Q4 = "";
+                if (download.ResultItem.DevRst == null) download.ResultItem.DevRst = "";
+            }
+            return Json(listDownloads);
         }
         #endregion
     }
