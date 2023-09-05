@@ -74,7 +74,8 @@
                 </tr>
                 <tr class="text-center">
                     <th style="background-color: #C8E8FF; color: #2D4686; ">Competency All</th>
-                    <td colspan="2">@ViewBag.All</td>
+                    <td>@ViewBag.All</td>
+                    <td>@ViewBag.All</td>
                 </tr>
                 <tr class="text-center">
                     <th style="background-color: #C8E8FF; color: #2D4686;">Competency Pass</th>
@@ -278,7 +279,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKPF2mSznTQsxqPgnpkI4DNTlrdUmTzrDgektczlKNRRhy5X5AAOnx5S09ydFYWWNSfcEqDTTHgtNA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script>
-    var competencyData = {
+    var MC_Data = {
         labels: [@foreach (var res in Model)
             {
                 if (res.Competency.Type == "MC")
@@ -337,7 +338,7 @@
         ]
     };
 
-    var pieChartOptions = {
+    var MC_Options = {
         plugins: {
             title: {
                 display: true,
@@ -366,31 +367,18 @@
         maintainAspectRatio: false,
     };
 
-    var pieChart = new Chart(document.getElementById('pieChart-MC'), {
+    var MC_Chart = new Chart(document.getElementById('pieChart-MC'), {
         type: 'radar',
-        data: competencyData,
-        options: pieChartOptions
+        data: MC_Data,
+        options: MC_Options
     });
 
-    @functions {
-        public string TruncateString(string text, int maxLength)
-        {
-            if (text.Length <= maxLength)
-                return text;
-            else
-                return text.Substring(0, maxLength) + "...";
-        }
-    }
-
-
-</script>
-<script>
-var competencyData = {
+    var FC_Data = {
     labels: [@foreach (var res in Model)
         {
             if (res.Competency.Type == "FC")
             {
-                <text>'@res.Competency.CompetencyNameTH'</text>@(res != Model.Last() ? "," : "")
+                <text>'@TruncateString(res.Competency.CompetencyNameTH,25)'</text>@(res != Model.Last() ? "," : "")
             }
         }],
 
@@ -442,9 +430,9 @@ var competencyData = {
             borderWidth: 2,
         }
     ]
-};
+    };
 
-var pieChartOptions = {
+    var FC_Options = {
     plugins: {
         title: {
             display: true,
@@ -470,148 +458,117 @@ var pieChartOptions = {
     },
     responsive: true,
     maintainAspectRatio: false,
-};
+    };
 
-var pieChart = new Chart(document.getElementById('pieChart-FC'), {
-    type: 'radar',
-    data: competencyData,
-    options: pieChartOptions
-});
-</script>
-<script>
-var competencyData = {
-    labels: [@foreach (var res in Model)
-        {
-            if (res.Competency.Type == "TC" || res.Competency.Type == "CC")
-            {
-                <text>'@res.Competency.CompetencyNameTH'</text>@(res != Model.Last() ? "," : "")
-            }
-        }],
-
-    datasets: [
-        {
-            label: 'Actual1',
-            data: [
-                @foreach (var res in Model)
-                {
-                    if (res.Competency.Type == "TC" || res.Competency.Type == "CC")
-                    {
-                        <text>@(res.ResultItem.Actual1)</text>
-                        if (!ReferenceEquals(res, Model.Last()))
-                        {
-                            <text>,</text>
-                        }
-                    }
-                }
-            ],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.5)',
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-            ],
-            borderWidth: 2,
-        },
-        {
-            label: 'Actual2',
-            data: [
-                @foreach (var res in Model)
-                {
-                    if (res.Competency.Type == "TC" || res.Competency.Type == "CC")
-                    {
-                        <text>@(res.ResultItem.Actual2)</text>
-                        if (!ReferenceEquals(res, Model.Last()))
-                        {
-                            <text>,</text>
-                        }
-                    }
-                }
-            ],
-            backgroundColor: [
-                'rgba(54, 162, 235, 0.5)',
-            ],
-            borderColor: [
-                'rgba(54, 162, 235, 1)',
-            ],
-            borderWidth: 2,
-        }
-    ]
-};
-
-var pieChartOptions = {
-    plugins: {
-        title: {
-            display: true,
-            text: 'Technical Competency Achievement',
-        },
-        labels: {
-            render: 'outside',
-            arc: true,
-            fontColor: 'black',
-            fontStyle: 'bold',
-            position: 'outside',
-        },
-    },
-    scales: {
-        r: {
-            beginAtZero: true,
-            max: 5,
-            stepSize: 1,
-            ticks: {
-                precision: 0,
-            },
-        },
-    },
-    responsive: true,
-    maintainAspectRatio: false,
-};
-
-var pieChart = new Chart(document.getElementById('pieChart-TC_CC'), {
-    type: 'radar',
-    data: competencyData,
-    options: pieChartOptions
-});
-</script>
-@*<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var canvas = document.getElementById("chart");
-
-        var competencyAll;
-        var competencyPass;
-
-        competencyAll = @emp.CompetencyAll;
-        competencyPass = @emp.CompetencyPass;
-
-
-        var competencyFail = @emp.CompetencyAll - @emp.CompetencyPass;
-        var maxScale = competencyAll > 0 ? competencyAll : 1;
-
-        var chart = new Chart(canvas, {
-            type: 'bar',
-            data: {
-                labels: ['ไม่มี GAP', 'มี GAP  '],
-                datasets: [{
-                    label: 'Competency Result',
-                    data: [competencyPass, competencyFail],
-                    backgroundColor: ['#4bc0c050', '#ff638450'],
-                    borderColor: ['#4bc0c0', '#ff6384'],
-                    borderWidth: 1,
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: maxScale,
-                        ticks: {
-                            precision: 0,
-                        },
-                    }
-                },
-            }
-        });
+    var FC_Chart = new Chart(document.getElementById('pieChart-FC'), {
+        type: 'radar',
+        data: FC_Data,
+        options: FC_Options
     });
-</script>*@
+
+    var TC_CC_Data = {
+        labels: [@foreach (var res in Model)
+            {
+                if (res.Competency.Type == "TC" || res.Competency.Type == "CC")
+                {
+                    <text>'@TruncateString(res.Competency.CompetencyNameTH, 25)'</text>@(res != Model.Last() ? "," : "")
+                }
+            }],
+
+        datasets: [
+            {
+                label: 'Actual1',
+                data: [
+                    @foreach (var res in Model)
+                    {
+                        if (res.Competency.Type == "TC" || res.Competency.Type == "CC")
+                        {
+                            <text>@(res.ResultItem.Actual1)</text>
+                            if (!ReferenceEquals(res, Model.Last()))
+                            {
+                                <text>,</text>
+                            }
+                        }
+                    }
+                ],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.5)',
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                ],
+                borderWidth: 2,
+            },
+            {
+                label: 'Actual2',
+                data: [
+                    @foreach (var res in Model)
+                    {
+                        if (res.Competency.Type == "TC" || res.Competency.Type == "CC")
+                        {
+                            <text>@(res.ResultItem.Actual2)</text>
+                            if (!ReferenceEquals(res, Model.Last()))
+                            {
+                                <text>,</text>
+                            }
+                        }
+                    }
+                ],
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.5)',
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)',
+                ],
+                borderWidth: 2,
+            }
+        ]
+    };
+
+    var TC_CC_Options = {
+        plugins: {
+            title: {
+                display: true,
+                text: 'Technical Competency Achievement',
+            },
+            labels: {
+                render: 'outside',
+                arc: true,
+                fontColor: 'black',
+                fontStyle: 'bold',
+                position: 'outside',
+            },
+        },
+        scales: {
+            r: {
+                beginAtZero: true,
+                max: 5,
+                stepSize: 1,
+                ticks: {
+                    precision: 0,
+                },
+            },
+        },
+        responsive: true,
+        maintainAspectRatio: false,
+    };
+
+    var TC_CC_Chart = new Chart(document.getElementById('pieChart-TC_CC'), {
+        type: 'radar',
+        data: TC_CC_Data,
+        options: TC_CC_Options
+    });
+
+    @functions {
+        public string TruncateString(string text, int maxLength)
+        {
+            if (text.Length <= maxLength)
+                return text;
+            else
+                return text.Substring(0, maxLength) + "...";
+        }
+    }
+</script>
 <script type="text/javascript">
     var res = @Html.Raw(ResJson);
     var remark = @Html.Raw(RemarkJson);
@@ -653,41 +610,41 @@ var pieChart = new Chart(document.getElementById('pieChart-TC_CC'), {
         printDocument.write('<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@500&display=swap" rel="stylesheet">');
         printDocument.write('<style>');
         printDocument.write('body { font-family: Arial, sans-serif; }');
-        printDocument.write('#TB,#TB td,#TB th { border: 1px solid; }');
-        printDocument.write('#reTB,#reTB th { border: 1px solid; }');
+        printDocument.write('#TB,#TB td,#TB th { border: 0.5px solid; }');
+        printDocument.write('#myTable,#myTable td,#myTable th { border: 0.5px solid; }');
+        printDocument.write('#reTB,#reTB th { border: 0.5px solid; }');
         printDocument.write('#TB { width: 100 %; border - collapse: collapse; }');
-        printDocument.write('#TB tbody tr:nth-child(even) { background-color: #f2f2f2; border: 1px solid;}');
+        printDocument.write('#TB tbody tr:nth-child(even) { background-color: #f2f2f2; border: 0.5px solid;}');
+
         printDocument.write('</style>');
         printDocument.write('</head>');
         printDocument.write('<body>');
         printDocument.write('<div class="row m-2 align-items-center" style="background-color: #D5F8EF; border: 2px solid black;">');
-        printDocument.write('<img src="https://www.satpcl.co.th/themes/default/assets/static/images/logo.png" style="max-width: 10%" />');
+        printDocument.write('<img src="https://www.satpcl.co.th/themes/default/assets/static/images/logo.png" style="width: 100px; height: 50px;" />');
         printDocument.write('<div class="col-auto mt-2">');
-        printDocument.write('<p class="fw-bold" style="font-size: 14px;">Competency Evaluation &</p>');
-        printDocument.write('<p class="fw-bold" style="font-size: 14px;">Individual Development Plan ' + year + '</p>');
+        printDocument.write('<p class="fw-bold" style="font-size: 12px;">Competency Evaluation &</p>');
+        printDocument.write('<p class="fw-bold" style="font-size: 12px;">Individual Development Plan ' + year + '</p>');
         printDocument.write('</div>');
         printDocument.write('<div class="col-auto mt-2">');
-        printDocument.write('<p style="font-size: 12px;"><strong>ID:</strong> @ViewBag.Id</p>');
         printDocument.write('<p style="font-size: 12px;"><strong>Name:</strong> @ViewBag.Prefix @ViewBag.FirstName @ViewBag.LastName</p>');
+        printDocument.write('<p style="font-size: 12px;"><strong>ID:</strong> @ViewBag.Id</p>');
+        printDocument.write('</div>');
+        printDocument.write('<div class="col-auto mt-2">');
         printDocument.write('<p style="font-size: 12px;"><strong>Position:</strong> @ViewBag.Position</p>');
-        printDocument.write('</div>');
-        printDocument.write('<div class="col-auto mt-2">');
         printDocument.write('<p style="font-size: 12px;"><strong>Department:</strong> @ViewBag.DepartmentName</p>');
-        printDocument.write('<p style="font-size: 12px;"><strong>JobLevel:</strong> @ViewBag.JobLevel</p>');
-        printDocument.write('<p style="font-size: 12px;"><strong>BU/Holding:</strong> @ViewBag.Company</p>');
         printDocument.write('</div>');
         printDocument.write('<div class="col-auto mt-2">');
-        printDocument.write('<p style="font-size: 12px;"><strong>IDPGroupID:</strong> @ViewBag.IDPGroupID</p>');
-        printDocument.write('<p style="font-size: 12px;"><strong>IDPGroupName:</strong> @ViewBag.IDPGroupName</p>');
-        printDocument.write('<p style="font-size: 12px;"><strong>Year:</strong> @ViewBag.Year</p>');
+        printDocument.write('<p style="font-size: 12px;"><strong>Job Level:</strong> @ViewBag.JobLevel</p>');
+        printDocument.write('<p style="font-size: 12px;"><strong>BU/Holding:</strong> @ViewBag.Company</p>');
         printDocument.write('</div>');
         printDocument.write('</div>');
         printDocument.write('<div class="row ms-2 me-2">');
-        printDocument.write('<img src="' + pieChartMCDataURL + '" style="max-width:25%; border: 2px solid black;">');
-        printDocument.write('<img src="' + pieChartFCDataURL + '" style="max-width:25%; border: 2px solid black;">');
-        printDocument.write('<img src="' + pieChartTC_CCDataURL + '" style="max-width:25%; border: 2px solid black;">');
-        printDocument.write('<div class="col-3" style="padding-left: 0; padding-right: 0;">');
-        printDocument.write('<table class="table table-striped" id="myTable" width="80">');
+        printDocument.write('<img src="' + pieChartMCDataURL + '" style="width:240px; height: 200px; border: 0.5px solid black;">');
+        printDocument.write('<img src="' + pieChartFCDataURL + '" style="width:240px; height: 200px; border: 0.5px solid black;">');
+        printDocument.write('<img src="' + pieChartTC_CCDataURL + '" style="width:240px; height: 200px; border: 0.5px solid black;">');
+        printDocument.write('<div class="col-3 ms-1" style="padding-left: 0; padding-right: 0;">');
+
+        printDocument.write('<table id="myTable" width="300">');
         printDocument.write('<tr class="text-center">');
         printDocument.write('<th style="background-color: #C8E8FF; color: #2D4686; "></th>');
         printDocument.write('<td style="background-color: #C8E8FF; color: #2D4686; font-size: 12px;"><strong>ครึ่งแรก</strong></td>');
@@ -695,76 +652,84 @@ var pieChart = new Chart(document.getElementById('pieChart-TC_CC'), {
         printDocument.write('</tr>');
         printDocument.write('<tr class="text-center">');
         printDocument.write('<th style="background-color: #B7DCFF; font-size: 12px;">Competency All</th>');
-        printDocument.write('<td colspan="2">' + @ViewBag.All +'</td>');
-        printDocument.write('</tr>');
+        printDocument.write('<td style="font-size: 14px;">' + @ViewBag.All +'</td>');
+        printDocument.write('<td style="font-size: 14px;">' + @ViewBag.All +'</td>');
+        printDocument.write('</tr>')
         printDocument.write('<tr class="text-center">');
         printDocument.write('<th style="background-color: #B7DCFF; font-size: 12px;">Competency Pass</th>');
-        printDocument.write('<td>' + @ViewBag.Pass1 +'</td>');
-        printDocument.write('<td>' + @ViewBag.Pass2 +'</td>');
+        printDocument.write('<td style="font-size: 14px;">' + @ViewBag.Pass1 +'</td>');
+        printDocument.write('<td style="font-size: 14px;">' + @ViewBag.Pass2 +'</td>');
         printDocument.write('</tr>');
         printDocument.write('<tr class="text-center">');
         printDocument.write('<th style="background-color: #B7DCFF; font-size: 12px;">% Competency</th>');
-        printDocument.write('<td>' + @ViewBag.Per1 +'%</td>');
-        printDocument.write('<td>' + @ViewBag.Per2 +'%</td>');
+        printDocument.write('<td style="font-size: 14px;">' + @ViewBag.Per1 +'%</td>');
+        printDocument.write('<td style="font-size: 14px;">' + @ViewBag.Per2 +'%</td>');
         printDocument.write('</tr>');
         printDocument.write('<tr class="text-center">');
-        printDocument.write('<th style="background-color: #B7DCFF; font-size: 12px;">>100%</th>');
-        printDocument.write('<td colspan="2">');
+        printDocument.write('<th style="background-color: #B7DCFF; font-size: 12px;">M = >100%</th>');
+        printDocument.write('<td style="background-color: black;">');
         printDocument.write('</td>');
+        printDocument.write('<td style="background-color: black;">');
+        printDocument.write('</td>')
         printDocument.write('</tr>');
         printDocument.write('<tr class="text-center">');
-        printDocument.write('<th style="background-color: #B7DCFF; font-size: 12px;">>70%&#60;100%</th>');
-        printDocument.write('<td>' + '@ViewBag.Rank1' +'</td>');
-        printDocument.write('<td>' + '@ViewBag.Rank2' +'</td>');
+        printDocument.write('<th style="background-color: #B7DCFF; font-size: 12px;">C = >70%&#60;100%</th>');
+        printDocument.write('<td style="font-size: 14px;">' + '@ViewBag.Rank1' +'</td>');
+        printDocument.write('<td style="font-size: 14px;">' + '@ViewBag.Rank2' +'</td>');
         printDocument.write('</tr>');
         printDocument.write('<tr class="text-center">');
-        printDocument.write('<th style="background-color: #B7DCFF; font-size: 12px;">&#60;70%</th>');
-        printDocument.write('<td colspan="2">');
+        printDocument.write('<th style="background-color: #B7DCFF; font-size: 12px;">L = &#60;70%</th>');
+        printDocument.write('<td style="background-color: black;">');
         printDocument.write('</td>');
+        printDocument.write('<td style="background-color: black;">');
+        printDocument.write('</td>')
         printDocument.write('</tr>');
         printDocument.write('</table>');
+
         printDocument.write('</div>');
         printDocument.write('</div>');
         printDocument.write('<table class="mt-3" width="100%" id="TB">');
         printDocument.write('<thead style="background-color: #fbd0da"');
         printDocument.write('<tr>');
-        printDocument.write('<th colspan="17" style="padding: 0px 0px 0px 5px;">II-1. Overall Competency - Managerial</th>');
+        printDocument.write('<th colspan="18" style="padding: 0px 0px 0px 5px;">II-1. Overall Competency - Managerial</th>');
         printDocument.write('</tr>');
         printDocument.write('<tr>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="5%">Critical</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="20%">Competency Name</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="2%">R</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="1%">A1</th>');
-        printDocument.write('<th class="text-center" colspan="2" style="font-size: 15px;" width="2%">Gap1</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="5%">Priority</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="5%">Type</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="20%">Development Plan</th>');
-        printDocument.write('<th class="text-center" colspan="4" style="font-size: 15px;" width="5%">Quarter</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="20%">Development Result</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="5%">A2</th>');
-        printDocument.write('<th class="text-center" colspan="2" style="font-size: 15px;" width="5%">Gap2</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="5%">Critical</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="5%">Code</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="20%">Competency Name</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="2%">R</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="1%">A1</th>');
+        printDocument.write('<th class="text-center fw-bold" colspan="2" style="font-size: 13px;" width="2%">Gap1</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="5%">Priority</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="5%">Type</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="20%">Development Plan</th>');
+        printDocument.write('<th class="text-center fw-bold" colspan="4" style="font-size: 13px;" width="5%">Quarter</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="20%">Development Result</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="5%">A2</th>');
+        printDocument.write('<th class="text-center fw-bold" colspan="2" style="font-size: 13px;" width="5%">Gap2</th>');
         printDocument.write('</tr>');
         printDocument.write('<tr>');
-        printDocument.write('<th class="text-center" width="1%">-</th>');
-        printDocument.write('<th class="text-center" width="1%">+</th>');
-        printDocument.write('<th class="text-center" width="1%">Q1</th>');
-        printDocument.write('<th class="text-center" width="1%">Q2</th>');
-        printDocument.write('<th class="text-center" width="1%">Q3</th>');
-        printDocument.write('<th class="text-center" width="1%">Q4</th>');
-        printDocument.write('<th class="text-center" width="1%">-</th>');
-        printDocument.write('<th class="text-center" width="1%">+</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">-</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">+</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">Q1</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">Q2</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">Q3</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">Q4</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">-</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">+</th>');
         printDocument.write('</tr>');
         printDocument.write('</thead>');
         printDocument.write('<tbody>');
         for (i = 0; i < propertyCount; i++) {
             if (res[i].Competency.Type === "MC") {
                 printDocument.write('<tr>');
-                if (res[i].ResultItem.Critical == false) {
+                if (res[i].IDPGroupItem.Critical == false) {
                     printDocument.write('<td></td>');
                 } else {
                     printDocument.write('<td class="text-center"><img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Regular_hexagon.svg" width="25" height="25" /></td>');
                 }
-                printDocument.write('<td style="font-size: 13px; padding: 5px 5px 5px 5px;">' + (res[i].Competency.CompetencyNameTH || '') + '</td>');
+                printDocument.write('<td class="text-center" style="font-size: 12px; padding: 5px 5px 5px 5px;">' + (res[i].Competency.CompetencyId || '') + '</td>');
+                printDocument.write('<td style="font-size: 12px; padding: 5px 5px 5px 5px;">' + (res[i].Competency.CompetencyNameTH || '') + '</td>');
                 printDocument.write('<td class="text-center">' + (res[i].ResultItem.Requirement || '') + '</td>');
                 printDocument.write('<td class="text-center">' + (res[i].ResultItem.Actual1 || '') + '</td>');
                 if (res[i].ResultItem.Gap1 < 0) {
@@ -781,7 +746,7 @@ var pieChart = new Chart(document.getElementById('pieChart-TC_CC'), {
                 }
                 printDocument.write('<td class="text-center">' + (res[i].ResultItem.Priority || '') + '</td>');
                 printDocument.write('<td class="text-center">' + (res[i].ResultItem.TypePlan || '') + '</td>');
-                printDocument.write('<td style="font-size: 13px; padding: 5px 5px 5px 5px;">' + (res[i].ResultItem.DevPlan || '') + '</td>');
+                printDocument.write('<td style="font-size: 12px; padding: 5px 5px 5px 5px;">' + (res[i].ResultItem.DevPlan || '') + '</td>');
                 if (res[i].ResultItem.Q1 == "1") {
                     printDocument.write('<td class="text-center"><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></td>');
                 }
@@ -806,7 +771,7 @@ var pieChart = new Chart(document.getElementById('pieChart-TC_CC'), {
                 else {
                     printDocument.write('<td></td>');
                 }
-                printDocument.write('<td style="font-size: 13px; padding: 5px 5px 5px 5px;">' + (res[i].ResultItem.DevRst || '') + '</td>');
+                printDocument.write('<td style="font-size: 12px; padding: 5px 5px 5px 5px;">' + (res[i].ResultItem.DevRst || '') + '</td>');
                 printDocument.write('<td class="text-center">' + (res[i].ResultItem.Actual2 || '') + '</td>');
                 if (res[i].ResultItem.Gap2 < 0) {
                     printDocument.write('<td class="text-center">' + (res[i].ResultItem.Gap2) + '</td>');
@@ -828,43 +793,45 @@ var pieChart = new Chart(document.getElementById('pieChart-TC_CC'), {
         printDocument.write('<table class="mt-3" width="100%" id="TB">');
         printDocument.write('<thead style="background-color: #FDF3CE"');
         printDocument.write('<tr>');
-        printDocument.write('<th colspan="17" style="padding: 0px 0px 0px 5px;">II-2. Overall Competency - Functional</th>');
+        printDocument.write('<th colspan="18" style="padding: 0px 0px 0px 5px;">II-2. Overall Competency - Functional</th>');
         printDocument.write('</tr>');
         printDocument.write('<tr>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="5%">Critical</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="20%">Competency Name</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="2%">R</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="1%">A1</th>');
-        printDocument.write('<th class="text-center" colspan="2" style="font-size: 15px;" width="2%">Gap1</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="5%">Priority</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="5%">Type</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="20%">Development Plan</th>');
-        printDocument.write('<th class="text-center" colspan="4" style="font-size: 15px;" width="5%">Quarter</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="20%">Development Result</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="5%">A2</th>');
-        printDocument.write('<th class="text-center" colspan="2" style="font-size: 15px;" width="5%">Gap2</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="5%">Critical</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="5%">Code</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="20%">Competency Name</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="2%">R</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="1%">A1</th>');
+        printDocument.write('<th class="text-center fw-bold" colspan="2" style="font-size: 13px;" width="2%">Gap1</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="5%">Priority</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="5%">Type</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="20%">Development Plan</th>');
+        printDocument.write('<th class="text-center fw-bold" colspan="4" style="font-size: 13px;" width="5%">Quarter</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="20%">Development Result</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="5%">A2</th>');
+        printDocument.write('<th class="text-center fw-bold" colspan="2" style="font-size: 13px;" width="5%">Gap2</th>');
         printDocument.write('</tr>');
         printDocument.write('<tr>');
-        printDocument.write('<th class="text-center" width="1%">-</th>');
-        printDocument.write('<th class="text-center" width="1%">+</th>');
-        printDocument.write('<th class="text-center" width="1%">Q1</th>');
-        printDocument.write('<th class="text-center" width="1%">Q2</th>');
-        printDocument.write('<th class="text-center" width="1%">Q3</th>');
-        printDocument.write('<th class="text-center" width="1%">Q4</th>');
-        printDocument.write('<th class="text-center" width="1%">-</th>');
-        printDocument.write('<th class="text-center" width="1%">+</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">-</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">+</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">Q1</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">Q2</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">Q3</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">Q4</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">-</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">+</th>');
         printDocument.write('</tr>');
         printDocument.write('</thead>');
         printDocument.write('<tbody>');
         for (i = 0; i < propertyCount; i++) {
             if (res[i].Competency.Type === "FC") {
                 printDocument.write('<tr>');
-                if (res[i].ResultItem.Critical == false) {
+                if (res[i].IDPGroupItem.Critical == false) {
                     printDocument.write('<td></td>');
                 } else {
                     printDocument.write('<td class="text-center"><img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Regular_hexagon.svg" width="25" height="25" /></td>');
                 }
-                printDocument.write('<td style="font-size: 13px; padding: 5px 5px 5px 5px;">' + (res[i].Competency.CompetencyNameTH || '') + '</td>');
+                printDocument.write('<td class="text-center" style="font-size: 12px; padding: 5px 5px 5px 5px;">' + (res[i].Competency.CompetencyId || '') + '</td>');
+                printDocument.write('<td style="font-size: 12px; padding: 5px 5px 5px 5px;">' + (res[i].Competency.CompetencyNameTH || '') + '</td>');
                 printDocument.write('<td class="text-center">' + (res[i].ResultItem.Requirement || '') + '</td>');
                 printDocument.write('<td class="text-center">' + (res[i].ResultItem.Actual1 || '') + '</td>');
                 if (res[i].ResultItem.Gap1 < 0) {
@@ -881,7 +848,7 @@ var pieChart = new Chart(document.getElementById('pieChart-TC_CC'), {
                 }
                 printDocument.write('<td class="text-center">' + (res[i].ResultItem.Priority || '') + '</td>');
                 printDocument.write('<td class="text-center">' + (res[i].ResultItem.TypePlan || '') + '</td>');
-                printDocument.write('<td style="font-size: 13px; padding: 5px 5px 5px 5px;">' + (res[i].ResultItem.DevPlan || '') + '</td>');
+                printDocument.write('<td style="font-size: 12px; padding: 5px 5px 5px 5px;">' + (res[i].ResultItem.DevPlan || '') + '</td>');
                 if (res[i].ResultItem.Q1 == "1") {
                     printDocument.write('<td class="text-center"><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></td>');
                 }
@@ -906,7 +873,7 @@ var pieChart = new Chart(document.getElementById('pieChart-TC_CC'), {
                 else {
                     printDocument.write('<td></td>');
                 }
-                printDocument.write('<td style="font-size: 13px; padding: 5px 5px 5px 5px;">' + (res[i].ResultItem.DevRst || '') + '</td>');
+                printDocument.write('<td style="font-size: 12px; padding: 5px 5px 5px 5px;">' + (res[i].ResultItem.DevRst || '') + '</td>');
                 printDocument.write('<td class="text-center">' + (res[i].ResultItem.Actual2 || '') + '</td>');
                 if (res[i].ResultItem.Gap2 < 0) {
                     printDocument.write('<td class="text-center">' + (res[i].ResultItem.Gap2) + '</td>');
@@ -929,31 +896,32 @@ var pieChart = new Chart(document.getElementById('pieChart-TC_CC'), {
         printDocument.write('<table class="mt-3" width="100%" id="TB">');
         printDocument.write('<thead style="background-color: #FFE3CD"');
         printDocument.write('<tr>');
-        printDocument.write('<th colspan="17" style="padding: 0px 0px 0px 5px;">II-3. Overall Competency - Technical</th>');
+        printDocument.write('<th colspan="18" style="padding: 0px 0px 0px 5px;">II-3. Overall Competency - Technical</th>');
         printDocument.write('</tr>');
         printDocument.write('<tr>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="5%">Critical</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="20%">Competency Name</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="2%">R</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="1%">A1</th>');
-        printDocument.write('<th class="text-center" colspan="2" style="font-size: 15px;" width="2%">Gap1</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="5%">Priority</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="5%">Type</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="20%">Development Plan</th>');
-        printDocument.write('<th class="text-center" colspan="4" style="font-size: 15px;" width="5%">Quarter</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="20%">Development Result</th>');
-        printDocument.write('<th class="text-center" rowspan="2" style="font-size: 15px;" width="5%">A2</th>');
-        printDocument.write('<th class="text-center" colspan="2" style="font-size: 15px;" width="5%">Gap2</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="5%">Critical</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="5%">Code</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="20%">Competency Name</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="2%">R</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="1%">A1</th>');
+        printDocument.write('<th class="text-center fw-bold" colspan="2" style="font-size: 13px;" width="2%">Gap1</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="5%">Priority</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="5%">Type</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="20%">Development Plan</th>');
+        printDocument.write('<th class="text-center fw-bold" colspan="4" style="font-size: 13px;" width="5%">Quarter</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="20%">Development Result</th>');
+        printDocument.write('<th class="text-center fw-bold" rowspan="2" style="font-size: 13px;" width="5%">A2</th>');
+        printDocument.write('<th class="text-center fw-bold" colspan="2" style="font-size: 13px;" width="5%">Gap2</th>');
         printDocument.write('</tr>');
         printDocument.write('<tr>');
-        printDocument.write('<th class="text-center" width="1%">-</th>');
-        printDocument.write('<th class="text-center" width="1%">+</th>');
-        printDocument.write('<th class="text-center" width="1%">Q1</th>');
-        printDocument.write('<th class="text-center" width="1%">Q2</th>');
-        printDocument.write('<th class="text-center" width="1%">Q3</th>');
-        printDocument.write('<th class="text-center" width="1%">Q4</th>');
-        printDocument.write('<th class="text-center" width="1%">-</th>');
-        printDocument.write('<th class="text-center" width="1%">+</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">-</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">+</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">Q1</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">Q2</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">Q3</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">Q4</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">-</th>');
+        printDocument.write('<th class="text-center fw-bold" width="1%" style="font-size: 13px;">+</th>');
         printDocument.write('</tr>');
         printDocument.write('</thead>');
         printDocument.write('<tbody>');
@@ -961,12 +929,13 @@ var pieChart = new Chart(document.getElementById('pieChart-TC_CC'), {
             if (res[i].Competency.Type === "TC" || res[i].Competency.Type === "CC")
             {
                 printDocument.write('<tr>');
-                if (res[i].ResultItem.Critical == false) {
+                if (res[i].IDPGroupItem.Critical == false) {
                     printDocument.write('<td></td>');
                 } else {
                     printDocument.write('<td class="text-center"><img src="https://upload.wikimedia.org/wikipedia/commons/4/41/Regular_hexagon.svg" width="25" height="25" /></td>');
                 }
-                printDocument.write('<td style="font-size: 13px; padding: 5px 5px 5px 5px;">' + (res[i].Competency.CompetencyNameTH || '') + '</td>');
+                printDocument.write('<td class="text-center" style="font-size: 12px; padding: 5px 5px 5px 5px;">' + (res[i].Competency.CompetencyId || '') + '</td>');
+                printDocument.write('<td style="font-size: 12px; padding: 5px 5px 5px 5px;">' + (res[i].Competency.CompetencyNameTH || '') + '</td>');
                 printDocument.write('<td class="text-center">' + (res[i].ResultItem.Requirement || '') + '</td>');
                 printDocument.write('<td class="text-center">' + (res[i].ResultItem.Actual1 || '') + '</td>');
                 if (res[i].ResultItem.Gap1 < 0) {
@@ -983,7 +952,7 @@ var pieChart = new Chart(document.getElementById('pieChart-TC_CC'), {
                 }
                 printDocument.write('<td class="text-center">' + (res[i].ResultItem.Priority || '') + '</td>');
                 printDocument.write('<td class="text-center">' + (res[i].ResultItem.TypePlan || '') + '</td>');
-                printDocument.write('<td style="font-size: 13px; padding: 5px 5px 5px 5px;">' + (res[i].ResultItem.DevPlan || '') + '</td>');
+                printDocument.write('<td style="font-size: 12px; padding: 5px 5px 5px 5px;">' + (res[i].ResultItem.DevPlan || '') + '</td>');
                 if (res[i].ResultItem.Q1 == "1") {
                     printDocument.write('<td class="text-center"><svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></td>');
                 }
@@ -1008,7 +977,7 @@ var pieChart = new Chart(document.getElementById('pieChart-TC_CC'), {
                 else {
                     printDocument.write('<td></td>');
                 }
-                printDocument.write('<td style="font-size: 13px; padding: 5px 5px 5px 5px;">' + (res[i].ResultItem.DevRst || '') + '</td>');
+                printDocument.write('<td style="font-size: 12px; padding: 5px 5px 5px 5px;">' + (res[i].ResultItem.DevRst || '') + '</td>');
                 printDocument.write('<td class="text-center">' + (res[i].ResultItem.Actual2 || '') + '</td>');
                 if (res[i].ResultItem.Gap2 < 0) {
                     printDocument.write('<td class="text-center">' + (res[i].ResultItem.Gap2) + '</td>');

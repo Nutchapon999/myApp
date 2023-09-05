@@ -234,17 +234,17 @@
                     js('#myTable_length label').addClass('entries-label');
                 }
             });
+
+            var checkAllCheckbox = document.getElementById('checkAll');
+
+            var checkboxes = document.querySelectorAll('tbody input[name="competencyIds"]');
+
+            checkAllCheckbox.addEventListener('change', function () {
+                checkboxes.forEach(function (checkbox) {
+                    checkbox.checked = checkAllCheckbox.checked;
+                });
+            });
         }
-    });
-
-    const checkAllCheckbox = document.getElementById('checkAll');
-
-    const checkboxes = document.querySelectorAll('tbody input[name="competencyIds"]');
-
-    checkAllCheckbox.addEventListener('change', function () {
-        checkboxes.forEach(function (checkbox) {
-            checkbox.checked = checkAllCheckbox.checked;
-        });
     });
 </script>
 <style>

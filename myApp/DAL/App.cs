@@ -2678,6 +2678,36 @@ namespace myApp.DAL
                 }
             }
         }
+        public void InsertResultEmployeesByUpload(User user, string year, string username, string idpGroupId)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                
+                int competencyAll = GetCompetencyAll(user.Id, idpGroupId);
+
+                string resultQuery = "INSERT INTO IDP_RESULT (GUID, K2_NO, FORM_TYPE, FORM_ID, IDP_GROUP_ID, ID, COMPETENCY_ALL, COMPETENCY_PASS1, COMPETENCY_PASS2, COMPETENCY_PER1, COMPETENCY_PER2, " +
+                                        "YEAR, RANK1, RANK2, SUBJECT, PLANT, DEPARTMENT, COMPANY_CODE, REQUISITIONER, REQUISITIONER_EMAIL, " +
+                                        "CREATED_BY, CREATED_ON, STARTEDWF_ON, COMPLETED_ON, CURRENT_APPROVER, GR_LEVEL) " +
+                                        "VALUES (@Guid, NULL, 'IDP', 'IDP01', @IDPGroupId, @Id, @All, 0, 0, 0, 0, " +
+                                        "@Year, NULL, NULL, @Subject, NULL, @Department, NULL, NULL, NULL, @CreateBy, GETDATE(), NULL, NULL, NULL, NULL)";
+
+                using (SqlCommand resultCommand = new SqlCommand(resultQuery, connection))
+                {
+                    resultCommand.Parameters.AddWithValue("@Guid", Guid.NewGuid().ToString());
+                    resultCommand.Parameters.AddWithValue("@Id", user.Id);
+                    resultCommand.Parameters.AddWithValue("@Year", year);
+                    resultCommand.Parameters.AddWithValue("@All", competencyAll);
+                    resultCommand.Parameters.AddWithValue("@Subject", user.Prefix + user.FirstNameTH + user.LastNameTH);
+                    resultCommand.Parameters.AddWithValue("@Department", user.Department);
+                    resultCommand.Parameters.AddWithValue("@CreateBy", username);
+                    resultCommand.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
+
+                    resultCommand.ExecuteNonQuery();
+                }
+                
+            }
+        }
         public void UpdateStartWorkFlow(string guid, string username)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -4103,6 +4133,7 @@ namespace myApp.DAL
                         idpGroupItem.Critical = reader.IsDBNull(reader.GetOrdinal("CRITICAL")) ? false : (bool)reader["CRITICAL"];
 
                         Competency competency = new Competency();
+                        competency.CompetencyId = (string)reader["COMPETENCY_ID"];
                         competency.CompetencyNameTH = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_NAME_TH")) ? null : (string)reader["COMPETENCY_NAME_TH"];
                         competency.Pl1 = reader.IsDBNull(reader.GetOrdinal("PL1")) ? null : (string)reader["PL1"];
                         competency.Pl2 = reader.IsDBNull(reader.GetOrdinal("PL2")) ? null : (string)reader["PL2"];

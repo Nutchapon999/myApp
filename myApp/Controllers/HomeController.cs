@@ -1107,111 +1107,255 @@ namespace myApp.Controllers
 
             return RedirectToAction("UploadIDPGroup");
         }
+        //private void InsertExceldata3(string FilePath, string FileName, string username)
+        //{
+        //    string fullpath = Server.MapPath("/Excel/") + FileName;
+        //    ExcelConn(fullpath);
+        //    String query = string.Format("select * from [{0}]", "Sheet1$");
+
+        //    try
+        //    {
+        //        OleDbCommand Ecom = new OleDbCommand(query, Econ);
+        //        Econ.Open();
+
+        //        DataSet ds = new DataSet();
+        //        OleDbDataAdapter oda = new OleDbDataAdapter(query, Econ);
+        //        Econ.Close();
+        //        oda.Fill(ds);
+
+        //        DataTable dt = ds.Tables[0];
+
+        //        //using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyConnection"].ConnectionString))
+        //        //{
+        //        //    con.Open();
+        //        //    SqlCommand checkExistCommand = new SqlCommand("SELECT IDP_GROUP_ID FROM IDP_GROUP WHERE IDP_GROUP_ID = @IDPGroupId", con);
+        //        //    SqlCommand insertCommand = new SqlCommand("INSERT INTO IDP_GROUP (IDP_GROUP_ID, IDP_GROUP_NAME, YEAR, CREATED_BY, CREATED_ON) " +
+        //        //                                             "VALUES (@IDPGroupId, @IDPGroupName, @Year, @Username, GETDATE())", con);
+
+        //        //    foreach (DataRow row in dt.Rows)
+        //        //    {
+        //        //        string IDPGroupId = row["IDP_GROUP_ID"].ToString();
+        //        //        checkExistCommand.Parameters.Clear();
+        //        //        checkExistCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
+
+        //        //        object existingCode = checkExistCommand.ExecuteScalar();
+        //        //        if (existingCode == null && !string.IsNullOrEmpty(IDPGroupId))
+        //        //        {
+        //        //            insertCommand.Parameters.Clear();
+        //        //            insertCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
+        //        //            insertCommand.Parameters.AddWithValue("@IDPGroupName", row["IDP_GROUP_NAME"]);
+        //        //            insertCommand.Parameters.AddWithValue("@Year", row["YEAR"]);
+        //        //            insertCommand.Parameters.AddWithValue("@Username", username);
+
+
+        //        //            insertCommand.ExecuteNonQuery();
+        //        //        }
+        //        //        else
+        //        //        {
+        //        //            SqlCommand updateCommand = new SqlCommand("UPDATE IDP_GROUP SET IDP_GROUP_ID = @IDPGroupId, IDP_GROUP_NAME = @IDPGroupName, " +
+        //        //                                                   "YEAR = @Year " +
+        //        //                                                   "WHERE IDP_GROUP_ID = @IDPGroupId", con);
+
+        //        //            updateCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
+        //        //            updateCommand.Parameters.AddWithValue("@IDPGroupName", row["IDP_GROUP_NAME"]);
+        //        //            updateCommand.Parameters.AddWithValue("@Year", row["YEAR"]);
+
+
+
+        //        //            updateCommand.ExecuteNonQuery();
+        //        //            //SqlCommand selectOldDataCommand = new SqlCommand("SELECT IDP_GROUP_NAME, YEAR FROM IDP_GROUP WHERE IDP_GROUP_ID = @IDPGroupId", con);
+        //        //            //selectOldDataCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
+
+        //        //            //using (SqlDataReader reader = selectOldDataCommand.ExecuteReader())
+        //        //            //{
+        //        //            //    if (reader.Read())
+        //        //            //    {
+        //        //            //        string oldGroupName = reader["IDP_GROUP_NAME"].ToString();
+        //        //            //        int oldYear = Convert.ToInt32(reader["YEAR"]);
+
+        //        //            //        string newGroupName = row["IDP_GROUP_NAME"].ToString();
+        //        //            //        int newYear = Convert.ToInt32(row["YEAR"]);
+
+        //        //            //        reader.Close();
+
+
+        //        //            //        if (oldGroupName != newGroupName || oldYear != newYear)
+        //        //            //        {
+        //        //            //            // Update data
+        //        //            //            SqlCommand updateCommand = new SqlCommand("UPDATE IDP_GROUP SET IDP_GROUP_NAME = @IDPGroupName, YEAR = @Year WHERE IDP_GROUP_ID = @IDPGroupId", con);
+
+        //        //            //            updateCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
+        //        //            //            updateCommand.Parameters.AddWithValue("@IDPGroupName", oldGroupName);
+        //        //            //            updateCommand.Parameters.AddWithValue("@Year", oldYear);
+
+        //        //            //            updateCommand.ExecuteNonQuery();
+        //        //            //        }
+        //        //            //        else
+        //        //            //        {
+        //        //            //            SqlCommand updateCommand = new SqlCommand("UPDATE IDP_GROUP SET IDP_GROUP_NAME = @IDPGroupName, YEAR = @Year WHERE IDP_GROUP_ID = @IDPGroupId", con);
+
+        //        //            //            updateCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
+        //        //            //            updateCommand.Parameters.AddWithValue("@IDPGroupName", newGroupName);
+        //        //            //            updateCommand.Parameters.AddWithValue("@Year", newYear);
+
+        //        //            //            updateCommand.ExecuteNonQuery();
+        //        //            //        }
+        //        //            //    }
+        //        //            //}
+        //        //        }
+
+        //        //    }
+        //        //}
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        TempData["UploadError"] = "เกิดข้อผิดพลาดในการอัปโหลด: " + ex.Message;
+        //    }
+        //}
         private void InsertExceldata3(string FilePath, string FileName, string username)
         {
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             string fullpath = Server.MapPath("/Excel/") + FileName;
-            ExcelConn(fullpath);
-            String query = string.Format("select * from [{0}]", "Sheet1$");
-
             try
             {
-                OleDbCommand Ecom = new OleDbCommand(query, Econ);
-                Econ.Open();
-
-                DataSet ds = new DataSet();
-                OleDbDataAdapter oda = new OleDbDataAdapter(query, Econ);
-                Econ.Close();
-                oda.Fill(ds);
-
-                DataTable dt = ds.Tables[0];
-
-                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyConnection"].ConnectionString))
+                string fileExtension = Path.GetExtension(FileName).ToLower();
+                if( fileExtension == ".xlsx" || fileExtension == ".xls")
                 {
-                    con.Open();
-                    SqlCommand checkExistCommand = new SqlCommand("SELECT IDP_GROUP_ID FROM IDP_GROUP WHERE IDP_GROUP_ID = @IDPGroupId", con);
-                    SqlCommand insertCommand = new SqlCommand("INSERT INTO IDP_GROUP (IDP_GROUP_ID, IDP_GROUP_NAME, YEAR, CREATED_BY, CREATED_ON) " +
-                                                             "VALUES (@IDPGroupId, @IDPGroupName, @Year, @Username, GETDATE())", con);
-
-                    foreach (DataRow row in dt.Rows)
+                    using (var package = new ExcelPackage(new FileInfo(fullpath)))
                     {
-                        string IDPGroupId = row["IDP_GROUP_ID"].ToString();
-                        checkExistCommand.Parameters.Clear();
-                        checkExistCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
+                        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                        var worksheet1 = package.Workbook.Worksheets[0];
+                        var worksheet2 = package.Workbook.Worksheets[1];
+                        var worksheet3 = package.Workbook.Worksheets[2];
 
-                        object existingCode = checkExistCommand.ExecuteScalar();
-                        if (existingCode == null && !string.IsNullOrEmpty(IDPGroupId))
+                        int startRow = 2;
+
+                        using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyConnection"].ConnectionString))
                         {
-                            insertCommand.Parameters.Clear();
-                            insertCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
-                            insertCommand.Parameters.AddWithValue("@IDPGroupName", row["IDP_GROUP_NAME"]);
-                            insertCommand.Parameters.AddWithValue("@Year", row["YEAR"]);
-                            insertCommand.Parameters.AddWithValue("@Username", username);
-                       
 
-                            insertCommand.ExecuteNonQuery();
+                            con.Open();
+
+                            for (int row = startRow; row <= worksheet1.Dimension.End.Row; row++)
+                            {
+                                string A = worksheet1.Cells[row, 1].Text;
+                                string B = worksheet1.Cells[row, 2].Text;
+                                string C = worksheet1.Cells[row, 3].Text;
+
+                                string selectQuery = "SELECT COUNT(*) FROM IDP_GROUP WHERE IDP_GROUP_ID = @A";
+                                SqlCommand selectCmd = new SqlCommand(selectQuery, con);
+                                selectCmd.Parameters.AddWithValue("@A", A);
+                                int count = (int)selectCmd.ExecuteScalar();
+
+                                if (count > 0)
+                                {
+                                    string updateQuery = "UPDATE IDP_GROUP SET IDP_GROUP_NAME = @B, YEAR = @C, CREATED_BY = @Username WHERE IDP_GROUP_ID = @A";
+                                    SqlCommand updateCmd = new SqlCommand(updateQuery, con);
+                                    updateCmd.Parameters.AddWithValue("@A", A);
+                                    updateCmd.Parameters.AddWithValue("@B", B);
+                                    updateCmd.Parameters.AddWithValue("@C", C);
+                                    updateCmd.Parameters.AddWithValue("@Username", username);
+                                    updateCmd.ExecuteNonQuery();
+                                }
+                                else
+                                {
+                                    string insertQuery = "INSERT INTO IDP_GROUP (IDP_GROUP_ID, IDP_GROUP_NAME, YEAR, CREATED_BY) VALUES (@A, @B, @C, @Username)";
+                                    SqlCommand insertCmd = new SqlCommand(insertQuery, con);
+                                    insertCmd.Parameters.AddWithValue("@A", A);
+                                    insertCmd.Parameters.AddWithValue("@B", B);
+                                    insertCmd.Parameters.AddWithValue("@C", C);
+                                    insertCmd.Parameters.AddWithValue("@Username", username);
+                                    insertCmd.ExecuteNonQuery();
+                                }
+                            }
+                            for (int row = startRow; row <= worksheet2.Dimension.End.Row; row++)
+                            {
+                                string A = worksheet2.Cells[row, 1].Text;
+                                string B = worksheet2.Cells[row, 2].Text;
+                                string C = worksheet2.Cells[row, 3].Text;
+                                string D = worksheet2.Cells[row, 4].Text;
+
+                                string selectQuery = "SELECT COUNT(*) FROM IDP_GROUP_ITEM WHERE IDP_GROUP_ID = @A AND COMPETENCY_ID = @B";
+                                SqlCommand selectCmd = new SqlCommand(selectQuery, con);
+
+                                selectCmd.Parameters.AddWithValue("@A", A);
+                                selectCmd.Parameters.AddWithValue("@B", B);
+                                int count = (int)selectCmd.ExecuteScalar();
+
+                                if (count > 0)
+                                {
+                                    //string updateQuery = "UPDATE IDP_GROUP_ITEM SET COMPETENCY_ID = @B, PL = @C, CRITICAL = @D WHERE IDP_GROUP_ID = @A AND COMPETENCY_ID = @B";
+                                    //SqlCommand updateCmd = new SqlCommand(updateQuery, con);
+                                    //updateCmd.Parameters.AddWithValue("@A", A);
+                                    //updateCmd.Parameters.AddWithValue("@B", B);
+                                    //updateCmd.Parameters.AddWithValue("@C", C);
+                                    //updateCmd.Parameters.AddWithValue("@D", D);
+
+                                    //updateCmd.ExecuteNonQuery();
+
+                                    continue;
+                                }
+                                else
+                                {
+                                    string insertQuery = "INSERT INTO IDP_GROUP_ITEM (IDP_GROUP_ID, COMPETENCY_ID, PL, CRITICAL) VALUES (@A, @B, @C, @D)";
+                                    SqlCommand insertCmd = new SqlCommand(insertQuery, con);
+
+                                    insertCmd.Parameters.AddWithValue("@A", A);
+                                    insertCmd.Parameters.AddWithValue("@B", B);
+                                    insertCmd.Parameters.AddWithValue("@C", C);
+                                    insertCmd.Parameters.AddWithValue("@D", D);
+
+                                    insertCmd.ExecuteNonQuery();
+                                }
+                            }
+                            for (int row = startRow; row <= worksheet3.Dimension.End.Row; row++)
+                            {
+                                string A = worksheet3.Cells[row, 1].Text;
+                                string B = worksheet3.Cells[row, 2].Text;
+                                string Year = worksheet1.Cells[row, 3].Text;
+
+                                string selectQuery = "SELECT COUNT(*) FROM IDP_USER_ENROLL WHERE IDP_GROUP_ID = @B AND ID = @A";
+                                SqlCommand selectCmd = new SqlCommand(selectQuery, con);
+                                selectCmd.Parameters.AddWithValue("@A", A);
+                                selectCmd.Parameters.AddWithValue("@B", B);
+
+                                int count = (int)selectCmd.ExecuteScalar();
+
+                                if (count > 0)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    string insertQuery = "INSERT INTO IDP_USER_ENROLL (ID, IDP_GROUP_ID, STATUS) VALUES (@A, @B, 'Draft')";
+                                    SqlCommand insertCmd = new SqlCommand(insertQuery, con);
+                                    insertCmd.Parameters.AddWithValue("@A", A);
+                                    insertCmd.Parameters.AddWithValue("@B", B);
+
+                                    insertCmd.ExecuteNonQuery();
+                                }
+                                User user = app.GetUserById(A);
+
+                                app.InsertResultEmployeesByUpload(user, Year, username, B);
+                            }
+                            con.Close();
+
+
                         }
-                        else
-                        {
-                            SqlCommand updateCommand = new SqlCommand("UPDATE IDP_GROUP SET IDP_GROUP_ID = @IDPGroupId, IDP_GROUP_NAME = @IDPGroupName, " +
-                                                                   "YEAR = @Year " +
-                                                                   "WHERE IDP_GROUP_ID = @IDPGroupId", con);
-
-                            updateCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
-                            updateCommand.Parameters.AddWithValue("@IDPGroupName", row["IDP_GROUP_NAME"]);
-                            updateCommand.Parameters.AddWithValue("@Year", row["YEAR"]);
-
-
-
-                            updateCommand.ExecuteNonQuery();
-                            //SqlCommand selectOldDataCommand = new SqlCommand("SELECT IDP_GROUP_NAME, YEAR FROM IDP_GROUP WHERE IDP_GROUP_ID = @IDPGroupId", con);
-                            //selectOldDataCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
-
-                            //using (SqlDataReader reader = selectOldDataCommand.ExecuteReader())
-                            //{
-                            //    if (reader.Read())
-                            //    {
-                            //        string oldGroupName = reader["IDP_GROUP_NAME"].ToString();
-                            //        int oldYear = Convert.ToInt32(reader["YEAR"]);
-
-                            //        string newGroupName = row["IDP_GROUP_NAME"].ToString();
-                            //        int newYear = Convert.ToInt32(row["YEAR"]);
-
-                            //        reader.Close();
-
-
-                            //        if (oldGroupName != newGroupName || oldYear != newYear)
-                            //        {
-                            //            // Update data
-                            //            SqlCommand updateCommand = new SqlCommand("UPDATE IDP_GROUP SET IDP_GROUP_NAME = @IDPGroupName, YEAR = @Year WHERE IDP_GROUP_ID = @IDPGroupId", con);
-
-                            //            updateCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
-                            //            updateCommand.Parameters.AddWithValue("@IDPGroupName", oldGroupName);
-                            //            updateCommand.Parameters.AddWithValue("@Year", oldYear);
-
-                            //            updateCommand.ExecuteNonQuery();
-                            //        }
-                            //        else
-                            //        {
-                            //            SqlCommand updateCommand = new SqlCommand("UPDATE IDP_GROUP SET IDP_GROUP_NAME = @IDPGroupName, YEAR = @Year WHERE IDP_GROUP_ID = @IDPGroupId", con);
-
-                            //            updateCommand.Parameters.AddWithValue("@IDPGroupId", IDPGroupId);
-                            //            updateCommand.Parameters.AddWithValue("@IDPGroupName", newGroupName);
-                            //            updateCommand.Parameters.AddWithValue("@Year", newYear);
-
-                            //            updateCommand.ExecuteNonQuery();
-                            //        }
-                            //    }
-                            //}
-                        }
-
                     }
                 }
+                else
+                {
+                    TempData["UploadError"] = "เกิดข้อผิดพลาดในการอัปโหลด: ไม่ใช่ไฟล์ Excel" ;
+                }
+                
             }
             catch (Exception ex)
             {
                 TempData["UploadError"] = "เกิดข้อผิดพลาดในการอัปโหลด: " + ex.Message;
             }
         }
+
+
         #endregion
 
         #region EMAIL
