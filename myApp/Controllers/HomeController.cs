@@ -1069,6 +1069,7 @@ namespace myApp.Controllers
                 TempData["UploadError"] = "เกิดข้อผิดพลาดในการอัปโหลด: " + ex.Message;
             }
         }
+        
         #endregion
 
         #region UPLOAD IDP GROUP
@@ -1905,6 +1906,24 @@ namespace myApp.Controllers
         {
             app.DeleteGoodness(GDId);
             return null;
+        }
+        public ActionResult SortingGoodness(string selectedCompany)
+        {
+            List<User> sortingUser = app.GetListUserByGoodness(selectedCompany);
+            foreach (var user in sortingUser)
+            {
+                if (user.Id == null) user.Id = "";
+                if (user.Prefix == null) user.Prefix = "";
+                if (user.FirstNameTH == null) user.FirstNameTH = "";
+                if (user.LastNameTH == null) user.LastNameTH = "";
+                if (user.Status == null) user.Status = "";
+                if (user.Position == null) user.Position = "";
+                if (user.JobLevel == null) user.JobLevel = "";
+                if (user.CostCenter == null) user.CostCenter = "";
+                if (user.DepartmentName == null) user.DepartmentName = "";
+                if (user.Company == null) user.Company = "";
+            }
+            return Json(sortingUser, JsonRequestBehavior.AllowGet);
         }
         #endregion
 

@@ -11,7 +11,6 @@
             "linear-gradient(\r\n  45deg,\r\n  hsl(4deg 85% 57%) 0%,\r\n  hsl(7deg 86% 58%) 11%,\r\n  hsl(11deg 87% 58%) 22%,\r\n  hsl(14deg 89% 59%) 33%,\r\n  hsl(18deg 90% 59%) 44%,\r\n  hsl(22deg 91% 60%) 56%,\r\n  hsl(25deg 92% 60%) 67%,\r\n  hsl(29deg 93% 61%) 78%,\r\n  hsl(32deg 95% 61%) 89%,\r\n  hsl(36deg 96% 62%) 100%\r\n);",
             "linear-gradient(\r\n  45deg,\r\n  hsl(233deg 51% 36%) 0%,\r\n  hsl(229deg 55% 38%) 11%,\r\n  hsl(225deg 60% 39%) 22%,\r\n  hsl(221deg 64% 41%) 33%,\r\n  hsl(217deg 69% 42%) 44%,\r\n  hsl(213deg 75% 44%) 56%,\r\n  hsl(209deg 80% 45%) 67%,\r\n  hsl(204deg 86% 46%) 78%,\r\n  hsl(200deg 93% 46%) 89%,\r\n  hsl(196deg 100% 47%) 100%\r\n);"
     };*/
-
 }
 <link rel="stylesheet" href="/CSS/Style.css">
 <div class="sticky-header-breadcrumb">
@@ -74,18 +73,61 @@
         </div>
     </div>
 </div>
-<div class="container topic-title">
+<div class="container">
     <div class="row align-items-center">
         <div class="col-3">
             <a href="@Url.Action("Goodness", "Form", new { year = ViewBag.Year })" class="btn active-link-good">
                 <i class="fa-solid fa-star" aria-hidden="true"></i> <strong class="gradient-text-good">บันทึกความดี</strong>
             </a>
         </div>
-        <div class="col-6 text-center fw-bold">
+        <div class="col-6 text-center fw-bold topic-title">
             <h1>เลือกแบบประเมิน</h1>
         </div>
         <div class="col-3 text-end">
-            <button id="toggle-btn" class="btn btn-lg"><i class="fa-solid fa-list-ul"></i></button>
+            <button class="btn btn-lg" title="ประวัติ workflow"><i class="fa-solid fa-clock-rotate-left" style="color:black" data-bs-toggle="modal" data-bs-target="#WorkflowHistory"></i></button>
+            <button id="toggle-btn" class="btn btn-lg" title="มุมมอง"><i class="fa-solid fa-list-ul" style="color:black"></i></button>
+            <div class="modal fade" id="WorkflowHistory" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="CreateIDPGroupLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4>ประวัติอนุมัติ</h4>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            
+                                <table class="table table-hover" id="empTB" width="100%" style="table-layout: fixed;">
+                                    <thead class="sticky-header text-center" style="background-color: #2D4686; color: #C8E8FF">
+                                        <tr>
+                                            <th width="5%">K2_NO</th>
+                                            <th width="5%">ActionBy</th>
+                                            <th width="10%">Subject</th>
+                                            <th width="5%">Status</th>
+                                            <th width="5%">Year</th>
+                                            <th width="10%">Remark</th>
+                                            <th width="5%">RemarkDate</th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody class="text-center table-group-divider">
+                                        @foreach(var workflow in ViewBag.WorkFlows)
+                                        {
+                                            <tr>
+                                                <td>@workflow.K2_NO</td>
+                                                <td>@workflow.Action</td>
+                                                <td>@workflow.Subject</td>
+                                                <td>@workflow.Status</td>
+                                                <td>@workflow.Year</td>
+                                                <td>@workflow.Remark</td>
+                                                <td>@workflow.RemarkDate</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -291,8 +333,6 @@
     var toggleBtn = document.getElementById('toggle-btn');
     toggleBtn.addEventListener('click', toggleView);
 </script>
-
-
 <style>
 
     #myTable {
@@ -313,7 +353,7 @@
         -webkit-text-fill-color: transparent;
     }
 
-    p {
+    p, h4 {
         margin-bottom: 0;
     }
 
@@ -456,32 +496,8 @@
             .active-link-info:hover i {
                 transform: scale(1.2);
             }
+    .modal-xl {
+        --bs-modal-width: 1280px;
+    }
 </style>
-<script>
-    // ฟังก์ชันสำหรับเพิ่มปีใน dropdown
-    function addYearToDropdown(year) {
-        let url = '@Url.Action("Index", "Form", new { Year = "replaceYear" })';
-        url = url.replace("replaceYear", year);
-        const listItem = document.createElement("li");
-        listItem.innerHTML = `<a class="nav-link year" href="${url}"><strong>${year}</strong></a>`;
-        document.getElementById("dropdownMenu").appendChild(listItem);
-    }
 
-    // ฟังก์ชันสำหรับตรวจสอบปีปัจจุบันและเพิ่มปีใหม่ใน dropdown
-    function checkAndUpdateYear() {
-        const currentYear = new Date().getFullYear();
-        const lastYearInDropdown = @DateTime.Now.Year + 541;
-        if (currentYear > lastYearInDropdown) {
-            for (let i = currentYear - 1; i >= lastYearInDropdown; i--) {
-                addYearToDropdown(i);
-            }
-        }
-    }
-
-    // เรียกใช้ฟังก์ชันเมื่อหน้าเว็บโหลดขึ้นมา
-    window.onload = checkAndUpdateYear;
-
-    // เรียกใช้ฟังก์ชันเมื่อมีการคลิกปุ่มหรือเกิดเหตุการณ์ที่ทำให้เกิดการรีเฟรชหน้าเว็บ
-    window.addEventListener("click", checkAndUpdateYear);
-    window.addEventListener("beforeunload", checkAndUpdateYear);
-</script>

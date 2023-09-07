@@ -156,11 +156,12 @@
         "PL1", "PL2", "PL3", "PL4", "PL5", "ACTIVE", "DELETED", ""];
 
     var dataRow = ["TCxxxx", "TC CC FC MC", "Name in TH", "Name in EN", "Definition",
-        "xxxxxx", "xxxxxx", "xxxxxx", "xxxxxx", "xxxxxx", "1 *1 = Active 0 = Not Active*", "1 *1 = Not Deleted 0 = Deleted*", "****Example****"];
+        "xxxxxx", "xxxxxx", "xxxxxx", "การทำให้หกกเานี้กาเว", "xxxxxx", "1 *1 = Active 0 = Not Active*", "1 *1 = Not Deleted 0 = Deleted*", "****Example****"];
 
     function downloadExcel() {
+        
         var workbook = XLSX.utils.book_new();
-        var sheetData = [header, dataRow]; 
+        var sheetData = [header, dataRow];
 
         var worksheet = XLSX.utils.aoa_to_sheet(sheetData);
         XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
@@ -170,7 +171,7 @@
 
         var link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.download = "competencies.xlsx"; 
+        link.download = "competencies.xlsx";
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);

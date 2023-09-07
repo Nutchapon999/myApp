@@ -253,8 +253,8 @@
                     <div class="row align-items-center">
                         <div class="col-4 d-flex align-items-center">
                             <h1 class="modal-title fs-4 fw-bold me-3" id="exampleModalLabel">เลือกพนักงาน</h1>
-                            <label for="selectType" class="form-label me-2 mt-2"> BU/Holding:</label>
-                            <select class="form-select" id="selectType" style="width: 200px">
+                            <label for="selectCompany" class="form-label me-2 mt-2"> BU/Holding:</label>
+                            <select class="form-select" id="selectCompany" style="width: 200px">
                                 <option value="">ทั้งหมด</option>
                                 @foreach (var dpt in ((List<myApp.Models.User>)ViewBag.User).Where(u => u.Company != null).GroupBy(u => u.Company).Select(grp => grp.First()))
                                 {
@@ -309,63 +309,10 @@
                                     <th class="text-center sortable" id="col8" width="5%">
                                         บริษัท <span id="col8Icon"><i class='fa-solid fa-sort'></i></span>
                                     </th>
-
                                 </tr>
                             </thead>
-                            <tbody class="table-group-divider">
-                                @foreach (var user in ViewBag.User)
-                                {
-                                    <tr>
-                                        <td>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="userIds" value="@user.Id" />
-                                            </div>
-                                        </td>
-                                        <td>@user.Id</td>
-                                        @if (user.Prefix == "นาง" || user.Prefix == "นางสาว")
-                                        {
-                                            <td>
-                                                <i class="fa fa-female" style="color:palevioletred; font-size:large" aria-hidden="true"></i>
-                                                @(user.Prefix) @(user.FirstNameTH) @(user.LastNameTH)
-
-                                            </td>
-                                        }
-                                        else if (user.Prefix == "นาย" || user.Prefix == " นาย")
-                                        {
-                                            <td>
-                                                <i class="fa fa-male" style="color:cornflowerblue; font-size:large" aria-hidden="true"></i>
-                                                @(user.Prefix) @(user.FirstNameTH) @(user.LastNameTH)
-
-                                            </td>
-                                        }
-                                        else
-                                        {
-                                            <td>
-                                                @(user.Prefix) @(user.FirstNameTH) @(user.LastNameTH)
-
-                                            </td>
-                                        }
-                                        <td class="text-center fw-bold">
-                                            @if (user.Status == "ทำงาน")
-                                            {
-                                                <p style="padding: 3px; border-radius: 3rem; background-color: #D5F8EF; color: #14B789; width: auto ">
-                                                    @user.Status
-                                                </p>
-                                            }
-                                            else
-                                            {
-                                                <p style="padding: 3px; border-radius: 3rem; background-color: #FFE5F4; color: #E50087; width: auto">
-                                                    @user.Status
-                                                </p>
-                                            }
-                                        </td>
-                                        <td>@user.Position</td>
-                                        <td class="text-center">@user.JobLevel</td>
-                                        <td class="text-center">@user.CostCenter</td>
-                                        <td>@user.DepartmentName</td>
-                                        <td>@user.Company</td>
-                                    </tr>
-                                }
+                            <tbody class="table-group-divider" id="tableContainer">
+                                
                             </tbody>
                         </table>
                     </div>
@@ -373,7 +320,6 @@
             </div>
         </div>
     </div>
-    <input type="hidden" name=""/>
 </form>
 
 <script src="~/Scripts/jquery-3.7.0.min.js"></script>
@@ -424,14 +370,14 @@
         //console.log(file);
 
         if (type === "__other__") {
-            type = $("#OtherTypeEdit-" + gdId).val(); 
+            type = $("#OtherTypeEdit-" + gdId).val();
         }
 
         var data = {
             GDId: gdId,
             TypeEdit: type,
             CompanyEdit: company,
-            DescEdit: desc, 
+            DescEdit: desc,
             DateEdit: date,
             HourEdit: hour,
             //FileEdit: file,
@@ -493,38 +439,125 @@
         var otherTypeTextarea = document.getElementById("OtherTypeEdit-" + goodId);
 
         if (select.value === "__other__" || (select.value !== "@good1" && select.value !== "@good2" && select.value !== "@good3" && select.value !== "@good4")) {
-            otherTypeTextarea.value = ""; 
+            otherTypeTextarea.value = "";
             otherTypeEdit.style.display = "flex";
         } else {
             otherTypeEdit.style.display = "none";
         }
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const filterSelect = document.getElementById('selectType');
-        const tableRows = document.querySelectorAll('#empTB tbody tr');
+    //document.addEventListener('DOMContentLoaded', function () {
+    //    const filterSelect = document.getElementById('selectType');
+    //    const tableRows = document.querySelectorAll('#empTB tbody tr');
 
-        function filterTableByType() {
-            const selectedType = filterSelect.value;
+    //    function filterTableByType() {
+    //        const selectedType = filterSelect.value;
 
-            tableRows.forEach((row) => {
-                const rowType = row.cells[8].textContent.trim();
+    //        tableRows.forEach((row) => {
+    //            const rowType = row.cells[8].textContent.trim();
 
-                console.log(rowType);
-                console.log(selectedType);
+    //            console.log(rowType);
+    //            console.log(selectedType);
 
-                if (selectedType === '' || rowType === selectedType) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
+    //            if (selectedType === '' || rowType === selectedType) {
+    //                row.style.display = '';
+    //            } else {
+    //                row.style.display = 'none';
+    //            }
+    //        });
+    //    }
+
+    //    filterSelect.addEventListener('change', filterTableByType);
+
+    //    filterTableByType();
+    //});
+
+    js(document).ready(function () {
+
+        $("#selectCompany").change(function () {
+            filterTable();
+        });
+        var send = '@Url.Action("SortingGoodness", "Home")';
+
+        function filterTable() {
+            var selectedCompany = $("#selectCompany").val();
+            //var selectYear = $("#selectYear").val();
+            //var selectCostCenter = $("#DataListCostcenter").val();
+            //var selectUserId = $("#DataListUserID").val();
+
+            console.log(selectedCompany);
+            //console.log(selectYear);
+            //console.log(selectCostCenter);
+            //console.log(selectUserId);
+
+            $.ajax({
+                url: send,
+                type: "POST",
+                data: {
+                    selectedCompany: selectedCompany,
+                },
+                success: function (response) {
+                    console.log(response);
+                    buildTable(response);
+                },
+                error: function () {
+
                 }
             });
         }
-
-        filterSelect.addEventListener('change', filterTableByType);
-
-        filterTableByType();
     });
+
+    function buildTable(users) {
+        var tableHtml = "";
+
+        for (var i = 0; i < users.length; i++) {
+            var user = users[i];
+            var d = new Date();
+            var year = d.getFullYear() + 543;
+            var addIDPGroup = '@Url.Action("AddIDPGroup", "Home")' + '?id=' + user.Id;
+            var selectForm = '@Url.Action("SelectForm", "Home")' + '?user=' + user.UserLogin + '&year=' + year;
+            var iconHtml = "";
+            var buttonHtml1 = "";
+            var buttonHtml2 = "";
+            var statusHtml = "";
+
+            if (user.Prefix === "นาง" || user.Prefix === "นางสาว") {
+                iconHtml = "<i class='fa-solid fa-person-dress' style='color:palevioletred; font-size:large' aria-hidden='true'></i>";
+            } else if (user.Prefix === "นาย") {
+                iconHtml = "<i class='fa-solid fa-person' style='color:cornflowerblue; font-size:large' aria-hidden='true'></i>";
+            }
+
+            if (user.Status === "ทำงาน") {
+                statusHtml = "<p style='padding: 3px; border-radius: 3rem; background-color: #D5F8EF; color: #14B789; width: auto'>" + user.Status + "</p>";
+                buttonHtml2 = "<a id='link' href='" + addIDPGroup + "' class='btn active-link-add' title='เพิ่ม IDP Group'><i class='fa fa-book gradient-icon-add' aria-hidden='true'></i></a>";
+            }
+            else {
+                statusHtml = "<p style='padding: 3px; border-radius: 3rem; background-color: #FFE5F4; color: #E50087; width: auto'>" + user.Status + "</p>";
+            }
+            buttonHtml1 = "<a id='link' href='" + selectForm + "' class='btn active-link-form' title='แบบประเมิน'><i class='fa fa-file-text gradient-icon-form' aria-hidden='true'></i></a>";
+
+
+            var rowHtml = "<tr>" +
+                "<td>" +
+                    "<div class='form-check'>" +
+                        "<input class='form-check-input' type='checkbox' name='userIds' value='" + user.Id + "' />" +
+                    "</div>" +
+                "</td>" +
+                "<td class='text-center'>" + user.Id + "</td>" +
+                "<td>" + iconHtml + " " + user.Prefix + " " + user.FirstNameTH + " " + user.LastNameTH + "</td>" +
+                "<td class='text-center fw-bold'>" + statusHtml + "</td>" +
+                "<td>" + user.Position + "</td>" +
+                "<td class='text-center'>" + user.JobLevel + "</td>" +
+                "<td class='text-center'>" + user.CostCenter + "</td>" +
+                "<td>" + user.DepartmentName + "</td>" +
+                "<td class='text-center'>" + user.Company + "</td>" +
+                "</tr>";
+
+            tableHtml += rowHtml;
+        }
+
+        $("#tableContainer").html(tableHtml);
+    }
 
     function searchFilter() {
         var input, filter, table, tr, td, i, j, txtValue;
@@ -567,7 +600,7 @@
             activeHeader = this;
 
             if (this.id !== "col5") {
-                sortStatus["col5"] = "asc"; // Reset sort status for col5
+                sortStatus["col5"] = "asc";
                 resetHeaderIcon(document.getElementById("col5"));
             }
 
@@ -691,26 +724,6 @@
         const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked && checkbox.dataset.status !== "Draft");
         actionButton.disabled = !isChecked;
     }
-
-    /*const inputFields = document.querySelectorAll('input[name="Company"], textarea[name="Desc"], input[name="Date"], input[name="Hour"]');
-    const submitButton = document.getElementById('submitButton');
-
-    inputFields.forEach(inputField => {
-        inputField.addEventListener('input', checkInputs);
-    });
-
-    function checkInputs() {
-        let allFieldsFilled = true;
-
-        inputFields.forEach(inputField => {
-            if (inputField.value.trim() === '') {
-                allFieldsFilled = false;
-            }
-        });
-
-        submitButton.disabled = !allFieldsFilled;
-    }*/
-
 
 </script>
 <style>

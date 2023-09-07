@@ -2,6 +2,7 @@
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Office2013.Drawing.ChartStyle;
 using DocumentFormat.OpenXml.Presentation;
+using DocumentFormat.OpenXml.Spreadsheet;
 using myApp.Models;
 using OfficeOpenXml.FormulaParsing.Excel.Functions.Math;
 using Org.BouncyCastle.Crypto;
@@ -23,7 +24,6 @@ namespace myApp.DAL
             connectionString = ConfigurationManager.ConnectionStrings["MyConnection"].ConnectionString;
         }
 
-        public string ConnectionString;
 
         #region COMPETENCY
         public List<Competency> GetCompetencies()
@@ -3715,6 +3715,74 @@ namespace myApp.DAL
 
             return count;
         }
+        public List<User> GetListUserByGoodness(string company)
+        {
+            List<User> users = new List<User>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+
+                string query = "SELECT * " +
+                               "FROM MAS_USER_HR HR " +
+                               "WHERE STATUS = 'ทำงาน'";
+
+                if (company != null)
+                {
+                    query += " AND HR.COMPANY = @Company";
+                }
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@Company", (object)company ?? DBNull.Value);
+   
+                if (company != null)
+                {
+                    command.Parameters.AddWithValue("@Control", 1);
+                }
+                else
+                {
+                    command.Parameters.AddWithValue("@Control", 0);
+
+                }
+                connection.Open();
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    User user = new User();
+
+                    user.Id = (string)reader["ID"];
+                    user.Prefix = reader.IsDBNull(reader.GetOrdinal("PREFIX")) ? null : (string)reader["PREFIX"];
+                    user.FirstNameTH = reader.IsDBNull(reader.GetOrdinal("FIRSTNAME_TH")) ? null : (string)reader["FIRSTNAME_TH"];
+                    user.LastNameTH = reader.IsDBNull(reader.GetOrdinal("LASTNAME_TH")) ? null : (string)reader["LASTNAME_TH"];
+                    user.FirstNameEN = reader.IsDBNull(reader.GetOrdinal("FIRSTNAME_EN")) ? null : (string)reader["FIRSTNAME_EN"];
+                    user.LastNameEN = reader.IsDBNull(reader.GetOrdinal("LASTNAME_EN")) ? null : (string)reader["LASTNAME_EN"];
+                    user.Status = reader.IsDBNull(reader.GetOrdinal("STATUS")) ? null : (string)reader["STATUS"];
+                    user.StatusDate = reader.IsDBNull(reader.GetOrdinal("STATUS_DATE")) ? null : (string)reader["STATUS_DATE"];
+                    user.Company = reader.IsDBNull(reader.GetOrdinal("COMPANY")) ? null : (string)reader["COMPANY"];
+                    user.Location = reader.IsDBNull(reader.GetOrdinal("LOCATION")) ? null : (string)reader["LOCATION"];
+                    user.Position = reader.IsDBNull(reader.GetOrdinal("POSITION")) ? null : (string)reader["POSITION"];
+                    user.JobLevel = reader.IsDBNull(reader.GetOrdinal("JOBLEVEL")) ? null : (string)reader["JOBLEVEL"];
+                    user.CostCenter = reader.IsDBNull(reader.GetOrdinal("COSTCENTER")) ? null : (string)reader["COSTCENTER"];
+                    user.Department = reader.IsDBNull(reader.GetOrdinal("DEPARTMENT")) ? null : (string)reader["DEPARTMENT"];
+                    user.DepartmentName = reader.IsDBNull(reader.GetOrdinal("DEPARTMENT_NAME")) ? null : (string)reader["DEPARTMENT_NAME"];
+                    user.Email = reader.IsDBNull(reader.GetOrdinal("EMAIL")) ? null : (string)reader["EMAIL"];
+                    user.UserLogin = reader.IsDBNull(reader.GetOrdinal("USER_LOGIN")) ? null : (string)reader["USER_LOGIN"];
+                    user.Enabled = reader.IsDBNull(reader.GetOrdinal("Enabled")) ? null : (string)reader["Enabled"];
+                    user.ShiftWork = reader.IsDBNull(reader.GetOrdinal("SHIFTWORK")) ? null : (string)reader["SHIFTWORK"];
+                    user.WorkCenter = reader.IsDBNull(reader.GetOrdinal("WORK_CENTER")) ? null : (string)reader["WORK_CENTER"];
+                    user.HRPositionCode = reader.IsDBNull(reader.GetOrdinal("HRPositionCode")) ? null : (string)reader["HRPositionCode"];
+                    user.JobRole = reader.IsDBNull(reader.GetOrdinal("JobRole")) ? null : (string)reader["JobRole"];
+                    user.WorkAge = reader["WorkAge"].ToString();
+                    
+                    users.Add(user);
+                }
+                reader.Close();
+            }
+
+            return users;
+        }
         #endregion
 
         #region REMARK
@@ -3864,8 +3932,7 @@ namespace myApp.DAL
             {
                 string query = "SELECT * " +
                                 "FROM MAS_USER_HR HR " +
-                                "JOIN IDP_RESULT R ON HR.ID = R.ID " +
-                                "JOIN IDP_RESULT_ITEM RI ON RI.GUID = R.GUID";
+                                "JOIN IDP_RESULT R ON HR.ID = R.ID";
 
                 SqlCommand command = new SqlCommand(query, connection);
 
@@ -3878,57 +3945,14 @@ namespace myApp.DAL
                     User user = new User();
 
                     user.Id = (string)reader["ID"];
-                    user.Prefix = reader.IsDBNull(reader.GetOrdinal("PREFIX")) ? null : (string)reader["PREFIX"];
-                    user.FirstNameTH = reader.IsDBNull(reader.GetOrdinal("FIRSTNAME_TH")) ? null : (string)reader["FIRSTNAME_TH"];
-                    user.LastNameTH = reader.IsDBNull(reader.GetOrdinal("LASTNAME_TH")) ? null : (string)reader["LASTNAME_TH"];
-                    user.FirstNameEN = reader.IsDBNull(reader.GetOrdinal("FIRSTNAME_EN")) ? null : (string)reader["FIRSTNAME_EN"];
-                    user.LastNameEN = reader.IsDBNull(reader.GetOrdinal("LASTNAME_EN")) ? null : (string)reader["LASTNAME_EN"];
-                    user.Status = reader.IsDBNull(reader.GetOrdinal("STATUS")) ? null : (string)reader["STATUS"];
-                    user.StatusDate = reader.IsDBNull(reader.GetOrdinal("STATUS_DATE")) ? null : (string)reader["STATUS_DATE"];
                     user.Company = reader.IsDBNull(reader.GetOrdinal("COMPANY")) ? null : (string)reader["COMPANY"];
-                    user.Location = reader.IsDBNull(reader.GetOrdinal("LOCATION")) ? null : (string)reader["LOCATION"];
-                    user.Position = reader.IsDBNull(reader.GetOrdinal("POSITION")) ? null : (string)reader["POSITION"];
                     user.JobLevel = reader.IsDBNull(reader.GetOrdinal("JOBLEVEL")) ? null : (string)reader["JOBLEVEL"];
                     user.CostCenter = reader.IsDBNull(reader.GetOrdinal("COSTCENTER")) ? null : (string)reader["COSTCENTER"];
-                    user.Department = reader.IsDBNull(reader.GetOrdinal("DEPARTMENT")) ? null : (string)reader["DEPARTMENT"];
-                    user.DepartmentName = reader.IsDBNull(reader.GetOrdinal("DEPARTMENT_NAME")) ? null : (string)reader["DEPARTMENT_NAME"];
-                    user.Email = reader.IsDBNull(reader.GetOrdinal("EMAIL")) ? null : (string)reader["EMAIL"];
-                    user.UserLogin = reader.IsDBNull(reader.GetOrdinal("USER_LOGIN")) ? null : (string)reader["USER_LOGIN"];
-                    user.Enabled = reader.IsDBNull(reader.GetOrdinal("Enabled")) ? null : (string)reader["Enabled"];
-                    user.ShiftWork = reader.IsDBNull(reader.GetOrdinal("SHIFTWORK")) ? null : (string)reader["SHIFTWORK"];
-                    user.WorkCenter = reader.IsDBNull(reader.GetOrdinal("WORK_CENTER")) ? null : (string)reader["WORK_CENTER"];
-                    user.HRPositionCode = reader.IsDBNull(reader.GetOrdinal("HRPositionCode")) ? null : (string)reader["HRPositionCode"];
-                    user.JobRole = reader.IsDBNull(reader.GetOrdinal("JobRole")) ? null : (string)reader["JobRole"];
-                    user.WorkAge = reader["WorkAge"].ToString();
-                    user.StartWorkDate = reader.IsDBNull(reader.GetOrdinal("StartWorkDate")) ? null : (string)reader["StartWorkDate"];
-
-                    ResultItem resultItem = new ResultItem();
-                    resultItem.ResultItemId = reader.IsDBNull(reader.GetOrdinal("RESULT_ITEM")) ? 0 : (int)reader["RESULT_ITEM"];
-                    resultItem.Critical = reader.IsDBNull(reader.GetOrdinal("CRITICAL")) ? false : (bool)reader["CRITICAL"]; 
-                    resultItem.CompetencyId = reader.IsDBNull(reader.GetOrdinal("COMPETENCY_ID")) ? null : (string)reader["COMPETENCY_ID"];
-                    resultItem.IDPGroupId = reader.IsDBNull(reader.GetOrdinal("IDP_GROUP_ID")) ? null : (string)reader["IDP_GROUP_ID"];
-                    resultItem.Requirement = reader.IsDBNull(reader.GetOrdinal("REQUIREMENT")) ? 0 : (int)reader["REQUIREMENT"];
-                    resultItem.Actual1 = reader.IsDBNull(reader.GetOrdinal("ACTUAL1")) ? 0 : (int)reader["ACTUAL1"];
-                    resultItem.Gap1 = reader.IsDBNull(reader.GetOrdinal("GAP1")) ? 0 : (int)reader["GAP1"];
-                    resultItem.Priority = reader.IsDBNull(reader.GetOrdinal("PRIORITY")) ? null : (string)reader["PRIORITY"];
-                    resultItem.TypePlan = reader.IsDBNull(reader.GetOrdinal("TYPE_PLAN")) ? null : (string)reader["TYPE_PLAN"];
-                    resultItem.DevPlan = reader.IsDBNull(reader.GetOrdinal("DEV_PLAN")) ? null : (string)reader["DEV_PLAN"];
-                    resultItem.Q1 = reader.IsDBNull(reader.GetOrdinal("Q1")) ? null : (string)reader["Q1"];
-                    resultItem.Q2 = reader.IsDBNull(reader.GetOrdinal("Q2")) ? null : (string)reader["Q2"];
-                    resultItem.Q3 = reader.IsDBNull(reader.GetOrdinal("Q3")) ? null : (string)reader["Q3"];
-                    resultItem.Q4 = reader.IsDBNull(reader.GetOrdinal("Q4")) ? null : (string)reader["Q4"];
-                    resultItem.DevRst = reader.IsDBNull(reader.GetOrdinal("DEV_RST")) ? null : (string)reader["DEV_RST"];
-                    resultItem.Actual2 = reader.IsDBNull(reader.GetOrdinal("ACTUAL2")) ? 0 : (int)reader["ACTUAL2"];
-                    resultItem.Gap2 = reader.IsDBNull(reader.GetOrdinal("GAP2")) ? 0 : (int)reader["GAP2"];
 
                     Result result = new Result();
+                    result.Year = (string)reader["YEAR"];
 
-                    result.IDPGroupID = reader.IsDBNull(reader.GetOrdinal("IDP_GROUP_ID")) ? null : (string)reader["IDP_GROUP_ID"];
-                    result.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
-
-                    user.ResultItem = resultItem;
                     user.Result = result;
-
                     users.Add(user);
                 }
                 reader.Close();

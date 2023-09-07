@@ -22,6 +22,7 @@ namespace myApp.Controllers
     public class FormController : Controller
     {
         private App app;
+        private WorkFlow workFlow = new WorkFlow();
 
         public FormController()
         {
@@ -59,15 +60,24 @@ namespace myApp.Controllers
             ViewBag.isAdmin = isAdmin;
             ViewBag.isGood = isGood;
             ViewBag.Username = username;
+            var YearAD = "";
 
             if (string.IsNullOrEmpty(Year))
             {
                 Year = (DateTime.Now.Year + 543).ToString();
+                YearAD = DateTime.Now.Year.ToString();
             }
+            else
+            {
+                int yearInt = int.Parse(Year);
+                YearAD = (yearInt - 543).ToString();
+            }
+            
 
             ViewBag.Year = Year;
-
             List<Enrollment> enrollments = app.GetEnrollEachYearByUsername(username, Year);
+            List<WorkFlow> workFlows = workFlow.GetWorkflows(username, YearAD);
+            ViewBag.WorkFlows = workFlows;
             return View(enrollments);
         }
         #endregion
@@ -431,9 +441,19 @@ namespace myApp.Controllers
                 }
                 foreach (var criticalResultItem in criticalRes)
                 {
+                    if (string.IsNullOrEmpty(criticalResultItem.Priority))
+                    {
+                        TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical แต่ยังไม่ได้ระบุ Priority";
+                        return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                    }
+                    else if (string.IsNullOrEmpty(criticalResultItem.TypePlan))
+                    {
+                        TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical แต่ยังไม่ได้ระบุ TypePlan";
+                        return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                    }
                     if (string.IsNullOrEmpty(criticalResultItem.DevPlan) && criticalResultItem.Actual1 < criticalResultItem.Requirement)
                     {
-                        TempData["ErrorMessage"] = "มี Competency ที่มี Critical แต่ยังไม่ได้ระบุ Development Plan";
+                        TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical แต่ยังไม่ได้ระบุ Development Plan";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
                     else if (string.IsNullOrEmpty(criticalResultItem.Q1) &&
@@ -442,51 +462,51 @@ namespace myApp.Controllers
                             string.IsNullOrEmpty(criticalResultItem.Q4) &&
                             criticalResultItem.Actual1 < criticalResultItem.Requirement)
                     {
-                        TempData["ErrorMessage"] = "มี Competency ที่มี Critical แต่ยังไม่ได้ระบุ Quarter";
+                        TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical แต่ยังไม่ได้ระบุ Quarter";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
                     
                     else if (string.IsNullOrEmpty(criticalResultItem.DevRst) && (status == "2nd Evaluating" || status == "Developing") && criticalResultItem.Actual1 < criticalResultItem.Requirement)
                     {
-                        TempData["ErrorMessage"] = "มี Competency ที่มี Critical แต่ยังไม่ได้ระบุ Development Result";
+                        TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical แต่ยังไม่ได้ระบุ Development Result";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
                 }
-                foreach(var hasGapResultItem in hasGap)
-                {
-                    if(hasGapResultItem.Actual1 < hasGapResultItem.Requirement)
-                    {
-                        if (string.IsNullOrEmpty(hasGapResultItem.Priority))
-                        {
-                            TempData["ErrorMessage"] = "มี Competency ที่มี Gap แต่ยังไม่ได้ระบุ Priority";
-                            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
-                        }
-                        else if (string.IsNullOrEmpty(hasGapResultItem.TypePlan))
-                        {
-                            TempData["ErrorMessage"] = "มี Competency ที่มี Gap แต่ยังไม่ได้ระบุ TypePlan";
-                            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
-                        }
-                        else if (string.IsNullOrEmpty(hasGapResultItem.DevPlan))
-                        {
-                            TempData["ErrorMessage"] = "มี Competency ที่มี Gap แต่ยังไม่ได้ระบุ Development Plan";
-                            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
-                        }
-                        else if (string.IsNullOrEmpty(hasGapResultItem.Q1) &&
-                                string.IsNullOrEmpty(hasGapResultItem.Q2) &&
-                                string.IsNullOrEmpty(hasGapResultItem.Q3) &&
-                                string.IsNullOrEmpty(hasGapResultItem.Q4))
-                        {
-                            TempData["ErrorMessage"] = "มี Competency ที่มี Gap แต่ยังไม่ได้ระบุ Quarter";
-                            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
-                        }
+                //foreach(var hasGapResultItem in hasGap)
+                //{
+                //    if(hasGapResultItem.Actual1 < hasGapResultItem.Requirement)
+                //    {
+                //        if (string.IsNullOrEmpty(hasGapResultItem.Priority))
+                //        {
+                //            TempData["ErrorMessage"] = "มี Competency ที่เป็น Gap แต่ยังไม่ได้ระบุ Priority";
+                //            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                //        }
+                //        else if (string.IsNullOrEmpty(hasGapResultItem.TypePlan))
+                //        {
+                //            TempData["ErrorMessage"] = "มี Competency ที่เป็น Gap แต่ยังไม่ได้ระบุ TypePlan";
+                //            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                //        }
+                //        else if (string.IsNullOrEmpty(hasGapResultItem.DevPlan))
+                //        {
+                //            TempData["ErrorMessage"] = "มี Competency ที่เป็น Gap แต่ยังไม่ได้ระบุ Development Plan";
+                //            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                //        }
+                //        else if (string.IsNullOrEmpty(hasGapResultItem.Q1) &&
+                //                string.IsNullOrEmpty(hasGapResultItem.Q2) &&
+                //                string.IsNullOrEmpty(hasGapResultItem.Q3) &&
+                //                string.IsNullOrEmpty(hasGapResultItem.Q4))
+                //        {
+                //            TempData["ErrorMessage"] = "มี Competency ที่เป็น Gap แต่ยังไม่ได้ระบุ Quarter";
+                //            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                //        }
 
-                        else if (string.IsNullOrEmpty(hasGapResultItem.DevRst) && (status == "2nd Evaluating" || status == "Developing"))
-                        {
-                            TempData["ErrorMessage"] = "มี Competency ที่มี Gap แต่ยังไม่ได้ระบุ Development Result";
-                            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
-                        }
-                    }
-                }
+                //        else if (string.IsNullOrEmpty(hasGapResultItem.DevRst) && (status == "2nd Evaluating" || status == "Developing"))
+                //        {
+                //            TempData["ErrorMessage"] = "มี Competency ที่เป็น Gap แต่ยังไม่ได้ระบุ Development Result";
+                //            return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
+                //        }
+                //    }
+                //}
 
                 //WORKFLOW UPDATE
                 if (status == "1st Evaluating" || status == "2nd Evaluating")
@@ -709,8 +729,6 @@ namespace myApp.Controllers
         #endregion
 
         #region INFO
-
-        //INFO
         public ActionResult Info(string idpGroupId, string guid)
         {
             HttpCookie usernameCookie = Request.Cookies["username"];
