@@ -433,15 +433,11 @@
                                 <td class="text-center">
                                     @if (ViewBag.Status == "Self" || ViewBag.Status == "1st Evaluating" || ViewBag.Status == "Developing")
                                     {
-                                        <button id="actual2Button" onchange="calculateGap2(this)" type="button" class="btn active-link-competency m-1 disabled" data-bs-toggle="modal" style="background-color: @backgroundColor2; color: @color2; width: auto; font-size: 20px;" data-bs-target="#Detail2Pl-@enroll.IDPGroupItem.CompetencyId">
-                                            <strong>@(enroll.ResultItem.Actual2 >= 0 ? enroll.ResultItem.Actual2.ToString() : "?")</strong>
-                                        </button>
+                                        @enroll.ResultItem.Actual2
                                     }
                                     else if (ViewBag.Status == "2nd Evaluating" && (ViewBag.Approver == ViewBag.Username))
                                     {
-                                        <button id="actual2Button" onchange="calculateGap2(this)" type="button" class="btn active-link-competency m-1 disabled" data-bs-toggle="modal" style="background-color: @backgroundColor2; color: @color2; width: auto; font-size: 20px;" data-bs-target="#Detail2Pl-@enroll.IDPGroupItem.CompetencyId">
-                                            <strong>@(enroll.ResultItem.Actual2 >= 0 ? enroll.ResultItem.Actual2.ToString() : "?")</strong>
-                                        </button>
+                                        @enroll.ResultItem.Actual2
                                     }
                                     else if (ViewBag.Status == "Success")
                                     {

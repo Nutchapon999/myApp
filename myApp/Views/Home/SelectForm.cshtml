@@ -45,12 +45,15 @@
                     </li>
                     <li class="nav-item ms-2 dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="yearDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #C8E8FF">
-                            <strong>ปีก่อนๆ</strong>
+                            <strong>ปีอื่นๆ</strong>
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="yearDropdown">
-                            <li>
-                                <a class="nav-link year" href="@Url.Action("SelectForm", new { user = ViewBag.User, year = (DateTime.Now.Year + 541).ToString() })"><strong>@(DateTime.Now.Year + 541)</strong></a>
-                            </li>
+                        <ul class="dropdown-menu" aria-labelledby="yearDropdown" id="dropdownMenu">
+                            @for (var year = DateTime.Now.Year + 541; year > DateTime.Now.Year + 536; year--)
+                            {
+                                <li>
+                                    <a class="nav-link year" href="@Url.Action("Index", "Form", new { Year = year.ToString() })"><strong>@year.ToString()</strong></a>
+                                </li>
+                            }
                         </ul>
                     </li>
                 </ul>
@@ -80,224 +83,280 @@
 </div>
 
 
-    <div class="px-4" id="custom-cards">
+<div class="px-4" id="custom-cards">
 
-        @if (Model.Count() == 0)
-        {
-            <div class="alert alert-danger alert-dismissible fade show text-center container mt-2" role="alert" id="alertBox">
-                <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> ไม่มี <strong>IDP Group</strong> ที่ลงทะเบียนไว้
-            </div>
-        }
-        <div id="list-view">
-            <div class="container">
-                <table class="table table-striped" id="myTable">
-                    <thead style="background-color: #2D4686; color: #C8E8FF">
+    @if (Model.Count() == 0)
+    {
+        <div class="alert alert-danger alert-dismissible fade show text-center container mt-2" role="alert" id="alertBox">
+            <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> ไม่มี <strong>IDP Group</strong> ที่ลงทะเบียนไว้
+        </div>
+    }
+    <div id="list-view">
+        <div class="container">
+            <table class="table table-striped" id="formTable">
+                <thead style="background-color: #2D4686; color: #C8E8FF">
+                    <tr>
+                        <th width="10%" class="text-center">K2 No.</th>
+                        <th width="5%" class="text-center">IDPGroupId</th>
+                        <th width="15%" class="text-center">IDPGroupName</th>
+                        <th width="5%" class="text-center">Year</th>
+                        <th width="10%" class="text-center">Current Approver</th>
+                        <th width="5%" class="text-center">Status</th>
+                        <th width="5%" class="text-center"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var emp in Model)
+                    {
                         <tr>
-                            <th width="10%" class="text-center">K2 No.</th>
-                            <th width="5%" class="text-center">IDPGroupId</th>
-                            <th width="15%" class="text-center">IDPGroupName</th>
-                            <th width="5%" class="text-center">Year</th>
-                            <th width="10%" class="text-center">Current Approver</th>
-                            <th width="5%" class="text-center">Status</th>
-                            <th width="5%" class="text-center"></th>
+                            <td class="text-center">@emp.Result.K2_No</td>
+                            <td class="text-center">@emp.IDPGroupId</td>
+                            <td>@emp.IDPGroup.IDPGroupName</td>
+                            <td class="text-center">@emp.Result.Year</td>
+                            <td class="text-center">@emp.Result.CurrentApprover</td>
+                            <td class="text-center">
+                                @if (emp.Status == "Draft")
+                                {
+                                    <p style="color: #802FDE; background-color: #E8E2F7; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@emp.Status</p>
+                                }
+                                else if (emp.Status == "Self")
+                                {
+                                    <p style="color: #E50087; background-color: #FFE5F4; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@emp.Status</p>
+                                }
+                                else if (emp.Status == "1st Evaluating")
+                                {
+                                    <p style="color: #DAAB00; background-color: #FDF3CE; padding: 3px; border-radius: 3rem; width: auto; font-size: 14px;" class="text-center fw-bold">@emp.Status</p>
+                                }
+                                else if (emp.Status == "Developing")
+                                {
+                                    <p style="color: #00AEE5; background-color: #D8F6FF; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@emp.Status</p>
+                                }
+                                else if (emp.Status == "2nd Evaluating")
+                                {
+                                    <p style="color: #DAAB00; background-color: #FDF3CE; padding: 3px; border-radius: 3rem; width: auto; font-size: 14px;" class="text-center fw-bold">@emp.Status</p>
+                                }
+                                else if (emp.Status == "Success")
+                                {
+                                    <p style="color: #14B789; background-color: #D5F8EF; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@emp.Status</p>
+                                }
+                                else if (emp.Status == "Decline")
+                                {
+                                    <p style="color: #CC660A; background-color: #FFF2E7; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@emp.Status</p>
+                                }
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group" aria-label="Second group">
+                                    <a href="@Url.Action("Info", "Home",new { user = ViewBag.User, idpGroupId = emp.IDPGroupId, guid = emp.Result.GUID })" class="btn active-link-info" title="ผลลัพธ์">
+                                        <i class="fa fa-info gradient-text-edit fs-5" aria-hidden="true"></i>
+                                    </a>
+                                    <a id="link" href="@Url.Action("Form", "Home", new { user = ViewBag.User, idpGroupId = emp.IDPGroupId, guid = emp.Result.GUID })" class="btn active-link-form" title="ทำแบบประเมิน">
+                                        <i class="fa-solid fa-file-text gradient-icon-form fs-5" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var emp in Model)
-                        {
-                            <tr>
-                                <td class="text-center">@emp.Result.K2_No</td>
-                                <td class="text-center">@emp.IDPGroupId</td>
-                                <td>@emp.IDPGroup.IDPGroupName</td>
-                                <td class="text-center">@emp.Result.Year</td>
-                                <td class="text-center">@emp.Result.CurrentApprover</td>
-                                <td class="text-center">
-                                    @if (emp.Status == "Draft")
-                                    {
-                                        <p style="color: #802FDE; background-color: #E8E2F7; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@emp.Status</p>
-                                    }
-                                    else if (emp.Status == "Self")
-                                    {
-                                        <p style="color: #E50087; background-color: #FFE5F4; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@emp.Status</p>
-                                    }
-                                    else if (emp.Status == "1st Evaluating")
-                                    {
-                                        <p style="color: #DAAB00; background-color: #FDF3CE; padding: 3px; border-radius: 3rem; width: auto; font-size: 14px;" class="text-center fw-bold">@emp.Status</p>
-                                    }
-                                    else if (emp.Status == "Developing")
-                                    {
-                                        <p style="color: #00AEE5; background-color: #D8F6FF; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@emp.Status</p>
-                                    }
-                                    else if (emp.Status == "2nd Evaluating")
-                                    {
-                                        <p style="color: #DAAB00; background-color: #FDF3CE; padding: 3px; border-radius: 3rem; width: auto; font-size: 14px;" class="text-center fw-bold">@emp.Status</p>
-                                    }
-                                    else if (emp.Status == "Success")
-                                    {
-                                        <p style="color: #14B789; background-color: #D5F8EF; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@emp.Status</p>
-                                    }
-                                    else if (emp.Status == "Decline")
-                                    {
-                                        <p style="color: #CC660A; background-color: #FFF2E7; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@emp.Status</p>
-                                    }
-                                </td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group" aria-label="Second group">
-                                        <a href="@Url.Action("Info", "Home",new { user = ViewBag.User, idpGroupId = emp.IDPGroupId, guid = emp.Result.GUID })" class="btn active-link-info" title="ผลลัพธ์">
-                                            <i class="fa fa-info gradient-text-edit fs-5" aria-hidden="true"></i>
-                                        </a>
-                                        <a id="link" href="@Url.Action("Form", "Home", new { user = ViewBag.User, idpGroupId = emp.IDPGroupId, guid = emp.Result.GUID })" class="btn active-link-form" title="ทำแบบประเมิน">
-                                            <i class="fa-solid fa-file-text gradient-icon-form fs-5" aria-hidden="true"></i>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="card-view" style="display: none;">
+        <div class="container">
+            <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5">
+
+                @for (int i = 0; i < Model.Count(); i++)
+                {
+                    var enroll = Model.ElementAt(i);
+                    var form = Url.Action("Form", "Home", new { user = ViewBag.User, idpGroupId = enroll.IDPGroupId, guid = enroll.Result.GUID });
+                    var info = Url.Action("Info", "Home", new { user = ViewBag.User, idpGroupId = enroll.IDPGroupId, guid = enroll.Result.GUID });
+                    string backgroundColor = "";
+                    string color = "";
+                    if (enroll.Status == "Draft")
+                    {
+                        backgroundColor = "#802FDE";
+                        color = "#E8E2F7";
+                    }
+                    else if (enroll.Status == "Self")
+                    {
+                        backgroundColor = "#E50087";
+                        color = "#FFE5F4";
+                    }
+                    else if (enroll.Status == "1st Evaluating")
+                    {
+                        backgroundColor = "#DAAB00";
+                        color = "#FDF3CE";
+                    }
+                    else if (enroll.Status == "Developing")
+                    {
+                        backgroundColor = "#00AEE5";
+                        color = "#D8F6FF";
+                    }
+                    else if (enroll.Status == "2nd Evaluating")
+                    {
+                        backgroundColor = "#DAAB00";
+                        color = "#FDF3CE";
+                    }
+                    else if (enroll.Status == "Success")
+                    {
+                        backgroundColor = "#14B789";
+                        color = "#D5F8EF";
+                    }
+                    else if (enroll.Status == "Decline")
+                    {
+                        backgroundColor = "#CC660A";
+                        color = "#FFF2E7";
+                    }
+                    <div class="col">
+                        <div class="card card-cover h-100 overflow-hidden rounded-4 border-0" style="background-color: @backgroundColor;">
+                            <div class="d-flex flex-column h-100 p-5 pb-3 pt-3 text-white border-0">
+                                <div class="d-flex flex-row">
+                                    <h3 class="lh-1 fw-bold mt-2 me-auto" style="color: @color">@enroll.IDPGroupId</h3>
+                                    <div class="p-2">
+                                        <a href="@form">
+                                            <i class="fa-solid fa-file-text fs-5" style="color: @color"></i>
                                         </a>
                                     </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-                <a href="@Url.Action("Employee")" class="btn btn-lg active-link-back">
-                    <i class="fa fa-arrow-left gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back">กลับ</strong>
-                </a>
-            </div>
-        </div>
-
-        <div id="card-view" style="display: none;">
-            <div class="container">
-                <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-5">
-
-                    @for (int i = 0; i < Model.Count(); i++)
-                    {
-                        var enroll = Model.ElementAt(i);
-                        var form = Url.Action("Form", "Home", new { user = ViewBag.User, idpGroupId = enroll.IDPGroupId, guid = enroll.Result.GUID });
-                        var info = Url.Action("Info", "Home", new { user = ViewBag.User, idpGroupId = enroll.IDPGroupId, guid = enroll.Result.GUID });
-                        string backgroundColor = "";
-                        string color = "";
-                        if (enroll.Status == "Draft")
-                        {
-                            backgroundColor = "#802FDE";
-                            color = "#E8E2F7";
-                        }
-                        else if (enroll.Status == "Self")
-                        {
-                            backgroundColor = "#E50087";
-                            color = "#FFE5F4";
-                        }
-                        else if (enroll.Status == "1st Evaluating")
-                        {
-                            backgroundColor = "#DAAB00";
-                            color = "#FDF3CE";
-                        }
-                        else if (enroll.Status == "Developing")
-                        {
-                            backgroundColor = "#00AEE5";
-                            color = "#D8F6FF";
-                        }
-                        else if (enroll.Status == "2nd Evaluating")
-                        {
-                            backgroundColor = "#DAAB00";
-                            color = "#FDF3CE";
-                        }
-                        else if (enroll.Status == "Success")
-                        {
-                            backgroundColor = "#14B789";
-                            color = "#D5F8EF";
-                        }
-                        else if (enroll.Status == "Decline")
-                        {
-                            backgroundColor = "#CC660A";
-                            color = "#FFF2E7";
-                        }
-                        <div class="col">
-                                <div class="card card-cover h-100 overflow-hidden rounded-4 border-0" style="background-color: @backgroundColor;">
-                                    <div class="d-flex flex-column h-100 p-5 pb-3 pt-3 text-white border-0">
-                                        <div class="d-flex flex-row">
-                                            <h3 class="lh-1 fw-bold mt-2 me-auto" style="color: @color">@enroll.IDPGroupId</h3>
-                                            <div class="p-2">
-                                                <a href="@form">
-                                                    <i class="fa-solid fa-file-text fs-5" style="color: @color"></i>
-                                                </a>
-                                            </div>
-                                            <div class="p-2">
-                                                <a href="@info">
-                                                    <i class="fa-solid fa-info fs-5" style="color: @color"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <h4 class="lh-1 fw-bold mt-2" style="color: @color">@enroll.IDPGroup.IDPGroupName</h4>
-                                        <ul class="d-flex list-unstyled mt-5">
-                                            <li>
-                                                @if (enroll.Status == "Self")
-                                                {
-                                                    <i class="fa-solid fa-file-signature fa-beat" aria-hidden="true" style="font-size: xx-large; color: @color; "></i>
-                                                }
-                                                else if (enroll.Status == "1st Evaluating")
-                                                {
-                                                    <i class="fa fa-spinner fa-spin" aria-hidden="true" style="font-size: xx-large; color: @color;"></i>
-                                                }
-                                                else if (enroll.Status == "Developing")
-                                                {
-                                                    <i class="fa-solid fa-graduation-cap fa-beat" aria-hidden="true" style="font-size: xx-large; color: @color;"></i>
-                                                }
-                                                else if (enroll.Status == "2nd Evaluating")
-                                                {
-                                                    <i class="fa fa-spinner fa-spin" aria-hidden="true" style="font-size: xx-large; color: @color;"></i>
-                                                }
-                                                else if (enroll.Status == "Success")
-                                                {
-                                                    <i class="fa-solid fa-circle-check" aria-hidden="true" style="font-size: xx-large; color: @color;"></i>
-                                                }
-                                                else if (enroll.Status == "Decline")
-                                                {
-                                                    <i class="fa-solid fa-ban" aria-hidden="true" style="font-size: xx-large; color: @color;"></i>
-                                                }
-                                            </li>
-                                            <li class="me-auto">
-                                                <h4 style="color: @color" class="ms-2 mt-1"> <strong>@enroll.Status</strong></h4>
-                                            </li>
-                                            <li class="d-flex align-items-center">
-                                                <h4 style="color: @color" class="mt-1"><i class="fa fa-layer-group"></i> <strong>@enroll.Competencies</strong></h4>
-                                            </li>
-                                        </ul>
+                                    <div class="p-2">
+                                        <a href="@info">
+                                            <i class="fa-solid fa-info fs-5" style="color: @color"></i>
+                                        </a>
                                     </div>
                                 </div>
-                            
+                                <h4 class="lh-1 fw-bold mt-2" style="color: @color">@enroll.IDPGroup.IDPGroupName</h4>
+                                <ul class="d-flex list-unstyled mt-5">
+                                    <li>
+                                        @if (enroll.Status == "Self")
+                                        {
+                                            <i class="fa-solid fa-file-signature fa-beat" aria-hidden="true" style="font-size: xx-large; color: @color; "></i>
+                                        }
+                                        else if (enroll.Status == "1st Evaluating")
+                                        {
+                                            <i class="fa fa-spinner fa-spin" aria-hidden="true" style="font-size: xx-large; color: @color;"></i>
+                                        }
+                                        else if (enroll.Status == "Developing")
+                                        {
+                                            <i class="fa-solid fa-graduation-cap fa-beat" aria-hidden="true" style="font-size: xx-large; color: @color;"></i>
+                                        }
+                                        else if (enroll.Status == "2nd Evaluating")
+                                        {
+                                            <i class="fa fa-spinner fa-spin" aria-hidden="true" style="font-size: xx-large; color: @color;"></i>
+                                        }
+                                        else if (enroll.Status == "Success")
+                                        {
+                                            <i class="fa-solid fa-circle-check" aria-hidden="true" style="font-size: xx-large; color: @color;"></i>
+                                        }
+                                        else if (enroll.Status == "Decline")
+                                        {
+                                            <i class="fa-solid fa-ban" aria-hidden="true" style="font-size: xx-large; color: @color;"></i>
+                                        }
+                                    </li>
+                                    <li class="me-auto">
+                                        <h4 style="color: @color" class="ms-2 mt-1"> <strong>@enroll.Status</strong></h4>
+                                    </li>
+                                    <li class="d-flex align-items-center">
+                                        <h4 style="color: @color" class="mt-1"><i class="fa fa-layer-group"></i> <strong>@enroll.Competencies</strong></h4>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                    }
 
-                </div>
-                <a href="@Url.Action("Employee")" class="btn btn-lg active-link-back">
-                    <i class="fa fa-arrow-left gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back">กลับ</strong>
-                </a>
+                    </div>
+                }
+
             </div>
-            
         </div>
-
-
     </div>
-    <script>
-        function toggleView() {
-            var listView = document.getElementById('list-view');
-            var cardView = document.getElementById('card-view');
-            var toggleBtn = document.getElementById('toggle-btn');
+    <div class="container" id="container-workflow">
+        <h3 class="mt-3 mb-3">ประวัติอนุมัติ</h3>
+        <table class="table table-hover" id="workFlowTable" width="100%">
+            <thead class="sticky-header text-center" style="background-color: #2D4686; color: #C8E8FF">
+                <tr>
+                    <th width="5%">K2 NO.</th>
+                    <th width="5%">ActionBy</th>
+                    <th width="10%">Subject</th>
+                    <th width="5%">Status</th>
+                    <th width="5%">Year</th>
+                    <th width="10%">Remark</th>
+                    <th width="5%">RemarkDate</th>
 
-            if (listView.style.display === 'none') {
-                listView.style.display = 'block';
-                cardView.style.display = 'none';
-                toggleBtn.innerHTML = '<i class="fa-solid fa-list-ul"></i>'; // เปลี่ยน icon เป็น list view
-            } else {
-                listView.style.display = 'none';
-                cardView.style.display = 'block';
-                toggleBtn.innerHTML = '<i class="fa-solid fa-grip"></i>'; // เปลี่ยนกลับเป็นตัวอักษร "สลับการแสดงผล"
-            }
-        }
-
+                </tr>
+            </thead>
+            <tbody class="text-center table-group-divider">
+                @foreach (var workflow in ViewBag.WorkFlows)
+                {
+                    <tr>
+                        <td>@workflow.K2_NO</td>
+                        <td>@workflow.Action</td>
+                        <td>@workflow.Subject</td>
+                        <td>
+                            @if (workflow.Status == "Draft")
+                            {
+                                <p style="color: #802FDE; background-color: #E8E2F7; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@workflow.Status</p>
+                            }
+                            else if (workflow.Status == "Self")
+                            {
+                                <p style="color: #E50087; background-color: #FFE5F4; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@workflow.Status</p>
+                            }
+                            else if (workflow.Status == "1st Evaluating")
+                            {
+                                <p style="color: #DAAB00; background-color: #FDF3CE; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@workflow.Status</p>
+                            }
+                            else if (workflow.Status == "Developing")
+                            {
+                                <p style="color: #00AEE5; background-color: #D8F6FF; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@workflow.Status</p>
+                            }
+                            else if (workflow.Status == "2nd Evaluating")
+                            {
+                                <p style="color: #DAAB00; background-color: #FDF3CE; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@workflow.Status</p>
+                            }
+                            else if (workflow.Status == "Success")
+                            {
+                                <p style="color: #14B789; background-color: #D5F8EF; padding: 3px; border-radius: 3rem; width: auto; " class="text-center fw-bold">@workflow.Status</p>
+                            }
+                            else if (workflow.Status == "Decline")
+                            {
+                                <p style="color: #CC660A; background-color: #FFF2E7; border-radius: 3rem; width: auto; " class="text-center fw-bold">@workflow.Status</p>
+                            }
+                        </td>
+                        <td>@workflow.Year</td>
+                        <td>@workflow.Remark</td>
+                        <td>@workflow.RemarkDate</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="container mt-3">
+        <a href="@Url.Action("Employee")" class="btn btn-lg active-link-back">
+            <i class="fa fa-arrow-left gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back">กลับ</strong>
+        </a>
+    </div>
+</div>
+<script>
+    function toggleView() {
+        var listView = document.getElementById('list-view');
+        var cardView = document.getElementById('card-view');
         var toggleBtn = document.getElementById('toggle-btn');
-        toggleBtn.addEventListener('click', toggleView);
-    </script>
+
+        if (listView.style.display === 'none') {
+            listView.style.display = 'block';
+            cardView.style.display = 'none';
+            toggleBtn.innerHTML = '<i class="fa-solid fa-list-ul"></i>'; // เปลี่ยน icon เป็น list view
+        } else {
+            listView.style.display = 'none';
+            cardView.style.display = 'block';
+            toggleBtn.innerHTML = '<i class="fa-solid fa-grip"></i>'; // เปลี่ยนกลับเป็นตัวอักษร "สลับการแสดงผล"
+        }
+    }
+
+    var toggleBtn = document.getElementById('toggle-btn');
+    toggleBtn.addEventListener('click', toggleView);
+</script>
 
 
     <style>
-        #myTable {
+        #formTable, #workFlowTable, #container-workflow {
             border-radius: 10px;
             overflow: hidden;
             box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;
@@ -434,6 +493,9 @@
 
                 .active-link-info:hover i {
                     transform: scale(1.2);
+                }
+                p {
+                    margin-bottom: 0px;
                 }
         
     </style>

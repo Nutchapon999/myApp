@@ -151,26 +151,10 @@
         }
     });
 
-    var header = ["IDP_GROUP_ID", "IDP_GROUP_NAME", "YEAR", ""];
-
-    var dataRow = ["MC-G1", "Operation", "2566", "****Example****"];
 
     function downloadExcel() {
-        var workbook = XLSX.utils.book_new();
-        var sheetData = [header, dataRow];
-
-        var worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-        var excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-        var blob = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-
-        var link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "idpgroups.xlsx";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        var send = '@Url.Action("ExportIDPGroup", "Home")';
+        window.location = send;
     }
 </script>
 <style>

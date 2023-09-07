@@ -29,6 +29,7 @@ namespace myApp.Controllers
     public class HomeController : Controller
     {
         private App app;
+        private WorkFlow workFlow = new WorkFlow();
 
         public HomeController()
         {
@@ -970,7 +971,6 @@ namespace myApp.Controllers
         {
             if (file != null && file.ContentLength > 0)
             {
-                //int rowCount = GetExcelRowCount(file) - 1;
                 string filename = Guid.NewGuid() + Path.GetExtension(file.FileName);
                 string filepath = "/Excel/" + filename;
 
@@ -978,9 +978,7 @@ namespace myApp.Controllers
                 InsertExceldata1(filepath, filename);
 
                 TempData["UploadSuccess"] = true;
-                //TempData["RowCount"] = rowCount.ToString();
             }
-
 
             return RedirectToAction("UploadCompetency");
         }
@@ -991,77 +989,90 @@ namespace myApp.Controllers
         }
         private void InsertExceldata1(string FilePath, string FileName)
         {
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             string fullpath = Server.MapPath("/Excel/") + FileName;
-            ExcelConn(fullpath);
-            String query = string.Format("select * from [{0}]", "Sheet1$");
-
             try
             {
-                OleDbCommand Ecom = new OleDbCommand(query, Econ);
-                Econ.Open();
-
-                DataSet ds = new DataSet();
-                OleDbDataAdapter oda = new OleDbDataAdapter(query, Econ);
-                Econ.Close();
-                oda.Fill(ds);
-
-                DataTable dt = ds.Tables[0];
-
-
-                using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyConnection"].ConnectionString))
+                string fileExtension = Path.GetExtension(FileName).ToLower();
+                if (fileExtension == ".xlsx" || fileExtension == ".xls")
                 {
-                    con.Open();
-                    SqlCommand checkExistCommand = new SqlCommand("SELECT COMPETENCY_ID FROM IDP_COMPTY WHERE COMPETENCY_ID = @CompetencyId", con);
-                    SqlCommand insertCommand = new SqlCommand("INSERT INTO IDP_COMPTY (COMPETENCY_ID, COMPETENCY_NAME_TH, COMPETENCY_NAME_EN, COMPETENCY_DESC, PL1, PL2, PL3, PL4, PL5, ACTIVE, TYPE, DELETED) " +
-                                                             "VALUES (@CompetencyId, @CompetencyNameTH, @CompetencyNameEN, @CompetencyDesc, @Pl1, @Pl2, @Pl3, @Pl4, @Pl5, @Active, @Type, @Delete)", con);
-
-                    foreach (DataRow row in dt.Rows)
+                    using (var package = new ExcelPackage(new FileInfo(fullpath)))
                     {
-                        string competencyId = row["COMPETENCY_ID"].ToString();
-                        checkExistCommand.Parameters.Clear();
-                        checkExistCommand.Parameters.AddWithValue("@CompetencyId", competencyId);
+                        ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                        var worksheet1 = package.Workbook.Worksheets[0];
 
-                        object existingCode = checkExistCommand.ExecuteScalar();
-                        if (existingCode == null)
+                        int startRow = 2;
+
+                        using (SqlConnection con = new SqlConnection(ConfigurationManager.ConnectionStrings["MyConnection"].ConnectionString))
                         {
-                            insertCommand.Parameters.Clear();
-                            insertCommand.Parameters.AddWithValue("@CompetencyId", competencyId);
-                            insertCommand.Parameters.AddWithValue("@CompetencyNameTH", row["COMPETENCY_NAME_TH"]);
-                            insertCommand.Parameters.AddWithValue("@CompetencyNameEN", row["COMPETENCY_NAME_EN"]);
-                            insertCommand.Parameters.AddWithValue("@CompetencyDesc", row["COMPETENCY_DESC"]);
-                            insertCommand.Parameters.AddWithValue("@Pl1", row["PL1"]);
-                            insertCommand.Parameters.AddWithValue("@Pl2", row["PL2"]);
-                            insertCommand.Parameters.AddWithValue("@Pl3", row["PL3"]);
-                            insertCommand.Parameters.AddWithValue("@Pl4", row["PL4"]);
-                            insertCommand.Parameters.AddWithValue("@Pl5", row["PL5"]);
-                            insertCommand.Parameters.AddWithValue("@Active", row["ACTIVE"]);
-                            insertCommand.Parameters.AddWithValue("@Type", row["TYPE"]);
-                            insertCommand.Parameters.AddWithValue("@Delete", row["DELETED"]);
+                            con.Open();
+                            for (int row = startRow; row <= worksheet1.Dimension.End.Row; row++)
+                            {
+                                string A = worksheet1.Cells[row, 1].Text;
+                                string B = worksheet1.Cells[row, 2].Text;
+                                string C = worksheet1.Cells[row, 3].Text;
+                                string D = worksheet1.Cells[row, 4].Text;
+                                string E = worksheet1.Cells[row, 5].Text;
+                                string F = worksheet1.Cells[row, 6].Text;
+                                string G = worksheet1.Cells[row, 7].Text;
+                                string H = worksheet1.Cells[row, 8].Text;
+                                string I = worksheet1.Cells[row, 9].Text;
+                                string J = worksheet1.Cells[row, 10].Text;
+                                string K = worksheet1.Cells[row, 11].Text;
+                                string L = worksheet1.Cells[row, 12].Text;
 
-                            insertCommand.ExecuteNonQuery();
+                                string selectQuery = "SELECT COUNT(*) FROM IDP_COMPTY WHERE COMPETENCY_ID = @A";
+                                SqlCommand selectCmd = new SqlCommand(selectQuery, con);
+                                selectCmd.Parameters.AddWithValue("@A", A);
+                                int count = (int)selectCmd.ExecuteScalar();
+
+                                if (count > 0)
+                                {
+                                    string updateQuery = "UPDATE IDP_COMPTY SET COMPETENCY_NAME_TH = @C, COMPETENCY_NAME_EN = @D, COMPETENCY_DESC = @E, " +
+                                                            "PL1 = @F, PL2 = @G, PL3 = @H, PL4 = @I, PL5 = @J, Active = @K, TYPE = @B, DELETED = @L WHERE COMPETENCY_ID = @A";
+                                    SqlCommand updateCmd = new SqlCommand(updateQuery, con);
+                                    updateCmd.Parameters.AddWithValue("@A", A);
+                                    updateCmd.Parameters.AddWithValue("@B", B);
+                                    updateCmd.Parameters.AddWithValue("@C", C);
+                                    updateCmd.Parameters.AddWithValue("@D", D);
+                                    updateCmd.Parameters.AddWithValue("@E", E);
+                                    updateCmd.Parameters.AddWithValue("@F", F);
+                                    updateCmd.Parameters.AddWithValue("@G", G);
+                                    updateCmd.Parameters.AddWithValue("@H", H);
+                                    updateCmd.Parameters.AddWithValue("@I", I);
+                                    updateCmd.Parameters.AddWithValue("@J", J);
+                                    updateCmd.Parameters.AddWithValue("@K", K);
+                                    updateCmd.Parameters.AddWithValue("@L", L);
+                                    updateCmd.ExecuteNonQuery();
+                                }
+                                else
+                                {
+                                    string insertQuery = "INSERT INTO IDP_COMPTY (COMPETENCY_ID, COMPETENCY_NAME_TH, COMPETENCY_NAME_EN, COMPETENCY_DESC, PL1, PL2, PL3, PL4, PL5, ACTIVE, TYPE, DELETED) " +
+                                                         "VALUES (@A, @C, @D, @E, @F, @G, @H, @I, @J, @K, @B, @L)";
+                                    SqlCommand insertCmd = new SqlCommand(insertQuery, con);
+                                    insertCmd.Parameters.AddWithValue("@A", A);
+                                    insertCmd.Parameters.AddWithValue("@B", B);
+                                    insertCmd.Parameters.AddWithValue("@C", C);
+                                    insertCmd.Parameters.AddWithValue("@D", D);
+                                    insertCmd.Parameters.AddWithValue("@E", E);
+                                    insertCmd.Parameters.AddWithValue("@F", F);
+                                    insertCmd.Parameters.AddWithValue("@G", G);
+                                    insertCmd.Parameters.AddWithValue("@H", H);
+                                    insertCmd.Parameters.AddWithValue("@I", I);
+                                    insertCmd.Parameters.AddWithValue("@J", J);
+                                    insertCmd.Parameters.AddWithValue("@K", K);
+                                    insertCmd.Parameters.AddWithValue("@L", L);
+                                    insertCmd.ExecuteNonQuery();
+                                }
+
+                            }
+                            con.Close();
                         }
-                        else
-                        {
-                            SqlCommand updateCommand = new SqlCommand("UPDATE IDP_COMPTY SET COMPETENCY_NAME_TH = @CompetencyNameTH, COMPETENCY_NAME_EN = @CompetencyNameEN, COMPETENCY_DESC = @CompetencyDesc, " +
-                                "PL1 = @Pl1, PL2 = @Pl2, PL3 = @Pl3, PL4 = @Pl4, PL5 = @Pl5, Active = @Active, TYPE = @Type, DELETED = @Delete WHERE COMPETENCY_ID = @CompetencyId", con);
-
-                            updateCommand.Parameters.AddWithValue("@CompetencyId", competencyId);
-                            updateCommand.Parameters.AddWithValue("@CompetencyNameTH", row["COMPETENCY_NAME_TH"]);
-                            updateCommand.Parameters.AddWithValue("@CompetencyNameEN", row["COMPETENCY_NAME_EN"]);
-                            updateCommand.Parameters.AddWithValue("@CompetencyDesc", row["COMPETENCY_DESC"]);
-                            updateCommand.Parameters.AddWithValue("@Pl1", row["PL1"]);
-                            updateCommand.Parameters.AddWithValue("@Pl2", row["PL2"]);
-                            updateCommand.Parameters.AddWithValue("@Pl3", row["PL3"]);
-                            updateCommand.Parameters.AddWithValue("@Pl4", row["PL4"]);
-                            updateCommand.Parameters.AddWithValue("@Pl5", row["PL5"]);
-                            updateCommand.Parameters.AddWithValue("@Active", row["ACTIVE"]);
-                            updateCommand.Parameters.AddWithValue("@Type", row["TYPE"]);
-                            updateCommand.Parameters.AddWithValue("@Delete", row["DELETED"]);
-
-                            updateCommand.ExecuteNonQuery();
-                        }
-
                     }
+                }
+                else
+                {
+                    TempData["UploadError"] = "เกิดข้อผิดพลาดในการอัปโหลด: ไม่ใช่ไฟล์ Excel";
                 }
             }
             catch (Exception ex)
@@ -1069,7 +1080,20 @@ namespace myApp.Controllers
                 TempData["UploadError"] = "เกิดข้อผิดพลาดในการอัปโหลด: " + ex.Message;
             }
         }
-        
+        public ActionResult ExportCompetency()
+        {
+            string filePath = Server.MapPath("~/Files/Competency.xlsx");
+
+            if (System.IO.File.Exists(filePath))
+            {
+                return File(filePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Competency.xlsx");
+            }
+            else
+            {
+                return HttpNotFound("The file 'Competency.xlsx' does not exist.");
+            }
+        }
+
         #endregion
 
         #region UPLOAD IDP GROUP
@@ -1103,7 +1127,6 @@ namespace myApp.Controllers
                 file.SaveAs(Server.MapPath(filepath));
                 InsertExceldata3(filepath, filename , ViewBag.Username);
                 TempData["UploadSuccess"] = true;
-
             }
 
             return RedirectToAction("UploadIDPGroup");
@@ -1339,8 +1362,6 @@ namespace myApp.Controllers
                                 app.InsertResultEmployeesByUpload(user, Year, username, B);
                             }
                             con.Close();
-
-
                         }
                     }
                 }
@@ -1348,7 +1369,6 @@ namespace myApp.Controllers
                 {
                     TempData["UploadError"] = "เกิดข้อผิดพลาดในการอัปโหลด: ไม่ใช่ไฟล์ Excel" ;
                 }
-                
             }
             catch (Exception ex)
             {
@@ -1356,7 +1376,19 @@ namespace myApp.Controllers
             }
         }
 
+        public ActionResult ExportIDPGroup()
+        {
+            string filePath = Server.MapPath("~/Files/IDP Group.xlsx");
 
+            if (System.IO.File.Exists(filePath))
+            {
+                return File(filePath, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "IDP Group.xlsx");
+            }
+            else
+            {
+                return HttpNotFound("The file 'IDP Group.xlsx' does not exist.");
+            }
+        }
         #endregion
 
         #region EMAIL
@@ -1433,7 +1465,13 @@ namespace myApp.Controllers
                 ViewBag.Id = id;
                 ViewBag.Year = year;
 
+                var yearAD = "";
+                int yearInt = int.Parse(year);
+                yearAD = (yearInt - 543).ToString();
+
                 List<Enrollment> enrollments = app.GetEnrollEachYearByUsername(user, year);
+                List<WorkFlow> workFlows = workFlow.GetWorkflows(user, yearAD);
+                ViewBag.WorkFlows = workFlows;
                 return View(enrollments);
             }
             else

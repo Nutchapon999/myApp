@@ -72,7 +72,6 @@ namespace myApp.Controllers
                 int yearInt = int.Parse(Year);
                 YearAD = (yearInt - 543).ToString();
             }
-            
 
             ViewBag.Year = Year;
             List<Enrollment> enrollments = app.GetEnrollEachYearByUsername(username, Year);

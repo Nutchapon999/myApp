@@ -81,7 +81,7 @@
                         <i class="fa fa-database" aria-hidden="true"></i>
                         <strong>อัปโหลด</strong>
                     </button>
-                    <button type="button" onclick="downloadExcel()" class="btn btn-success mt-3 btn-lg">
+                    <button onclick="downloadExcel()" type="button" class="btn btn-success mt-3 btn-lg">
                         <i class="fa fa-download" aria-hidden="true"></i>
                         <strong>ตัวอย่าง</strong>
                     </button>
@@ -152,29 +152,9 @@
         }
     });
 
-    var header = ["COMPETENCY_ID", "TYPE", "COMPETENCY_NAME_TH", "COMPETENCY_NAME_EN", "COMPETENCY_DESC",
-        "PL1", "PL2", "PL3", "PL4", "PL5", "ACTIVE", "DELETED", ""];
-
-    var dataRow = ["TCxxxx", "TC CC FC MC", "Name in TH", "Name in EN", "Definition",
-        "xxxxxx", "xxxxxx", "xxxxxx", "การทำให้หกกเานี้กาเว", "xxxxxx", "1 *1 = Active 0 = Not Active*", "1 *1 = Not Deleted 0 = Deleted*", "****Example****"];
-
     function downloadExcel() {
-        
-        var workbook = XLSX.utils.book_new();
-        var sheetData = [header, dataRow];
-
-        var worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-        var excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-        var blob = new Blob([excelBuffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-
-        var link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "competencies.xlsx";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        var send = '@Url.Action("ExportCompetency", "Home")';
+        window.location = send;
     }
 
 </script>

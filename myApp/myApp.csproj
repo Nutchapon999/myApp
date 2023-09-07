@@ -619,6 +619,8 @@
     <Content Include="fonts\Sarabun-SemiBoldItalic.ttf" />
     <Content Include="fonts\Sarabun-Thin.ttf" />
     <Content Include="fonts\Sarabun-ThinItalic.ttf" />
+    <Content Include="Files\Competency.xlsx" />
+    <Content Include="Files\IDP Group.xlsx" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
