@@ -860,9 +860,11 @@ namespace myApp.Controllers
                 return RedirectToAction("Index", "Form");
             }
         }
-        public ActionResult GetSelectDepartment(string selectedValue, string idpGroupId)
+        public ActionResult GetSelectDepartment(string selectedValue, string idpGroupId, string year)
         {
             List<User> users = app.getEmployeeByDepartment(selectedValue);
+            List<User> usersToAddToAvailableIds = new List<User>();
+            int count = 0;
             foreach (var user in users)
             {
                 if (user.Id == null) user.Id = "";
@@ -875,11 +877,18 @@ namespace myApp.Controllers
                 if (user.CostCenter == null) user.CostCenter = "";
                 if (user.DepartmentName == null) user.DepartmentName = "";
                 if (user.Company == null) user.Company = "";
+                if (user.UserLogin == null) user.UserLogin = "";
+
+                count = app.CountUserIDPGroupByYear(year, user.Id);
+                if (count <= 0)
+                {
+                    usersToAddToAvailableIds.Add(user);
+                }
             }
 
             List<string> enrolledIds = app.GetCheckedId(idpGroupId);
 
-            List<User> availableIds = users.Where(u => !enrolledIds.Contains(u.Id)).ToList();
+            List<User> availableIds = usersToAddToAvailableIds.Where(u => !enrolledIds.Contains(u.Id)).ToList();
 
             availableIds.ForEach(u => u.Enrollment = new Enrollment());
 
@@ -1465,12 +1474,9 @@ namespace myApp.Controllers
                 ViewBag.Id = id;
                 ViewBag.Year = year;
 
-                var yearAD = "";
-                int yearInt = int.Parse(year);
-                yearAD = (yearInt - 543).ToString();
 
                 List<Enrollment> enrollments = app.GetEnrollEachYearByUsername(user, year);
-                List<WorkFlow> workFlows = workFlow.GetWorkflows(user, yearAD);
+                List<WorkFlow> workFlows = workFlow.GetWorkflows(user, year);
                 ViewBag.WorkFlows = workFlows;
                 return View(enrollments);
             }

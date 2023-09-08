@@ -65,17 +65,11 @@ namespace myApp.Controllers
             if (string.IsNullOrEmpty(Year))
             {
                 Year = (DateTime.Now.Year + 543).ToString();
-                YearAD = DateTime.Now.Year.ToString();
-            }
-            else
-            {
-                int yearInt = int.Parse(Year);
-                YearAD = (yearInt - 543).ToString();
             }
 
             ViewBag.Year = Year;
             List<Enrollment> enrollments = app.GetEnrollEachYearByUsername(username, Year);
-            List<WorkFlow> workFlows = workFlow.GetWorkflows(username, YearAD);
+            List<WorkFlow> workFlows = workFlow.GetWorkflows(username, Year);
             ViewBag.WorkFlows = workFlows;
             return View(enrollments);
         }

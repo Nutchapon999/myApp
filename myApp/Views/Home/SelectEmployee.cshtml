@@ -156,12 +156,13 @@
         $("#exampleDataList").change(function () {
             var selectedValue = $(this).val();
             var idpGroupId = '@ViewBag.IDPGroupId';
+            var year = '@ViewBag.Year';
 
             console.log(selectedValue);
             $.ajax({
                 url: send,
                 type: "POST",
-                data: { selectedValue: selectedValue, idpGroupId: idpGroupId },
+                data: { selectedValue: selectedValue, idpGroupId: idpGroupId, year : year },
                 success: function (response) {
                     console.log(response);
                     buildTable(response);

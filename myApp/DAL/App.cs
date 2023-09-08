@@ -13,6 +13,7 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Numerics;
+using System.Text;
 
 namespace myApp.DAL
 {
@@ -2586,6 +2587,27 @@ namespace myApp.DAL
 
             return CheckedIds;
         }
+        public int CountUserIDPGroupByYear(string year, string id)
+        {
+            int count = 0;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand("SELECT COUNT(*) " +
+                                                        "FROM IDP_USER_ENROLL EN " +
+                                                        "JOIN IDP_RESULT RE ON EN.ID = RE.ID AND EN.IDP_GROUP_ID = RE.IDP_GROUP_ID " +
+                                                        "WHERE RE.YEAR = @Year AND EN.ID = @Id AND EN.STATUS != 'Decline'", connection))
+            {
+
+                command.Parameters.AddWithValue("@Year", year);
+                command.Parameters.AddWithValue("@Id", id);
+
+                connection.Open();
+
+                count = (int)command.ExecuteScalar();
+            }
+
+            return count;
+        }
         public void InsertEmployee(List<User> selectedUsers, string idpGroupId)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -2654,17 +2676,28 @@ namespace myApp.DAL
 
                 foreach (User user in selectedUsers)
                 {
+                    StringBuilder builder = new StringBuilder();
+                    Enumerable
+                       .Range(65, 26)
+                        .Select(e => ((char)e).ToString()) 
+                        .Concat(Enumerable.Range(97, 26).Select(e => ((char)e).ToString()))
+                        .Concat(Enumerable.Range(0, 10).Select(e => e.ToString()))
+                        .OrderBy(e => Guid.NewGuid())
+                        .Take(11)
+                        .ToList().ForEach(e => builder.Append(e));
+                    string K2_No = "IDP_" + builder.ToString();
                     int competencyAll = GetCompetencyAll(user.Id, idpGroupId);
 
                     string resultQuery = "INSERT INTO IDP_RESULT (GUID, K2_NO, FORM_TYPE, FORM_ID, IDP_GROUP_ID, ID, COMPETENCY_ALL, COMPETENCY_PASS1, COMPETENCY_PASS2, COMPETENCY_PER1, COMPETENCY_PER2, " +
                                             "YEAR, RANK1, RANK2, SUBJECT, PLANT, DEPARTMENT, COMPANY_CODE, REQUISITIONER, REQUISITIONER_EMAIL, " +
                                             "CREATED_BY, CREATED_ON, STARTEDWF_ON, COMPLETED_ON, CURRENT_APPROVER, GR_LEVEL) " +
-                                            "VALUES (@Guid, NULL, 'IDP', 'IDP01', @IDPGroupId, @Id, @All, 0, 0, 0, 0, " +
+                                            "VALUES (@Guid, @K2No, 'IDP', 'IDP01', @IDPGroupId, @Id, @All, 0, 0, 0, 0, " +
                                             "@Year, NULL, NULL, @Subject, NULL, @Department, NULL, NULL, NULL, @CreateBy, GETDATE(), NULL, NULL, NULL, NULL)";
 
                     using (SqlCommand resultCommand = new SqlCommand(resultQuery, connection))
                     {
                         resultCommand.Parameters.AddWithValue("@Guid", Guid.NewGuid().ToString());
+                        resultCommand.Parameters.AddWithValue("@K2No", K2_No);
                         resultCommand.Parameters.AddWithValue("@Id", user.Id);
                         resultCommand.Parameters.AddWithValue("@Year", year);
                         resultCommand.Parameters.AddWithValue("@All", competencyAll);
@@ -3299,7 +3332,6 @@ namespace myApp.DAL
                 {
                     UserFormAuth userFormAuth = new UserFormAuth();
 
-                    //userFormAuth.Id = (int)reader["ID"];
                     userFormAuth.Username = reader.IsDBNull(reader.GetOrdinal("USERNAME")) ? null : (string)reader["USERNAME"];
                     userFormAuth.FormId = reader.IsDBNull(reader.GetOrdinal("FORM_ID")) ? null : (string)reader["FORM_ID"];
                     userFormAuth.ObjectName = reader.IsDBNull(reader.GetOrdinal("OBJECT_NAME")) ? null : (string)reader["OBJECT_NAME"];
