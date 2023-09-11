@@ -67,11 +67,36 @@
                                 <i class="fa fa-plus gradient-icon-add" aria-hidden="true"></i> <strong class="gradient-icon-add"> เพิ่ม</strong>
                             </a>
                         }
-                        @if(ViewBag.Count > 0)
+                        @if (ViewBag.Count > 0 && ViewBag.CountResult <= 0)
                         {
                             <button type="submit" class="btn btn-lg active-link-submit mb-2">
                                 <i class="fa-solid fa-save gradient-icon-submit" aria-hidden="true"></i> <strong class="gradient-icon-submit"> บันทึก</strong>
                             </button>
+                        }
+                        else if (ViewBag.CountResult > 0)
+                        {
+                            <button type="button" class="btn btn-lg active-link-submit mb-2" data-bs-toggle="modal" data-bs-target="#sendModal">
+                                <i class="fa-solid fa-save gradient-icon-submit" aria-hidden="true"></i> <strong class="gradient-icon-submit"> บันทึก</strong>
+                            </button>
+                            <div class="modal fade" id="sendModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+                                <div class="modal-dialog modal-sm modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-body text-center">
+                                            <div class="alert alert-dark" role="alert" style="font-size: 20px">
+                                                มีพนักงานที่กำลังทำแบบประเมินอยู่ คุณต้องการที่จะ<strong>บันทึก</strong> PL และ Critical <strong>ใหม่</strong>จริงๆใช่ไหม?
+                                            </div>
+                                            <div class="d-flex flex-row mt-3">
+                                                <button type="button" class="btn btn-lg active-link-back w-50 " id="btn-refresh">
+                                                    <i class="fa-solid fa-ban gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back"> ยกเลิก</strong>
+                                                </button>
+                                                <button type="submit" class="btn btn-lg active-link-submit w-50 ms-2" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-dismiss="modal">
+                                                    <i class="fa-solid fa-save gradient-icon-submit" aria-hidden="true"></i> <strong class="gradient-icon-submit"> บันทึก</strong>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         }
                     </div>
                 </div>
@@ -335,6 +360,10 @@
         var plInput = row.querySelector('input[name^="idpGroupItems"][name$=".Pl"]');
         plInput.value = pl;
     }
+    js("#btn-refresh").click(function () {
+        location.reload();
+    });
+
 </script>
 
 

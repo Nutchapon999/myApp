@@ -585,6 +585,7 @@ namespace myApp.Controllers
                 ViewBag.Massage = "IDP Group นี้ใช้งานแล้วและไม่สามารถเพิ่มได้";
 
                 int count = app.GetCountCompetency(idpGroupId);
+                int countResult = app.GetCountResult(idpGroupId);
 
                 string idpGroupName = app.GetIDPGroupNameByIDPGroupId(idpGroupId);
                 string year = app.GetYearById(idpGroupId);
@@ -593,6 +594,7 @@ namespace myApp.Controllers
                 ViewBag.IDPGroupName = idpGroupName;
                 ViewBag.Year = year;
                 ViewBag.Count = count;
+                ViewBag.CountResult = countResult;
                 return View(competencyItems);
                 
             }
@@ -605,13 +607,19 @@ namespace myApp.Controllers
         public ActionResult AddCompetency(string idpGroupId, Dictionary<string, IDPGroupItem> idpGroupItems)
         {
             int count = app.GetCountResult(idpGroupId);
+            List<Result> results = app.GetResultByIDPGroupId(idpGroupId);
             app.UpdateIDPGroupItems(idpGroupItems, idpGroupId);
             if( count > 0)
             {
-                app.UpdateResultItem(idpGroupItems);
+                app.UpdateResultItem(idpGroupItems, idpGroupId);
+                foreach(Result result in results)
+                {
+                    List<ResultItem> resultItems = app.GetResultItemByGuid(result.GUID);
+                    app.UpdateGaps(resultItems);
+                }
+                app.UpdateResult(results, idpGroupId);
             }
             return RedirectToAction("AddCompetency", new { idpGroupId = idpGroupId });
-            
         }
         public ActionResult SelectCompetency(string idpGroupId)
         {
@@ -795,6 +803,7 @@ namespace myApp.Controllers
                                 string year = app.GetYearByGuid(guid);
 
                                 List<ResultItem> actual2 = app.GetPreActual2(id, year);
+
 
                                 app.UpdateStartWorkFlow(guid, username);
                                 app.InsertWorkflowHS0(position, username);
@@ -1951,9 +1960,11 @@ namespace myApp.Controllers
             app.DeleteGoodness(GDId);
             return null;
         }
-        public ActionResult SortingGoodness(string selectedCompany)
+        public ActionResult SortingGoodness(string selectedCompany, string selectedDepartment)
         {
-            List<User> sortingUser = app.GetListUserByGoodness(selectedCompany);
+            if (selectedCompany == "") selectedCompany = null;
+            if (selectedDepartment == "") selectedDepartment = null;
+            List<User> sortingUser = app.GetListUserByGoodness(selectedCompany, selectedDepartment);
             foreach (var user in sortingUser)
             {
                 if (user.Id == null) user.Id = "";
@@ -1996,13 +2007,14 @@ namespace myApp.Controllers
                 return RedirectToAction("Index", "Form");
             }
         }
-        public ActionResult GetListDownload(string selectedCompany, string selectYear, string selectCostCenter, string selectUserId)
+        public ActionResult GetListDownload(string selectedCompany, string selectYear, string selectCostCenter, string selectUserId, string selectStatus)
         {
             if (selectedCompany == "") selectedCompany = null;
             if (selectYear == "") selectYear = null;
             if (selectCostCenter == "") selectCostCenter = null;
             if (selectUserId == "") selectUserId = null;
-            List<User> listDownloads = app.GetListDownloadByFilter(selectedCompany, selectYear, selectCostCenter, selectUserId);
+            if (selectStatus == "") selectStatus = null;
+            List<User> listDownloads = app.GetListDownloadByFilter(selectedCompany, selectYear, selectCostCenter, selectUserId, selectStatus);
             foreach (var download in listDownloads)
             {
                 if (download.ResultItem.Priority == null) download.ResultItem.Priority = "";

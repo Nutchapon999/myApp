@@ -68,6 +68,19 @@
                 }
             </datalist>
         </div>
+        <div class="col-auto d-flex align-items-center ms-2">
+            <label for="selectStatus" class="form-label me-2 mt-2"> สถานะ:</label>
+            <select class="form-select" id="selectStatus" style="width: 100px">    
+                <option value="">-</option>
+                <option value="Draft">Draft</option>
+                <option value="Self">Self</option>
+                <option value="1st Evaluating">1st Evaluating</option>
+                <option value="Developing">Developing</option>
+                <option value="2nd Evaluating">2nd Evaluating</option>
+                <option value="Success">Success</option>
+                <option value="Decline">Decline</option>
+            </select>
+        </div>
         <div class="col-auto ms-auto text-end">
             <button type="button" class="btn btn-lg active-link-excel" onclick="exportTableToExcel('myTB')">
                 <i class="fa fa-solid fa-file-excel gradient-icon-excel fs-3"></i> <strong class="gradient-icon-excel">Excel</strong>
@@ -112,7 +125,7 @@
 <script>
     $(document).ready(function () {
 
-        $("#selectYear, #selectIDPGroup, #selectCompany, #DataListCostcenter, #DataListUserID").change(function () {
+        $("#selectYear, #selectIDPGroup, #selectCompany, #DataListCostcenter, #DataListUserID, #selectStatus").change(function () {
             filterTable();
         });
         var send = '@Url.Action("GetListDownload", "Home")';
@@ -122,11 +135,13 @@
             var selectYear = $("#selectYear").val();
             var selectCostCenter = $("#DataListCostcenter").val();
             var selectUserId = $("#DataListUserID").val();
+            var selectStatus = $("#selectStatus").val();
 
             console.log(selectedCompany);
             console.log(selectYear);
             console.log(selectCostCenter);
             console.log(selectUserId);
+            console.log(selectStatus);
 
             $.ajax({
                 url: send,
@@ -136,6 +151,7 @@
                     selectYear: selectYear,
                     selectCostCenter: selectCostCenter,
                     selectUserId: selectUserId,
+                    selectStatus: selectStatus,
                 },
                 success: function (response) {
                     console.log(response);

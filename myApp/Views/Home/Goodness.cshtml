@@ -251,16 +251,27 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <div class="row align-items-center">
-                        <div class="col-4 d-flex align-items-center">
+                        <div class="col-6 d-flex align-items-center">
                             <h1 class="modal-title fs-4 fw-bold me-3" id="exampleModalLabel">เลือกพนักงาน</h1>
                             <label for="selectCompany" class="form-label me-2 mt-2"> BU/Holding:</label>
-                            <select class="form-select" id="selectCompany" style="width: 200px">
+                            <select class="form-select" id="selectCompany" style="width: 100px">
                                 <option value="">ทั้งหมด</option>
                                 @foreach (var dpt in ((List<myApp.Models.User>)ViewBag.User).Where(u => u.Company != null).GroupBy(u => u.Company).Select(grp => grp.First()))
                                 {
                                     <option value="@dpt.Company">@dpt.Company</option>
                                 }
-                            </select>   
+                            </select>
+
+                            <label for="exampleDataList" class="form-label ms-2 me-2 mt-2"> แผนก:</label>
+                            <input class="form-control" list="selectDepartment" id="DepartmentDataList" placeholder="Type to search..." style="width: 200px">
+                            <datalist id="selectDepartment">
+                                @foreach (var item in ((List<myApp.Models.User>)ViewBag.User).Where(d => d.DepartmentName != null)
+                                                            .GroupBy(d => d.DepartmentName)
+                                                            .Select(d => d.First()))
+                                {
+                                    <option value="@item.DepartmentName"></option>
+                                }
+                            </datalist>
                         </div>
                         <div class="col-5 ms-auto text-end">
                             <button type="submit" class="btn btn-lg active-link-submit me-2" id="actionButton" disabled>
@@ -474,18 +485,20 @@
 
     js(document).ready(function () {
 
-        $("#selectCompany").change(function () {
+        $("#selectCompany, #DepartmentDataList").change(function () {
             filterTable();
         });
         var send = '@Url.Action("SortingGoodness", "Home")';
 
         function filterTable() {
             var selectedCompany = $("#selectCompany").val();
+            var selectedDepartment = $("#DepartmentDataList").val();
             //var selectYear = $("#selectYear").val();
             //var selectCostCenter = $("#DataListCostcenter").val();
             //var selectUserId = $("#DataListUserID").val();
 
             console.log(selectedCompany);
+            console.log(selectedDepartment);
             //console.log(selectYear);
             //console.log(selectCostCenter);
             //console.log(selectUserId);
@@ -495,6 +508,7 @@
                 type: "POST",
                 data: {
                     selectedCompany: selectedCompany,
+                    selectedDepartment: selectedDepartment,
                 },
                 success: function (response) {
                     console.log(response);
@@ -505,6 +519,12 @@
                 }
             });
         }
+
+        $(document).ready(function () {
+            $("#DepartmentDataList").click(function () {
+                $(this).val(""); 
+            });
+        });
     });
 
     function buildTable(users) {

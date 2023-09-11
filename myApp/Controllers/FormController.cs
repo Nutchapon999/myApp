@@ -60,7 +60,6 @@ namespace myApp.Controllers
             ViewBag.isAdmin = isAdmin;
             ViewBag.isGood = isGood;
             ViewBag.Username = username;
-            var YearAD = "";
 
             if (string.IsNullOrEmpty(Year))
             {

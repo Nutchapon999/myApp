@@ -899,7 +899,7 @@ namespace myApp.DAL
 
             return count;
         }
-        public void UpdateResultItem(Dictionary<string, IDPGroupItem> idpGroupItems)
+        public void UpdateResultItem(Dictionary<string, IDPGroupItem> idpGroupItems, string idpGroupId)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -920,7 +920,149 @@ namespace myApp.DAL
 
                         command.ExecuteNonQuery();
                     }
+
+                    
                 }
+            }
+        }
+        public List<Result> GetResultByIDPGroupId(string idpGroupId)
+        {
+            List<Result> results = new List<Result>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT * FROM IDP_RESULT WHERE IDP_GROUP_ID = @IDPGroupId";
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
+
+                connection.Open();
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    Result result = new Result();
+
+                    result.GUID = (string)reader["GUID"];
+                    result.Id = (string)reader["ID"];
+
+                    results.Add(result);
+                }
+                reader.Close();
+            }
+
+            return results;
+        }
+        public List<ResultItem> GetResultItemByGuid(string guid)
+        {
+            List<ResultItem> resultItems = new List<ResultItem>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT * FROM IDP_RESULT_ITEM WHERE GUID = @Guid";
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@Guid", guid);
+
+                connection.Open();
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    ResultItem resultItem = new ResultItem();
+
+                    resultItem.GUID = (string)reader["GUID"];
+                    resultItem.ResultItemId = (int)reader["RESULT_ITEM"];
+                    resultItem.Requirement = (int)reader["REQUIREMENT"];
+                    resultItem.Actual1 = (int)reader["ACTUAL1"];
+                    resultItem.Actual2 = (int)reader["ACTUAL2"];
+
+                    resultItems.Add(resultItem);
+                }
+                reader.Close();
+            }
+
+            return resultItems;
+        }
+        public void UpdateGaps(List<ResultItem> resultItems)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                foreach (ResultItem resultItem in resultItems)
+                {
+
+                    string updateQuery = "UPDATE IDP_RESULT_ITEM SET GAP1 = @Gap1, GAP2 = @Gap2 WHERE GUID = @Guid AND RESULT_ITEM = @ResultItem";
+
+                    using (SqlCommand command = new SqlCommand(updateQuery, connection))
+                    {
+                        command.Parameters.AddWithValue("@Gap1", resultItem.Actual1 - resultItem.Requirement);
+                        command.Parameters.AddWithValue("@Gap2", resultItem.Actual2 - resultItem.Requirement);
+                        command.Parameters.AddWithValue("@Guid", resultItem.GUID);
+                        command.Parameters.AddWithValue("@ResultItem", resultItem.ResultItemId);
+
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
+        public void UpdateResult(List<Result> results, string idpGroupId)
+        {
+            
+            foreach (Result result in results)
+            {
+                    string status = GetStatus(result.Id, idpGroupId);
+
+                    int all = GetCompetencyAllByGuid(result.GUID);
+                    int pass1;
+                    int pass2;
+                    
+                        pass1 = GetCompetencyPassByGap1(result.GUID);
+                    
+                        pass2 = GetCompetencyPassByGap2(result.GUID);
+                    
+
+                    //CALCULATE VALUES FOR RESULT
+                    float per1 = (float)pass1 / all * 100;
+                    float per2 = (float)pass2 / all * 100;
+                    string rank1;
+                    string rank2;
+
+                    switch (per1)
+                    {
+                        case var p when p >= 100:
+                            rank1 = "M";
+                            break;
+                        case var p when p < 100 && p >= 70:
+                            rank1 = "C";
+                            break;
+                        default:
+                            rank1 = "L";
+                            break;
+                    }
+                    switch (per2)
+                    {
+                        case var p when p >= 100:
+                            rank2 = "M";
+                            break;
+                        case var p when p < 100 && p >= 70:
+                            rank2 = "C";
+                            break;
+                        default:
+                            rank2 = "L";
+                            break;
+                    }
+
+                    
+                    UpdateResultA1(result.GUID, pass1, per1, rank1);
+                    
+                    UpdateResultA2(result.GUID, pass2, per2, rank2);
+
             }
         }
         #endregion
@@ -1512,7 +1654,7 @@ namespace myApp.DAL
             using (SqlConnection connection = new SqlConnection(connectionString))
             using (SqlCommand command = new SqlCommand("SELECT COUNT(*) " +
                 "FROM IDP_RESULT R " +
-                "JOIN IDP_RESULT_ITEM RI ON R.GUID = RI.GUID " +
+                "JOIN IDP_RESULT_ITEM RI ON R.GUID = RI.GUID " +    
                 "WHERE R.GUID = @GUID AND RI.GAP1 >= 0", connection))
             {
                 command.Parameters.AddWithValue("@GUID", guid);
@@ -3747,7 +3889,7 @@ namespace myApp.DAL
 
             return count;
         }
-        public List<User> GetListUserByGoodness(string company)
+        public List<User> GetListUserByGoodness(string company, string department)
         {
             List<User> users = new List<User>();
 
@@ -3762,10 +3904,15 @@ namespace myApp.DAL
                 {
                     query += " AND HR.COMPANY = @Company";
                 }
+                if (department != null)
+                {
+                    query += " AND HR.DEPARTMENT_NAME = @Department";
+                }
 
                 SqlCommand command = new SqlCommand(query, connection);
 
                 command.Parameters.AddWithValue("@Company", (object)company ?? DBNull.Value);
+                command.Parameters.AddWithValue("@Department", (object)department ?? DBNull.Value);
    
                 if (company != null)
                 {
@@ -3964,7 +4111,8 @@ namespace myApp.DAL
             {
                 string query = "SELECT * " +
                                 "FROM MAS_USER_HR HR " +
-                                "JOIN IDP_RESULT R ON HR.ID = R.ID";
+                                "JOIN IDP_RESULT R ON HR.ID = R.ID " +
+                                "JOIN IDP_USER_ENROLL EN ON EN.ID = R.ID AND EN.IDP_GROUP_ID = R.IDP_GROUP_ID";
 
                 SqlCommand command = new SqlCommand(query, connection);
 
@@ -3984,6 +4132,9 @@ namespace myApp.DAL
                     Result result = new Result();
                     result.Year = (string)reader["YEAR"];
 
+                    Enrollment enrollment = new Enrollment();
+                    enrollment.Status = (string)reader["STATUS"];
+
                     user.Result = result;
                     users.Add(user);
                 }
@@ -3992,7 +4143,7 @@ namespace myApp.DAL
 
             return users;
         }
-        public List<User> GetListDownloadByFilter(string company, string year, string costCenter, string userId)
+        public List<User> GetListDownloadByFilter(string company, string year, string costCenter, string userId, string status)
         {
             List<User> users = new List<User>();
 
@@ -4004,8 +4155,8 @@ namespace myApp.DAL
                                "JOIN IDP_RESULT R ON HR.ID = R.ID " +
                                "JOIN IDP_RESULT_ITEM RI ON RI.GUID = R.GUID " +
                                "JOIN IDP_USER_ENROLL EN ON R.IDP_GROUP_ID = EN.IDP_GROUP_ID " +
-                               "WHERE 1 = @Control"; 
-                
+                               "WHERE 1 = @Control";
+
                 if (company != null)
                 {
                     query += " AND HR.COMPANY = @Company";
@@ -4026,13 +4177,19 @@ namespace myApp.DAL
                     query += " AND HR.ID = @UserId";
                 }
 
+                if (status != null)
+                {
+                    query += " AND EN.STATUS = @Status";
+                }
+
                 SqlCommand command = new SqlCommand(query, connection);
 
                 command.Parameters.AddWithValue("@Company", (object)company ?? DBNull.Value);
                 command.Parameters.AddWithValue("@Year", (object)year ?? DBNull.Value);
                 command.Parameters.AddWithValue("@CostCenter", (object)costCenter ?? DBNull.Value);
                 command.Parameters.AddWithValue("@UserId", (object)userId ?? DBNull.Value);
-                if(company != null || year != null || costCenter != null || userId != null)
+                command.Parameters.AddWithValue("@Status", (object)status ?? DBNull.Value);
+                if (company != null || year != null || costCenter != null || userId != null || status != null)
                 {
                     command.Parameters.AddWithValue("@Control", 1);
                 }
