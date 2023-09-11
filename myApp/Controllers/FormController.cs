@@ -433,12 +433,12 @@ namespace myApp.Controllers
                 }
                 foreach (var criticalResultItem in criticalRes)
                 {
-                    if (string.IsNullOrEmpty(criticalResultItem.Priority))
+                    if (string.IsNullOrEmpty(criticalResultItem.Priority) && criticalResultItem.Actual1 < criticalResultItem.Requirement)
                     {
                         TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical แต่ยังไม่ได้ระบุ Priority";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
-                    else if (string.IsNullOrEmpty(criticalResultItem.TypePlan))
+                    else if (string.IsNullOrEmpty(criticalResultItem.TypePlan) && criticalResultItem.Actual1 < criticalResultItem.Requirement)
                     {
                         TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical แต่ยังไม่ได้ระบุ TypePlan";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });

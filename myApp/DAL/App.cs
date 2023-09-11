@@ -1284,7 +1284,7 @@ namespace myApp.DAL
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
 
-                string query = "SELECT * FROM MAS_USER_HR WHERE DEPARTMENT_NAME = @Department ORDER BY JOBLEVEL ASC";
+                string query = "SELECT * FROM MAS_USER_HR WHERE DEPARTMENT_NAME = @Department AND STATUS = 'ทำงาน' ORDER BY JOBLEVEL ASC";
 
                 SqlCommand command = new SqlCommand(query, connection);
 

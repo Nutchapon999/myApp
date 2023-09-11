@@ -257,9 +257,21 @@ namespace myApp.Controllers
                     if(Emp == true)
                     {
                         List<Enrollment> copyEnrolls = app.GetEnrollments(copyIDP);
-                        app.InsertEnrollCopy(copyEnrolls, iDPGroup);
-                        List<User> userCopies = app.GetUsersById(copyEnrolls);  
-                        app.InsertResultEmployees(userCopies, iDPGroup.Year, ViewBag.Username, iDPGroup.IDPGroupId);
+                        List<Enrollment> usersToAddToAvailableIds = new List<Enrollment>();
+                        int count = 0;
+                        foreach (var user in copyEnrolls)
+                        { 
+                            count = app.CountUserIDPGroupByYear(year, user.Id);
+                            if (count <= 0)
+                            {
+                                usersToAddToAvailableIds.Add(user);
+                            }
+                        }
+                        app.InsertEnrollCopy(usersToAddToAvailableIds, iDPGroup);
+                        //List<User> userCopies = app.GetUsersById(usersToAddToAvailableIds);
+                  
+
+                        //app.InsertResultEmployees(userCopies, iDPGroup.Year, ViewBag.Username, iDPGroup.IDPGroupId);
                     }
                     
                     return RedirectToAction("IDPGroup", "Home");
