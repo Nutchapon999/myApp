@@ -471,6 +471,7 @@ namespace myApp.Controllers
                 bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
 
                 ViewBag.isAdmin = isAdmin;
+
                 List<IDPGroup> iDPGroups = app.GetIDPGroups();
 
                 List<string> enrolledIDPGroupId = app.GetCheckedIDPGroup(id);
@@ -508,10 +509,33 @@ namespace myApp.Controllers
             }
         }
         [HttpPost]
+        public ActionResult GetSelectIDPGroup(string selectedValue, string id)
+        {
+            List<IDPGroup> iDPGroups = app.GetIDPGroupsByYear(selectedValue);
+
+            foreach (var idpGroup in iDPGroups)
+            {
+                idpGroup.EmployeeEnrollmentCount = app.GetCountEmployee(idpGroup.IDPGroupId);
+                idpGroup.EmployeeCompetencyCount = app.GetCountCompetency(idpGroup.IDPGroupId);
+            }
+
+            List<string> enrolledIDPGroupId = app.GetCheckedIDPGroup(id);
+
+            List<IDPGroup> availableIDPGroupId = iDPGroups.Where(g => !enrolledIDPGroupId.Contains(g.IDPGroupId)).ToList();
+
+            availableIDPGroupId.ForEach(g => g.Enrollment = new Enrollment());
+
+            return Json(availableIDPGroupId, JsonRequestBehavior.AllowGet);
+        }
+        [HttpPost]
         public ActionResult SelectedIDPGroup(List<string> iDPGroupIds, string id)
         {
             ViewBag.Username = Request.Cookies["username"].Value;
+            var form = HttpContext.Request.Form;
 
+            var year = form["year"];
+            
+            int count = app.GetCountEnrollmentEachYearById(id, year);
             if (iDPGroupIds == null)
             {
                 return RedirectToAction("AddIDPGroup", new { id = id });
@@ -537,6 +561,11 @@ namespace myApp.Controllers
                 }
             }
 
+            if(count >= 0)
+            {
+                TempData["ErrorMessage"] = "พนักงานคนนี้มีแบบประเมินในปีนั้นๆแล้ว กรุณายกเลิกแบบประเมินเก่าก่อน";
+                return RedirectToAction("SelectIDPGroup", "Home" , new {id = id });
+            }
             app.InsertIDPGroup(selectedIDPGroups, id);
 
             app.InsertResultEmployees2(selectedIDPGroups, ViewBag.Username, id);
@@ -1374,6 +1403,11 @@ namespace myApp.Controllers
 
                                 int count = (int)selectCmd.ExecuteScalar();
 
+                                int countEnroll = app.GetCountEnrollmentEachYearById(A, Year);
+                                if (countEnroll > 0)
+                                {
+                                    continue;
+                                }
                                 if (count > 0)
                                 {
                                     continue;

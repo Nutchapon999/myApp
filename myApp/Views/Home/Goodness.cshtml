@@ -577,6 +577,28 @@
         }
 
         $("#tableContainer").html(tableHtml);
+
+        const checkAllCheckbox = document.getElementById('checkAll');
+
+        const checkboxes = document.querySelectorAll('tbody input[name="userIds"]');
+        const actionButton = document.getElementById('actionButton');
+
+        checkAllCheckbox.addEventListener('change', function () {
+            checkboxes.forEach(function (checkbox) {
+                checkbox.checked = checkAllCheckbox.checked;
+            });
+
+            updateButtonState();
+        });
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', updateButtonState);
+        });
+
+        function updateButtonState() {
+            const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked && checkbox.dataset.status !== "Draft");
+            actionButton.disabled = !isChecked;
+        }
     }
 
     function searchFilter() {
@@ -723,27 +745,7 @@
         icon.innerHTML = "<i class='fa-solid fa-sort'></i>";
     }
 
-    const checkAllCheckbox = document.getElementById('checkAll');
-
-    const checkboxes = document.querySelectorAll('tbody input[name="userIds"]');
-    const actionButton = document.getElementById('actionButton');
-
-    checkAllCheckbox.addEventListener('change', function () {
-        checkboxes.forEach(function (checkbox) {
-            checkbox.checked = checkAllCheckbox.checked;
-        });
-
-        updateButtonState();
-    });
-
-    checkboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', updateButtonState);
-    });
-
-    function updateButtonState() {
-        const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked && checkbox.dataset.status !== "Draft");
-        actionButton.disabled = !isChecked;
-    }
+   
 
 </script>
 <style>

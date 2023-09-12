@@ -330,6 +330,37 @@ namespace myApp.DAL
 
             return iDPGroups;
         }
+        public List<IDPGroup> GetIDPGroupsByYear(string year)
+        {
+            List<IDPGroup> iDPGroups = new List<IDPGroup>();
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT * FROM IDP_GROUP WHERE YEAR = @Year";
+
+                SqlCommand command = new SqlCommand(query, connection);
+
+                command.Parameters.AddWithValue("@Year", year);
+
+                connection.Open();
+
+                SqlDataReader reader = command.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    IDPGroup iDPGroup = new IDPGroup();
+
+                    iDPGroup.IDPGroupId = (string)reader["IDP_GROUP_ID"];
+                    iDPGroup.IDPGroupName = reader.IsDBNull(reader.GetOrdinal("IDP_GROUP_NAME")) ? null : (string)reader["IDP_GROUP_NAME"];
+                    iDPGroup.Year = reader.IsDBNull(reader.GetOrdinal("YEAR")) ? null : (string)reader["YEAR"];
+
+                    iDPGroups.Add(iDPGroup);
+                }
+                reader.Close();
+            }
+
+            return iDPGroups;
+        }
         public void CreateIDPGroup(IDPGroup idpGroupId, string username)
         {
             if (IsDuplicateIDPGroupId(idpGroupId.IDPGroupId))
@@ -1609,6 +1640,28 @@ namespace myApp.DAL
             using (SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM IDP_USER_ENROLL WHERE ID = @Id", connection))
             {
                 command.Parameters.AddWithValue("@Id", id);
+
+                connection.Open();
+
+                object result = command.ExecuteScalar();
+                if (result != null && int.TryParse(result.ToString(), out int count))
+                {
+                    enrolled = count;
+                }
+            }
+
+            return enrolled;
+        }public int GetCountEnrollmentEachYearById(string id, string year)
+        {
+            int enrolled = 0;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM IDP_USER_ENROLL EN " +
+                                                        "JOIN IDP_GROUP G ON EN.IDP_GROUP_ID = G.IDP_GROUP_ID " +
+                                                        "WHERE ID = @Id AND YEAR = @Year AND EN.STATUS != 'Draft'", connection))
+            {
+                command.Parameters.AddWithValue("@Id", id);
+                command.Parameters.AddWithValue("@Year", year);
 
                 connection.Open();
 
@@ -2911,18 +2964,29 @@ namespace myApp.DAL
 
                 foreach (IDPGroup iDPGroup in selectedIDPGroups)
                 {
+                    StringBuilder builder = new StringBuilder();
+                    Enumerable
+                       .Range(65, 26)
+                        .Select(e => ((char)e).ToString())
+                        .Concat(Enumerable.Range(97, 26).Select(e => ((char)e).ToString()))
+                        .Concat(Enumerable.Range(0, 10).Select(e => e.ToString()))
+                        .OrderBy(e => Guid.NewGuid())
+                        .Take(11)
+                        .ToList().ForEach(e => builder.Append(e));
+                    string K2_No = "IDP_" + builder.ToString();
                     //int competencyAll = GetCompetencyAllById(user.Id, year); // Get competencyAll for each user
                     int competencyAll = GetCompetencyAll(id, iDPGroup.IDPGroupId);
 
-                    string resultQuery = "INSERT INTO IDP_RESULT (GUID, K2_NO, FORM_TYPE, FORM_ID, IDP_GROUP_ID, ID, COMPETENCY_ALL, COMPETENCY_PASS, COMPETENCY_PER, " +
-                                            "YEAR, RANK, SUBJECT, PLANT, DEPARTMENT, COMPANY_CODE, REQUISITIONER, REQUISITIONER_EMAIL, " +
+                    string resultQuery = "INSERT INTO IDP_RESULT (GUID, K2_NO, FORM_TYPE, FORM_ID, IDP_GROUP_ID, ID, COMPETENCY_ALL, COMPETENCY_PASS1, COMPETENCY_PASS2, COMPETENCY_PER1, COMPETENCY_PER2, " +
+                                            "YEAR, RANK1, RANK2, SUBJECT, PLANT, DEPARTMENT, COMPANY_CODE, REQUISITIONER, REQUISITIONER_EMAIL, " +
                                             "CREATED_BY, CREATED_ON, STARTEDWF_ON, COMPLETED_ON, CURRENT_APPROVER, GR_LEVEL) " +
-                                            "VALUES (@Guid, NULL, 'IDP', 'IDP01', @IDPGroupId, @Id, @All, 0, 0, " +
-                                            "@Year, NULL, @Subject, NULL, @Department, NULL, NULL, NULL, @CreateBy, GETDATE(), NULL, NULL, NULL, NULL)";
+                                            "VALUES (@Guid, @K2No, 'IDP', 'IDP01', @IDPGroupId, @Id, @All, 0, 0, 0, 0, " +
+                                            "@Year, NULL, NULL, @Subject, NULL, @Department, NULL, NULL, NULL, @CreateBy, GETDATE(), NULL, NULL, NULL, NULL)";
 
                     using (SqlCommand resultCommand = new SqlCommand(resultQuery, connection))
                     {
                         resultCommand.Parameters.AddWithValue("@Guid", Guid.NewGuid().ToString());
+                        resultCommand.Parameters.AddWithValue("@K2No", K2_No);
                         resultCommand.Parameters.AddWithValue("@Id", id);
                         resultCommand.Parameters.AddWithValue("@Year", iDPGroup.Year);
                         resultCommand.Parameters.AddWithValue("@All", competencyAll);

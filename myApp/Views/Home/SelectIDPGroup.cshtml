@@ -30,7 +30,7 @@
     </div>
 </div>
 <main>
-    @using (Html.BeginForm("SelectedIDPGroup", "Home", new { id = ViewBag.Id }, FormMethod.Post))
+    @using (Html.BeginForm("SelectedIDPGroup", "Home", new { id = ViewBag.Id}, FormMethod.Post))
     {
         <div class="card border-0 m-3">
             <div class="card-body border-0 mt-4">
@@ -41,22 +41,22 @@
                         </button>
                     </div>
                     <div class="col-6 text-center topic-title">
-                        <h2 class="mt-2 ">เพิ่ม Competency</h2>
+                        <h2 class="mt-2 ">เพิ่ม IDP Group</h2>
 
                     </div>
                     <div class="col-3 text-end">
-                        
+
                     </div>
                 </div>
                 <div class="row justify-content-center mb-2">
                     <div class="col-2 d-flex align-items-center ">
-                       
-                        <label for="selectType" class="form-label me-2 mt-2"> ปี:</label>
-                        <select class="form-select" id="selectType" style="width: 100px">
-                            <option value="">ทั้งหมด</option>
-                            @foreach (var year in Model.Select(y => y.Year).Distinct())
+
+                        <label for="selectYear" class="form-label me-2 mt-2"> ปี:</label>
+                        <select class="form-select" id="selectYear" name="year" style="width: 100px">
+                            <option>-</option>
+                            @foreach (var yearSelect in Model.Select(y => y.Year).Distinct())
                             {
-                                <option value="@year">@year</option>
+                                <option value="@yearSelect">@yearSelect</option>
                             }
                         </select>
                     </div>
@@ -77,6 +77,13 @@
 
                     </div>
                 </div>
+                @if (TempData["ErrorMessage"] != null)
+                {
+                <div class="alert alert-danger alert-dismissible fade show text-center" role="alert" id="alertBox">
+                    <i class="fa fa-exclamation-triangle" aria-hidden="true"></i> @TempData["ErrorMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                }
                 <table class="table table-hover table-responsive table-striped" id="myTable" width="100%">
                     <thead style="background-color: #2D4686; color: #C8E8FF">
                         <tr>
@@ -88,22 +95,7 @@
                             <th width="10%" class="text-center">ปี</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @foreach (var idp in Model)
-                        {
-                            <tr>
-                                <td>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" name="iDPGroupIds" value="@idp.IDPGroupId" />
-                                    </div>
-                                </td>
-                                <td class="text-center">@idp.IDPGroupId</td>
-                                <td>@idp.IDPGroupName</td>
-                                <td class="text-end">@idp.EmployeeEnrollmentCount</td>
-                                <td class="text-end">@idp.EmployeeCompetencyCount</td>
-                                <td class="text-center">@idp.Year</td>
-                            </tr>
-                        }
+                    <tbody id="tableContainer">
                     </tbody>
                 </table>
                 <div class="mt-2">
@@ -146,38 +138,77 @@
         });
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const filterSelect = document.getElementById('selectType');
-        const tableRows = document.querySelectorAll('#myTable tbody tr');
+    js(document).ready(function () {
 
-        function filterTableByType() {
-            const selectedType = filterSelect.value;
+        var send = '@Url.Action("GetSelectIDPGroup", "Home")';
 
-            tableRows.forEach((row) => {
-                const rowType = row.cells[5].textContent.trim();
+        $("#selectYear").change(function () {
+            var selectedValue = $(this).val();
+            var id = '@ViewBag.Id';
+            console.log(selectedValue);
+            $.ajax({
+                url: send,
+                type: "POST",
+                data: { selectedValue: selectedValue, id: id },
+                success: function (response) {
+                    console.log(response);
+                    buildTable(response);
+                },
+                error: function () {
 
-                if (selectedType === '' || rowType === selectedType) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
+                }
+            });
+        });
+
+        function buildTable(groups) {
+            js('#myTable').DataTable().destroy();
+            var tableHtml = "";
+
+            for (var i = 0; i < groups.length; i++) {
+                var group = groups[i];
+
+                var rowHtml = "<tr>" +
+                            "<td>" +
+                                "<div class='form-check'>" +
+                                    "<input class='form-check-input' type='checkbox' name='iDPGroupIds' value='" + group.IDPGroupId + "' />" +
+                                "</div>" +
+                            "</td>" +
+                            "<td class='text-center'>" + group.IDPGroupId + "</td>" +
+                            "<td>" + group.IDPGroupName + "</td>" +
+                            "<td class='text-end'>" + group.EmployeeEnrollmentCount + "</td>" +
+                            "<td class='text-end'>" + group.EmployeeCompetencyCount + "</td>" +
+                            "<td class='text-center'>" + group.Year + "</td>" +
+                        "</tr>";
+
+                tableHtml += rowHtml;
+            }
+
+            $("#tableContainer").html(tableHtml);
+
+            js('#myTable').DataTable({
+                info: false,
+                order: [[1, 'asc']],
+                paging: true,
+                language: {
+                    search: '',
+                    searchPlaceholder: 'ค้นหา',
+                    lengthMenu: '_MENU_',
+                    paginate: {
+                        next: 'ถัดไป <i class="fa fa-angle-right"></i>',
+                        previous: '<i class="fa fa-angle-left"></i> ก่อนหน้า'
+                    },
+                    info: 'กำลังแสดง _START_ ถึง _END_ จาก _TOTAL_'
+                },
+                columnDefs: [{
+                    targets: 0,
+                    orderable: false
+                }],
+
+                initComplete: function () {
+                    js('#myTable_length label').addClass('entries-label');
                 }
             });
         }
-
-        filterSelect.addEventListener('change', filterTableByType);
-
-        filterTableByType();
-    });
-    
-    const checkAllCheckbox = document.getElementById('checkAll');
-    
-    const checkboxes = document.querySelectorAll('tbody input[name="competencyIds"]');
-    
-    checkAllCheckbox.addEventListener('change', function () {
-        
-        checkboxes.forEach(function (checkbox) {
-            checkbox.checked = checkAllCheckbox.checked;
-        });
     });
 </script>
 <style>
