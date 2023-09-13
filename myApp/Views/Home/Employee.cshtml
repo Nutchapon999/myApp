@@ -60,7 +60,7 @@
                         <th width="20%" class="text-center">ชื่อแผนก</th>
                         <th width="5%" class="text-center">บริษัท</th>
                         <th width="5%" class="text-center"></th>
-                        <th width="5%" class="text-center"></th>
+                        @*<th width="5%" class="text-center"></th>*@
                     </tr>
                 </thead>
                 <tbody id="tableContainer">
@@ -93,9 +93,6 @@
             },
             columnDefs: [{
                 targets: 8,
-                orderable: false
-            }, {
-                targets: 9,
                 orderable: false
             }],
             initComplete: function () {
@@ -189,7 +186,6 @@
                 "<td>" + user.DepartmentName + "</td>" +
                 "<td class='text-center'>" + user.Company + "</td>" +
                 "<td class='text-center'>" + buttonHtml1 + "</td>" +
-                "<td class='text-center'>" + buttonHtml2 + "</td>" +
                 "</tr>";
 
             tableHtml += rowHtml;
@@ -214,9 +210,6 @@
             },
             columnDefs: [{
                 targets: 8,
-                orderable: false
-            }, {
-                targets: 9,
                 orderable: false
             }],
             initComplete: function () {

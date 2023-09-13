@@ -82,6 +82,19 @@
     </div>
 </div>
 
+    <div class="text-center">
+        <h6>
+            <i class="fa fa-key fs-4 ms-2"></i> รหัส<strong>: @ViewBag.Id</strong>
+            <i class="fa fa-user user-icon fs-4 ms-2"></i> ชื่อ<strong>: @ViewBag.Prefix @ViewBag.FirstName @ViewBag.LastName</strong>
+            <i class="fa fa-solid fa-ranking-star fs-4 ms-2"></i> ตำแหน่งขั้น<strong>: @ViewBag.JobLevel</strong>
+        </h6>
+        <h6>
+            <i class="fa fa-solid fa-location-dot fs-4 ms-2"></i> ตำแหน่ง<strong>: @ViewBag.Position</strong>
+            <i class="fa fa-home-user fs-4 ms-2"></i> แผนก<strong>: @ViewBag.Department</strong>
+            <i class="fa fa-solid fa-building ms-2 fs-4"></i> บริษัท<strong>: @ViewBag.Company</strong>
+        </h6>
+    </div>
+
 
 <div class="px-4" id="custom-cards">
 
@@ -497,5 +510,45 @@
                 p {
                     margin-bottom: 0px;
                 }
-        
+        .user-icon,
+        .fa-book,
+        .fa-signature {
+            background-image: linear-gradient( 0deg, hsl(220deg 100% 47%) 0%, hsl(216deg 100% 47%) 6%, hsl(213deg 100% 48%) 14%, hsl(209deg 100% 48%) 22%, hsl(206deg 100% 48%) 32%, hsl(202deg 100% 49%) 43%, hsl(199deg 100% 49%) 56%, hsl(195deg 100% 49%) 70%, hsl(192deg 100% 50%) 85%, hsl(188deg 100% 50%) 100% );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .fa-ranking-star {
+            background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(237deg 17% 44%) 11%, hsl(298deg 1% 48%) 22%, hsl(52deg 13% 52%) 33%, hsl(54deg 26% 54%) 44%, hsl(55deg 40% 56%) 56%, hsl(55deg 54% 58%) 67%, hsl(56deg 67% 59%) 78%, hsl(56deg 81% 59%) 89%, hsl(56deg 94% 59%) 100% );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .fa-home-user,
+        .fa-building {
+            background-image: linear-gradient( 0deg, hsl(233deg 51% 36%) 0%, hsl(229deg 55% 38%) 11%, hsl(225deg 60% 39%) 22%, hsl(221deg 64% 41%) 33%, hsl(217deg 69% 42%) 44%, hsl(213deg 75% 44%) 56%, hsl(209deg 80% 45%) 67%, hsl(204deg 86% 46%) 78%, hsl(200deg 93% 46%) 89%, hsl(196deg 100% 47%) 100% );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .fa-tag {
+            background-image: linear-gradient( 0deg, hsl(335deg 85% 55%) 0%, hsl(335deg 86% 57%) 11%, hsl(335deg 87% 59%) 22%, hsl(334deg 89% 61%) 33%, hsl(334deg 90% 63%) 44%, hsl(334deg 91% 66%) 56%, hsl(334deg 93% 68%) 67%, hsl(333deg 95% 70%) 78%, hsl(333deg 97% 72%) 89%, hsl(333deg 100% 75%) 100% );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .fa-address-card,
+        .fa-location-dot,
+        .fa-calendar-days {
+            background-image: linear-gradient( 0deg, hsl(357deg 100% 30%) 0%, hsl(358deg 85% 34%) 11%, hsl(358deg 76% 37%) 22%, hsl(358deg 69% 40%) 33%, hsl(358deg 64% 42%) 44%, hsl(357deg 59% 45%) 56%, hsl(357deg 55% 47%) 67%, hsl(356deg 52% 49%) 78%, hsl(355deg 52% 52%) 89%, hsl(354deg 53% 54%) 100% );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .gradient-icon-send,
+        .fa-key,
+        .fa-scale-balanced {
+            background-image: linear-gradient( 0deg, hsl(36deg 96% 62%) 0%, hsl(38deg 96% 61%) 11%, hsl(40deg 96% 61%) 22%, hsl(43deg 95% 61%) 33%, hsl(45deg 95% 60%) 44%, hsl(47deg 95% 60%) 56%, hsl(50deg 95% 60%) 67%, hsl(52deg 95% 59%) 78%, hsl(54deg 94% 59%) 89%, hsl(56deg 94% 59%) 100% );
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
     </style>

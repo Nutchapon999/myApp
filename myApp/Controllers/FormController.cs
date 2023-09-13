@@ -42,7 +42,8 @@ namespace myApp.Controllers
             {
                 //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "suchada.t"); // Goodness
                 //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "rattanaporn.p"); //User 
-                System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Ong-Ard.sin"); // Admin 
+                //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Ong-Ard.sin"); // Admin 
+                System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Rattanachai.p"); // Admin 
                 HttpContext.Response.Cookies.Add(UserCookie);
                 username = UserCookie.Value;
 

@@ -23,6 +23,7 @@ using System.Web.Services.Description;
 using DocumentFormat.OpenXml.Wordprocessing;
 using System.Security.Cryptography;
 using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Presentation;
 
 namespace myApp.Controllers
 {
@@ -561,7 +562,7 @@ namespace myApp.Controllers
                 }
             }
 
-            if(count >= 0)
+            if(count > 0)
             {
                 TempData["ErrorMessage"] = "พนักงานคนนี้มีแบบประเมินในปีนั้นๆแล้ว กรุณายกเลิกแบบประเมินเก่าก่อน";
                 return RedirectToAction("SelectIDPGroup", "Home" , new {id = id });
@@ -912,7 +913,7 @@ namespace myApp.Controllers
         }
         public ActionResult GetSelectDepartment(string selectedValue, string idpGroupId, string year)
         {
-            List<User> users = app.getEmployeeByDepartment(selectedValue);
+            List<User> users = app.getEmployeeByDepartmentActive(selectedValue);
             List<User> usersToAddToAvailableIds = new List<User>();
             int count = 0;
             foreach (var user in users)
@@ -1080,6 +1081,16 @@ namespace myApp.Controllers
                                 string K = worksheet1.Cells[row, 11].Text;
                                 string L = worksheet1.Cells[row, 12].Text;
 
+                                if (string.IsNullOrWhiteSpace(C))C = null;
+                                if (string.IsNullOrWhiteSpace(D))D = null;
+                                if (string.IsNullOrWhiteSpace(E))E = null;
+                                if (string.IsNullOrWhiteSpace(F))F = null;
+                                if (string.IsNullOrWhiteSpace(G))G = null;
+                                if (string.IsNullOrWhiteSpace(H))H = null;
+                                if (string.IsNullOrWhiteSpace(I))I = null;
+                                if (string.IsNullOrWhiteSpace(J))J = null;
+                          
+
                                 string selectQuery = "SELECT COUNT(*) FROM IDP_COMPTY WHERE COMPETENCY_ID = @A";
                                 SqlCommand selectCmd = new SqlCommand(selectQuery, con);
                                 selectCmd.Parameters.AddWithValue("@A", A);
@@ -1109,18 +1120,18 @@ namespace myApp.Controllers
                                     string insertQuery = "INSERT INTO IDP_COMPTY (COMPETENCY_ID, COMPETENCY_NAME_TH, COMPETENCY_NAME_EN, COMPETENCY_DESC, PL1, PL2, PL3, PL4, PL5, ACTIVE, TYPE, DELETED) " +
                                                          "VALUES (@A, @C, @D, @E, @F, @G, @H, @I, @J, @K, @B, @L)";
                                     SqlCommand insertCmd = new SqlCommand(insertQuery, con);
-                                    insertCmd.Parameters.AddWithValue("@A", A);
-                                    insertCmd.Parameters.AddWithValue("@B", B);
-                                    insertCmd.Parameters.AddWithValue("@C", C);
-                                    insertCmd.Parameters.AddWithValue("@D", D);
-                                    insertCmd.Parameters.AddWithValue("@E", E);
-                                    insertCmd.Parameters.AddWithValue("@F", F);
-                                    insertCmd.Parameters.AddWithValue("@G", G);
-                                    insertCmd.Parameters.AddWithValue("@H", H);
-                                    insertCmd.Parameters.AddWithValue("@I", I);
-                                    insertCmd.Parameters.AddWithValue("@J", J);
-                                    insertCmd.Parameters.AddWithValue("@K", K);
-                                    insertCmd.Parameters.AddWithValue("@L", L);
+                                    insertCmd.Parameters.AddWithValue("@A", (object)A ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@B", (object)B ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@C", (object)C ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@D", (object)D ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@E", (object)E ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@F", (object)F ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@G", (object)G ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@H", (object)H ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@I", (object)I ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@J", (object)J ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@K", (object)K ?? DBNull.Value);
+                                    insertCmd.Parameters.AddWithValue("@L", (object)L ?? DBNull.Value);
                                     insertCmd.ExecuteNonQuery();
                                 }
 
@@ -1523,8 +1534,22 @@ namespace myApp.Controllers
                 ViewBag.isAdmin = isAdmin;
                 ViewBag.Username = username;
                 ViewBag.User = user;
-
                 string id = app.GetIdByCookie(user);
+
+
+
+                User userLogin = app.GetUserByUserLogin(user);
+                if (userLogin != null)
+                {
+                    ViewBag.Prefix = userLogin.Prefix;
+                    ViewBag.FirstName = userLogin.FirstNameTH;
+                    ViewBag.LastName = userLogin.LastNameTH;
+                    ViewBag.Company = userLogin.Company;
+                    ViewBag.Joblevel = userLogin.JobLevel;
+                    ViewBag.Department = userLogin.DepartmentName;
+                    ViewBag.Position = userLogin.Position;
+                    ViewBag.UserLogin = userLogin.UserLogin;
+                }
 
                 ViewBag.Id = id;
                 ViewBag.Year = year;
@@ -1572,7 +1597,7 @@ namespace myApp.Controllers
                     ViewBag.LastName = userLogin.LastNameTH;
                     ViewBag.Company = userLogin.Company;
                     ViewBag.Joblevel = userLogin.JobLevel;
-                    ViewBag.Department = userLogin.Department;
+                    ViewBag.Department = userLogin.DepartmentName;
                     ViewBag.Position = userLogin.Position;
                     ViewBag.UserLogin = userLogin.UserLogin;
                 }
