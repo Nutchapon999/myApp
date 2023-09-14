@@ -407,6 +407,7 @@ namespace myApp.Controllers
                 //REMARK
                 if (status == "1st Evaluating" || (status == "2nd Evaluating" && actual2NullItems.Count == 0))
                 {
+                    if (remark == "") { remark = null; }
                     app.InsertRemark(remark, username, joblevel, Guid);
                 }
                 //LOG DATA
@@ -534,6 +535,7 @@ namespace myApp.Controllers
 
                 app.UpdateApprover(username, Guid);
             }
+            
 
             int all = app.GetCompetencyAllByGuid(Guid);
             int pass;

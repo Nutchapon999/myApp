@@ -101,7 +101,7 @@ namespace myApp.DAL
                         workFlow.Subject = (string)reader["SUBJECT"];
                         workFlow.Status = (string)reader["ACTION"];
                         workFlow.Year = (string)reader["YEAR"];
-                        workFlow.Remark = (string)reader["REMARK"];
+                        workFlow.Remark = reader["REMARK"] != DBNull.Value ? (string)reader["REMARK"] : null;
                         DateTime remarkDate = (DateTime)reader["REMARK_DATE"];
                         workFlow.RemarkDate = remarkDate.ToString("MM/dd/yyyy");
 

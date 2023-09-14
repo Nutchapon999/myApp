@@ -241,6 +241,7 @@ namespace myApp.Controllers
         public ActionResult CopyIDPGroup(IDPGroup iDPGroup, bool Emp = false, bool Cmpt = false)
         {
             string copyIDP = Request.Form["IDPGroupIdCopy"];
+            string copyYear = Request.Form["Year"];
 
             ViewBag.Username = Request.Cookies["username"].Value;
 
@@ -262,17 +263,17 @@ namespace myApp.Controllers
                         int count = 0;
                         foreach (var user in copyEnrolls)
                         { 
-                            count = app.CountUserIDPGroupByYear(year, user.Id);
+                            count = app.CountUserIDPGroupByYear(copyYear, user.Id);
                             if (count <= 0)
                             {
                                 usersToAddToAvailableIds.Add(user);
                             }
                         }
                         app.InsertEnrollCopy(usersToAddToAvailableIds, iDPGroup);
-                        //List<User> userCopies = app.GetUsersById(usersToAddToAvailableIds);
+                        List<User> userCopies = app.GetUsersById(usersToAddToAvailableIds);
                   
 
-                        //app.InsertResultEmployees(userCopies, iDPGroup.Year, ViewBag.Username, iDPGroup.IDPGroupId);
+                        app.InsertResultEmployees(userCopies, iDPGroup.Year, ViewBag.Username, iDPGroup.IDPGroupId);
                     }
                     
                     return RedirectToAction("IDPGroup", "Home");

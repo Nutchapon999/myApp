@@ -321,7 +321,7 @@
                             }
                         </td>
                         <td>@workflow.Year</td>
-                        <td>@workflow.Remark</td>
+                        <td>@(workflow.Remark != null ? workflow.Remark : "-")</td>
                         <td>@workflow.RemarkDate</td>
                     </tr>
                 }

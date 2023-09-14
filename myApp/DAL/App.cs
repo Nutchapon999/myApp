@@ -2460,7 +2460,7 @@ namespace myApp.DAL
 
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@Remark", remark);
+                    command.Parameters.AddWithValue("@Remark", (object)remark ?? DBNull.Value);
                     command.Parameters.AddWithValue("@Username", username);
                     command.Parameters.AddWithValue("@Position", position);
                     command.Parameters.AddWithValue("@Guid", guid);

@@ -1,4 +1,7 @@
 ﻿@model IEnumerable<myApp.Models.Enrollment>
+@{
+    var rowsToCheck = new List<int>(); // สร้างรายการแถวที่ตรงตามเงื่อนไขและมีค่าใน <textarea>
+}
 <link rel="stylesheet" href="/CSS/Style.css">
 <form method="post" action="@Url.Action("SaveForm", "Form", new {enrollId = ViewBag.EnrollmentId, Guid = ViewBag.Guid, IDPGroupId = ViewBag.IDPGroupId})" enctype="multipart/form-data">
     <div class="sticky-header-breadcrumb">
@@ -88,6 +91,12 @@
                 </div>
             </div>
         </div>
+        @if (ViewBag.Status == "Developing")
+        {
+            <div class="alert alert-warning ms-4 me-4" role="alert">
+                <h6 class="text-center" style="margin-bottom: 0">กรุณากรอก Development Result ของ Competency ที่มี Critical ซึ่งมี Gap < 0 ให้ครบก่อน</h6>
+            </div>
+        }
         @if (TempData["ErrorMessage"] != null)
         {
             <div class="alert alert-danger alert-dismissible fade show text-center m-4" role="alert" id="alertBox">
@@ -96,13 +105,13 @@
             </div>
 
             @*<script>
-                    window.setTimeout(function () {
-                        $(".alert-danger").fadeTo(500, 0).slideUp(500, function () {
-                            $(this).remove();
+                window.setTimeout(function () {
+                    $(".alert-danger").fadeTo(500, 0).slideUp(500, function () {
+                        $(this).remove();
 
-                        });
-                    }, 5000);
-                </script>*@
+                    });
+                }, 5000);
+            </script>*@
         }
         <div class="table-container m-4">
             <table class="table table-hover table-responsive table-striped" id="myTable" width="100%">
@@ -425,8 +434,12 @@
                                     {
                                         var cssClass = (enroll.IDPGroupItem.Critical == true && enroll.ResultItem.Actual1 < enroll.ResultItem.Requirement) ? "form-control dev-text" : "form-control";
                                         <textarea class="@cssClass" name="DevRst_@i" id="devRstSelect-row-@i" style="min-width: 100%;">@enroll.ResultItem.DevRst</textarea>
-                                    }
+                                        if (enroll.IDPGroupItem.Critical == true && enroll.ResultItem.Actual1 < enroll.ResultItem.Requirement)
+                                        {
+                                            rowsToCheck.Add(i);
+                                        }
 
+                                    }
                                     else
                                     {
                                         @enroll.ResultItem.DevRst
@@ -728,7 +741,7 @@
                     <thead class="text-center" style="background-color: #2D4686; color: #C8E8FF">
                         <tr>
                             <th width="20%">ประเภทความดี</th>
-                            <th width="20%">หน่วยงาน</th>
+                            <th width="20%">        /l/;</th>
                             <th width="40%">รายละเอียด</th>
                             <th width="10%">วันที่</th>
                             <th width="10%">จำนวนชั่วโมง</th>
@@ -776,13 +789,13 @@
                             <th width="10%">Remark Date</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="text-center">
                         @foreach (var remark in ViewBag.Remark)
                         {
                             <tr>
                                 <td>@remark.Name</td>
                                 <td>@remark.Position</td>
-                                <td>@remark.Remark</td>
+                                <td>@(remark.Remark != null ? remark.Remark : "-")</td>
                                 <td>@remark.RemarkDate</td>
                             </tr>
                         }
@@ -987,12 +1000,26 @@ else if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating")
         }
     </script>
 }
+
+
 <script src="~/Scripts/jquery-3.7.0.min.js"></script>
 <script>
     var js = jQuery.noConflict(true);
     js(document).ready(function () {
-        $('.dev-text').on('input change', function () {
-            if ($(this).val() != '') {
+        var rowsChecked = 0; // จำนวนแถวที่ถูกตรวจสอบ
+        var totalRowsToCheck = @rowsToCheck.Count; // จำนวนรายการแถวที่ต้องตรวจสอบ
+        console.log(totalRowsToCheck);
+
+        $('.dev-text').on('input', function () {
+            var hasValue = $(this).val() != '';
+
+            if (hasValue) {
+                rowsChecked++;
+            } else {
+                rowsChecked--;
+            }
+
+            if (rowsChecked === totalRowsToCheck) {
                 $('#btn-sendForm').prop('disabled', false);
             } else {
                 $('#btn-sendForm').prop('disabled', true);
@@ -1000,6 +1027,7 @@ else if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating")
         });
     });
 </script>
+
 <style>
     main {
         margin-top: 0px;
