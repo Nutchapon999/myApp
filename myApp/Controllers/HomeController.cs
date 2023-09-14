@@ -834,6 +834,12 @@ namespace myApp.Controllers
                     {
                         try
                         {
+                            int pl0 = app.CountPL0(idpGroupId);
+                            if (pl0 > 0)
+                            {
+                                TempData["ErrorMessage"] = "ยังไม่ได้กำหนด Pl ให้ Competency บางข้อ";
+                                return RedirectToAction("AddEmployee", new { idpGroupId = idpGroupId }); 
+                            }
                             if(status == "Draft")
                             {
                                 app.UpdateEnrollmentStatus_1(id, idpGroupId);
@@ -846,6 +852,7 @@ namespace myApp.Controllers
 
                                 List<ResultItem> actual2 = app.GetPreActual2(id, year);
 
+                                
 
                                 app.UpdateStartWorkFlow(guid, username);
                                 app.InsertWorkflowHS0(position, username);

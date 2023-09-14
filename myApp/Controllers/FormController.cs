@@ -42,8 +42,8 @@ namespace myApp.Controllers
             {
                 //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "suchada.t"); // Goodness
                 //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "rattanaporn.p"); //User 
-                //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Ong-Ard.sin"); // Admin 
-                System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Rattanachai.p"); // Admin 
+                System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Ong-Ard.sin"); // Admin 
+                //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Rattanachai.p"); // Admin 
                 HttpContext.Response.Cookies.Add(UserCookie);
                 username = UserCookie.Value;
 
@@ -52,7 +52,6 @@ namespace myApp.Controllers
             {
                 username = K2UserAuthen.GetUserAut(ConfigurationManager.AppSettings["PageK2Five"].ToString()).Username;
             }
-
 
             List<UserFormAuth> auths = app.GetUserFormAuths();
             bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");

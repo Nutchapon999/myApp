@@ -2761,6 +2761,23 @@ namespace myApp.DAL
 
             }
         }
+        public int CountPL0(string idpGroupId)
+        {
+            int count = 0;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlCommand command = new SqlCommand("SELECT COUNT(*) FROM IDP_GROUP_ITEM WHERE PL = 0 AND IDP_GROUP_ID = @IdpGroupId", connection))
+            {
+
+                command.Parameters.AddWithValue("@IdpGroupId", idpGroupId);
+
+                connection.Open();
+
+                count = (int)command.ExecuteScalar();
+            }
+
+            return count;
+        }
         #endregion
 
         #region ENROLLMENT
