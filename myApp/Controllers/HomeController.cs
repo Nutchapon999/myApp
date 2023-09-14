@@ -620,6 +620,7 @@ namespace myApp.Controllers
                 List<UserFormAuth> auths = app.GetUserFormAuths();
                 bool isAdmin = auths.Exists(auth => auth.Username == username && auth.ObjectName == "AUTH" && auth.Value == "Admin");
                 bool canAdd = app.CheckIfIDPGroupIsDraft(idpGroupId);
+                
 
                 ViewBag.isAdmin = isAdmin;
                 ViewBag.Username = username;

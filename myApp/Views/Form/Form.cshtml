@@ -51,7 +51,7 @@
                 }
                 else if (ViewBag.Status == "Self" || ViewBag.Status == "Developing")
                 {
-                    <button type="button" class="btn btn-lg active-link-send" data-bs-toggle="modal" data-bs-target="#sendModal">
+                    <button type="button" class="btn btn-lg active-link-send" data-bs-toggle="modal" data-bs-target="#sendModal" id="btn-sendForm" disabled>
                         <i class="fa fa-send gradient-icon-send"></i><strong class="gradient-icon-send"> ส่งแบบประเมิน</strong>
                     </button>
 
@@ -96,13 +96,13 @@
             </div>
 
             @*<script>
-                window.setTimeout(function () {
-                    $(".alert-danger").fadeTo(500, 0).slideUp(500, function () {
-                        $(this).remove();
+                    window.setTimeout(function () {
+                        $(".alert-danger").fadeTo(500, 0).slideUp(500, function () {
+                            $(this).remove();
 
-                    });
-                }, 5000);
-            </script>*@
+                        });
+                    }, 5000);
+                </script>*@
         }
         <div class="table-container m-4">
             <table class="table table-hover table-responsive table-striped" id="myTable" width="100%">
@@ -319,12 +319,12 @@
                                     }
                                     else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
                                     {
-                                <select class="form-select" name="Priority_@i" id="prioritySelect-row-@i">
-                                    <option value="" @(enroll.ResultItem.Priority == "" ? "selected" : "")>-</option>
-                                    <option value="A" @(enroll.ResultItem.Priority == "A" ? "selected" : "")>A</option>
-                                    <option value="B" @(enroll.ResultItem.Priority == "B" ? "selected" : "")>B</option>
-                                    <option value="C" @(enroll.ResultItem.Priority == "C" ? "selected" : "")>C</option>
-                                </select>
+                                        <select class="form-select" name="Priority_@i" id="prioritySelect-row-@i">
+                                            <option value="" @(enroll.ResultItem.Priority == "" ? "selected" : "")>-</option>
+                                            <option value="A" @(enroll.ResultItem.Priority == "A" ? "selected" : "")>A</option>
+                                            <option value="B" @(enroll.ResultItem.Priority == "B" ? "selected" : "")>B</option>
+                                            <option value="C" @(enroll.ResultItem.Priority == "C" ? "selected" : "")>C</option>
+                                        </select>
                                     }
                                 </td>
                                 <td class="text-center">
@@ -336,16 +336,16 @@
                                     }
                                     else if ((ViewBag.Status == "Self") || (ViewBag.Status == "1st Evaluating" && ViewBag.Approver != ViewBag.Username))
                                     {
-                                <select class="form-select" name="TypePlan_@i" id="typeSelect-row-@i">
-                                    <option value="" @(enroll.ResultItem.TypePlan == "" ? "selected" : "")>-</option>
-                                    <option value="TR" @(enroll.ResultItem.TypePlan == "TR" ? "selected" : "")>การอบรม (Training)</option>
-                                    <option value="SL" @(enroll.ResultItem.TypePlan == "SL" ? "selected" : "")>การศึกษาด้วยตนเอง (Self-Learning)</option>
-                                    <option value="OJT" @(enroll.ResultItem.TypePlan == "OJT" ? "selected" : "")> การสอนงานหน้างาน (On The Job Training)</option>
-                                    <option value="PA" @(enroll.ResultItem.TypePlan == "PA" ? "selected" : "")>การมอบหมายโครงการ/งาน (Project/Job Assignment)</option>
-                                    <option value="Co" @(enroll.ResultItem.TypePlan == "Co" ? "selected" : "")>การโค้ชชิ่ง (Coaching)</option>
-                                    <option value="SV" @(enroll.ResultItem.TypePlan == "SV" ? "selected" : "")>การศึกษาดูงาน (Site Visit)</option>
-                                    <option value="JS" @(enroll.ResultItem.TypePlan == "JS" ? "selected" : "")>การติดตามและสังเกต (Job Shadowing)</option>
-                                </select>
+                                        <select class="form-select" name="TypePlan_@i" id="typeSelect-row-@i">
+                                            <option value="" @(enroll.ResultItem.TypePlan == "" ? "selected" : "")>-</option>
+                                            <option value="TR" @(enroll.ResultItem.TypePlan == "TR" ? "selected" : "")>การอบรม (Training)</option>
+                                            <option value="SL" @(enroll.ResultItem.TypePlan == "SL" ? "selected" : "")>การศึกษาด้วยตนเอง (Self-Learning)</option>
+                                            <option value="OJT" @(enroll.ResultItem.TypePlan == "OJT" ? "selected" : "")> การสอนงานหน้างาน (On The Job Training)</option>
+                                            <option value="PA" @(enroll.ResultItem.TypePlan == "PA" ? "selected" : "")>การมอบหมายโครงการ/งาน (Project/Job Assignment)</option>
+                                            <option value="Co" @(enroll.ResultItem.TypePlan == "Co" ? "selected" : "")>การโค้ชชิ่ง (Coaching)</option>
+                                            <option value="SV" @(enroll.ResultItem.TypePlan == "SV" ? "selected" : "")>การศึกษาดูงาน (Site Visit)</option>
+                                            <option value="JS" @(enroll.ResultItem.TypePlan == "JS" ? "selected" : "")>การติดตามและสังเกต (Job Shadowing)</option>
+                                        </select>
                                     }
                                 </td>
                                 <td>
@@ -423,8 +423,10 @@
                                 <td>
                                     @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating") && ViewBag.Approver != ViewBag.Username)
                                     {
-                                        <textarea class="form-control" name="DevRst_@i" id="devRstSelect-row-@i" style="min-width: 100%;">@enroll.ResultItem.DevRst</textarea>
+                                        var cssClass = (enroll.IDPGroupItem.Critical == true && enroll.ResultItem.Actual1 < enroll.ResultItem.Requirement) ? "form-control dev-text" : "form-control";
+                                        <textarea class="@cssClass" name="DevRst_@i" id="devRstSelect-row-@i" style="min-width: 100%;">@enroll.ResultItem.DevRst</textarea>
                                     }
+
                                     else
                                     {
                                         @enroll.ResultItem.DevRst
@@ -677,7 +679,7 @@
                         <div class="alert alert-dark" role="alert" style="font-size: 18px">
                             คุณต้องการที่จะส่งแบบประเมินนี้ให้ผู้บังคับบัญชาหรือไม่?
                         </div>
-                        <button type="submit" class="btn btn-lg active-link-send" data-bs-toggle="modal" data-bs-target="#exampleModal" style="width: 100%;" id="sendButton" name="isSave" value="false"  data-bs-dismiss="modal">
+                        <button type="submit" class="btn btn-lg active-link-send" data-bs-toggle="modal" data-bs-target="#exampleModal" style="width: 100%;" id="sendButton" name="isSave" value="false" data-bs-dismiss="modal">
                             <i class="fa fa-send gradient-icon-send"></i><strong class="gradient-icon-send"> ส่งแบบประเมิน</strong>
                         </button>
                     </div>
@@ -747,7 +749,7 @@
                 </table>
             </div>
         </div>
-        @if((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating") && (ViewBag.Approver != ViewBag.Username))
+        @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating") && (ViewBag.Approver != ViewBag.Username))
         {
             <div class="table-container m-4">
                 <div class="m-2">
@@ -760,7 +762,7 @@
                 </div>
             </div>
         }
-        
+
 
         <div class="table-container m-4">
             <h2 class="ms-2 mt-2 fw-bold">หมายเหตุ</h2>
@@ -975,8 +977,29 @@ else if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating")
             var actualInput = row.querySelector("input[name^='Actual2']");
             actualInput.value = actual2;
         }
+
+        function toggleTextarea(textarea) {
+            if (textarea.value.trim() === '') {
+                textarea.disabled = true;
+            } else {
+                textarea.disabled = false;
+            }
+        }
     </script>
 }
+<script src="~/Scripts/jquery-3.7.0.min.js"></script>
+<script>
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+        $('.dev-text').on('input change', function () {
+            if ($(this).val() != '') {
+                $('#btn-sendForm').prop('disabled', false);
+            } else {
+                $('#btn-sendForm').prop('disabled', true);
+            }
+        });
+    });
+</script>
 <style>
     main {
         margin-top: 0px;

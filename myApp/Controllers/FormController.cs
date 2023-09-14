@@ -435,17 +435,17 @@ namespace myApp.Controllers
                 {
                     if (string.IsNullOrEmpty(criticalResultItem.Priority) && criticalResultItem.Actual1 < criticalResultItem.Requirement)
                     {
-                        TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical แต่ยังไม่ได้ระบุ Priority";
+                        TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical และมี Gap แต่ยังไม่ได้ระบุ Priority";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
                     else if (string.IsNullOrEmpty(criticalResultItem.TypePlan) && criticalResultItem.Actual1 < criticalResultItem.Requirement)
                     {
-                        TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical แต่ยังไม่ได้ระบุ TypePlan";
+                        TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical และมี Gap แต่ยังไม่ได้ระบุ TypePlan";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
                     if (string.IsNullOrEmpty(criticalResultItem.DevPlan) && criticalResultItem.Actual1 < criticalResultItem.Requirement)
                     {
-                        TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical แต่ยังไม่ได้ระบุ Development Plan";
+                        TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical และมี Gap แต่ยังไม่ได้ระบุ Development Plan";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
                     else if (string.IsNullOrEmpty(criticalResultItem.Q1) &&
@@ -454,13 +454,13 @@ namespace myApp.Controllers
                             string.IsNullOrEmpty(criticalResultItem.Q4) &&
                             criticalResultItem.Actual1 < criticalResultItem.Requirement)
                     {
-                        TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical แต่ยังไม่ได้ระบุ Quarter";
+                        TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical และมี Gap แต่ยังไม่ได้ระบุ Quarter";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
                     
                     else if (string.IsNullOrEmpty(criticalResultItem.DevRst) && (status == "2nd Evaluating" || status == "Developing") && criticalResultItem.Actual1 < criticalResultItem.Requirement)
                     {
-                        TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical แต่ยังไม่ได้ระบุ Development Result";
+                        TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical และมี Gap แต่ยังไม่ได้ระบุ Development Result";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
                 }

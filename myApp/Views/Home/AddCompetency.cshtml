@@ -75,28 +75,7 @@
                         }
                         else if (ViewBag.CountResult > 0)
                         {
-                            <button type="button" class="btn btn-lg active-link-submit mb-2" data-bs-toggle="modal" data-bs-target="#sendModal">
-                                <i class="fa-solid fa-save gradient-icon-submit" aria-hidden="true"></i> <strong class="gradient-icon-submit"> บันทึก</strong>
-                            </button>
-                            <div class="modal fade" id="sendModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
-                                <div class="modal-dialog modal-sm modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="modal-body text-center">
-                                            <div class="alert alert-dark" role="alert" style="font-size: 20px">
-                                                มีพนักงานที่กำลังทำแบบประเมินอยู่ คุณต้องการที่จะ<strong>บันทึก</strong> PL และ Critical <strong>ใหม่</strong>จริงๆใช่ไหม?
-                                            </div>
-                                            <div class="d-flex flex-row mt-3">
-                                                <button type="button" class="btn btn-lg active-link-back w-50 " id="btn-refresh">
-                                                    <i class="fa-solid fa-ban gradient-icon-back" aria-hidden="true"></i> <strong class="gradient-icon-back"> ยกเลิก</strong>
-                                                </button>
-                                                <button type="submit" class="btn btn-lg active-link-submit w-50 ms-2" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-dismiss="modal">
-                                                    <i class="fa-solid fa-save gradient-icon-submit" aria-hidden="true"></i> <strong class="gradient-icon-submit"> บันทึก</strong>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            
                         }
                     </div>
                 </div>
@@ -127,106 +106,124 @@
                                 </th>
                                 <td>@idpItm.Competency.CompetencyNameTH</td>
                                 <td class="text-center">
-                                    <button id="plButton" onchange="EditPl(this)" type="button" class="btn btn-dark active-link-competency " data-bs-toggle="modal" data-bs-target="#DetailPl-@idpItm.CompetencyId">
-                                        <strong style="font-size: 18px">@idpItm.Pl</strong>
-                                    </button>
-                                    <div class="modal fade modal-xl modal1" id="DetailPl-@idpItm.CompetencyId" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-                                                <div class="modal-header text-center">
-                                                    <h6 class="modal-title fs-5">
-                                                        <i class="fa-solid fa-key fs-4"></i> รหัส: <strong>@idpItm.CompetencyId</strong>
-                                                        <br />
-                                                        <i class="fa-solid fa-signature fs-4"></i> ชื่อ: <strong>@idpItm.Competency.CompetencyNameTH</strong>
-                                                    </h6>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <h5 class="text-center">PL1</h5>
-                                                    @if (idpItm.Competency.Pl1 != null)
-                                                    {
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="modalRadio1[@idpItm.IDPGroupItemId]" id="modalRadioButton1-@idpItm.IDPGroupItemId" value="1" @(idpItm.Pl == "1" ? "checked" : "") />
-                                                            <label class="form-check-label text-start" for="modalRadioButton1-@idpItm.IDPGroupItemId" style="cursor: pointer">
-                                                                @idpItm.Competency.Pl1
-                                                            </label>
-                                                        </div>
-                                                    }
-                                                    else
-                                                    {
-                                                        <h5 class="text-center">ไม่มี PL1</h5>
-                                                    }
-                                                    <hr />
-                                                    <h5 class="text-center">PL2</h5>
-                                                    @if (idpItm.Competency.Pl2 != null)
-                                                    {
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="modalRadio1[@idpItm.IDPGroupItemId]" id="modalRadioButton2-@idpItm.IDPGroupItemId" value="2" @(idpItm.Pl == "2" ? "checked" : "") />
-                                                            <label class="form-check-label text-start" for="modalRadioButton2-@idpItm.IDPGroupItemId" style="cursor: pointer">
-                                                                @idpItm.Competency.Pl2
-                                                            </label>
-                                                        </div>
-                                                    }
-                                                    else
-                                                    {
-                                                        <h5 class="text-center">ไม่มี PL2</h5>
-                                                    }
-                                                    <hr />
-                                                    <h5 class="text-center">PL3</h5>
-                                                    @if (idpItm.Competency.Pl3 != null)
-                                                    {
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="modalRadio1[@idpItm.IDPGroupItemId]" id="modalRadioButton3-@idpItm.IDPGroupItemId" value="3" @(idpItm.Pl == "3" ? "checked" : "") />
-                                                            <label class="form-check-label text-start" for="modalRadioButton3-@idpItm.IDPGroupItemId" style="cursor: pointer">
-                                                                @idpItm.Competency.Pl3
-                                                            </label>
-                                                        </div>
-                                                    }
-                                                    else
-                                                    {
-                                                        <h5 class="text-center">ไม่มี PL3</h5>
-                                                    }
-                                                    <hr />
-                                                    <h5 class="text-center">PL4</h5>
-                                                    @if (idpItm.Competency.Pl4 != null)
-                                                    {
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="modalRadio1[@idpItm.IDPGroupItemId]" id="modalRadioButton4-@idpItm.IDPGroupItemId" value="4" @(idpItm.Pl == "4" ? "checked" : "") />
-                                                            <label class="form-check-label text-start" for="modalRadioButton4-@idpItm.IDPGroupItemId" style="cursor: pointer">
-                                                                @idpItm.Competency.Pl4
-                                                            </label>
-                                                        </div>
-                                                    }
-                                                    else
-                                                    {
-                                                        <h5 class="text-center">ไม่มี PL4</h5>
-                                                    }
-                                                    <hr />
-                                                    <h5 class="text-center">PL5</h5>
-                                                    @if (idpItm.Competency.Pl5 != null)
-                                                    {
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="modalRadio1[@idpItm.IDPGroupItemId]" id="modalRadioButton5-@idpItm.IDPGroupItemId" value="5" @(idpItm.Pl == "5" ? "checked" : "") />
-                                                            <label class="form-check-label text-start" for="modalRadioButton5-@idpItm.IDPGroupItemId" style="cursor: pointer">
-                                                                @idpItm.Competency.Pl5
-                                                            </label>
-                                                        </div>
-                                                    }
-                                                    else
-                                                    {
-                                                        <h5 class="text-center">ไม่มี PL5</h5>
-                                                    }
+                                    @if (!ViewBag.CanAdd)
+                                    {
+                                        <button id="plButton" onchange="EditPl(this)" type="button" class="btn btn-dark active-link-competency " data-bs-toggle="modal" data-bs-target="#DetailPl-@idpItm.CompetencyId">
+                                            <strong style="font-size: 18px">@idpItm.Pl</strong>
+                                        </button>
+                                        <div class="modal fade modal-xl modal1" id="DetailPl-@idpItm.CompetencyId" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header text-center">
+                                                        <h6 class="modal-title fs-5">
+                                                            <i class="fa-solid fa-key fs-4"></i> รหัส: <strong>@idpItm.CompetencyId</strong>
+                                                            <br />
+                                                            <i class="fa-solid fa-signature fs-4"></i> ชื่อ: <strong>@idpItm.Competency.CompetencyNameTH</strong>
+                                                        </h6>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <h5 class="text-center">PL1</h5>
+                                                        @if (idpItm.Competency.Pl1 != null)
+                                                        {
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="modalRadio1[@idpItm.IDPGroupItemId]" id="modalRadioButton1-@idpItm.IDPGroupItemId" value="1" @(idpItm.Pl == "1" ? "checked" : "") />
+                                                                <label class="form-check-label text-start" for="modalRadioButton1-@idpItm.IDPGroupItemId" style="cursor: pointer">
+                                                                    @idpItm.Competency.Pl1
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <h5 class="text-center">ไม่มี PL1</h5>
+                                                        }
+                                                        <hr />
+                                                        <h5 class="text-center">PL2</h5>
+                                                        @if (idpItm.Competency.Pl2 != null)
+                                                        {
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="modalRadio1[@idpItm.IDPGroupItemId]" id="modalRadioButton2-@idpItm.IDPGroupItemId" value="2" @(idpItm.Pl == "2" ? "checked" : "") />
+                                                                <label class="form-check-label text-start" for="modalRadioButton2-@idpItm.IDPGroupItemId" style="cursor: pointer">
+                                                                    @idpItm.Competency.Pl2
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <h5 class="text-center">ไม่มี PL2</h5>
+                                                        }
+                                                        <hr />
+                                                        <h5 class="text-center">PL3</h5>
+                                                        @if (idpItm.Competency.Pl3 != null)
+                                                        {
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="modalRadio1[@idpItm.IDPGroupItemId]" id="modalRadioButton3-@idpItm.IDPGroupItemId" value="3" @(idpItm.Pl == "3" ? "checked" : "") />
+                                                                <label class="form-check-label text-start" for="modalRadioButton3-@idpItm.IDPGroupItemId" style="cursor: pointer">
+                                                                    @idpItm.Competency.Pl3
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <h5 class="text-center">ไม่มี PL3</h5>
+                                                        }
+                                                        <hr />
+                                                        <h5 class="text-center">PL4</h5>
+                                                        @if (idpItm.Competency.Pl4 != null)
+                                                        {
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="modalRadio1[@idpItm.IDPGroupItemId]" id="modalRadioButton4-@idpItm.IDPGroupItemId" value="4" @(idpItm.Pl == "4" ? "checked" : "") />
+                                                                <label class="form-check-label text-start" for="modalRadioButton4-@idpItm.IDPGroupItemId" style="cursor: pointer">
+                                                                    @idpItm.Competency.Pl4
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <h5 class="text-center">ไม่มี PL4</h5>
+                                                        }
+                                                        <hr />
+                                                        <h5 class="text-center">PL5</h5>
+                                                        @if (idpItm.Competency.Pl5 != null)
+                                                        {
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="radio" name="modalRadio1[@idpItm.IDPGroupItemId]" id="modalRadioButton5-@idpItm.IDPGroupItemId" value="5" @(idpItm.Pl == "5" ? "checked" : "") />
+                                                                <label class="form-check-label text-start" for="modalRadioButton5-@idpItm.IDPGroupItemId" style="cursor: pointer">
+                                                                    @idpItm.Competency.Pl5
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <h5 class="text-center">ไม่มี PL5</h5>
+                                                        }
 
-                                                </div>
-                                                <div class="modal-footer flex-nowrap p-0">
-                                                    <button type="button" class="btn btn-lg col-12 text-decoration-none py-3 rounded-0 m-0 " style="background-color: #D893A3; color: #B30021" data-bs-dismiss="modal"><strong>ปิด</strong></button>
+                                                    </div>
+                                                    <div class="modal-footer flex-nowrap p-0">
+                                                        <button type="button" class="btn btn-lg col-12 text-decoration-none py-3 rounded-0 m-0 " style="background-color: #D893A3; color: #B30021" data-bs-dismiss="modal"><strong>ปิด</strong></button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                    <input type="hidden" name="idpGroupItems[@idpItm.IDPGroupItemId].Pl" value="@idpItm.Pl" />
+                                        <input type="hidden" name="idpGroupItems[@idpItm.IDPGroupItemId].Pl" value="@idpItm.Pl" />
+                                    }
+                                    else
+                                    {
+                                        @idpItm.Pl
+                                    }
                                 </td>
                                 <td class="text-center">
-                                    <input class="form-check-input" type="checkbox" name="idpGroupItems[@idpItm.IDPGroupItemId].Critical" value="true" @(idpItm.Critical == true ? "checked" : "") />
+                                    @if (!ViewBag.CanAdd)
+                                    {
+                                        <input class="form-check-input" type="checkbox" name="idpGroupItems[@idpItm.IDPGroupItemId].Critical" value="true" @(idpItm.Critical == true ? "checked" : "") />
+                                    }
+                                    else
+                                    {
+                                        if(idpItm.Critical == true)
+                                        {
+                                           <img src="~/Images/hexagon_icon.png" width="25" height="25"/>
+                                        }
+
+                                    }
                                 </td>
 
                                 <td class="text-center">
