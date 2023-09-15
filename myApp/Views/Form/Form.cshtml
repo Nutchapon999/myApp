@@ -7,7 +7,7 @@
     <div class="sticky-header-breadcrumb">
         <div class="row me-2 align-items-center">
             <div class="col-auto me-auto ms-3">
-                <a href="@Url.Action("Index", "Form")" class="btn btn-lg active-link-exit">
+                <a href="@Url.Action("Index", "Form", new { Year = ViewBag.Year })" class="btn btn-lg active-link-exit">
                     <i class="fa fa-arrow-left gradient-icon-back"></i><strong class="gradient-icon-back"> ออก</strong>
                 </a>
             </div>
@@ -54,7 +54,7 @@
                 }
                 else if (ViewBag.Status == "Self" || ViewBag.Status == "Developing")
                 {
-                    <button type="button" class="btn btn-lg active-link-send" data-bs-toggle="modal" data-bs-target="#sendModal" id="btn-sendForm" disabled>
+                    <button type="button" class="btn btn-lg active-link-send" data-bs-toggle="modal" data-bs-target="#sendModal" id="btn-sendForm" @(ViewBag.Status == "Developing" ? "disabled" : "")>
                         <i class="fa fa-send gradient-icon-send"></i><strong class="gradient-icon-send"> ส่งแบบประเมิน</strong>
                     </button>
 
@@ -118,6 +118,7 @@
                 <thead style="background-color: #2D4686; color: #C8E8FF">
                     <tr>
                         <th class="text-center" rowspan="2" data-sortable="false" width="1%">Critical</th>
+                        <th class="text-center" rowspan="2" width="1%">Code</th>
                         <th class="text-center" rowspan="2" width="9%">Competency</th>
                         <th class="text-center" rowspan="2" width="1%">R</th>
                         <th class="text-center" rowspan="2" width="1%">A1</th>
@@ -193,13 +194,14 @@
                                     }
                                     <input type="hidden" name="Critical_@i" value="@enroll.IDPGroupItem.Critical.ToString()" />
                                 </td>
+                                <td class="text-center" style="font-size: 16px">@enroll.IDPGroupItem.CompetencyId</td>
                                 <td style="font-size: 14px">@enroll.Competency.CompetencyNameTH</td>
                                 <td class="text-center">
                                     @enroll.IDPGroupItem.Pl
                                     <input type="hidden" name="Requirement_@i" value="@enroll.IDPGroupItem.Pl" />
                                 </td>
                                 <td class="text-center">
-                                    @if ((ViewBag.Status == "Dewveloping" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
+                                    @if ((ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating" || ViewBag.Status == "Success") ||
                                 (ViewBag.Status == "1st Evaluating" && ViewBag.Approver == ViewBag.Username))
                                     {
                                         @enroll.ResultItem.Actual1
@@ -889,9 +891,9 @@
         var row = button.closest('tr');
         var rowId = row.getAttribute('id');
         var viewGuid = '@ViewBag.Guid';
-        var negativeGapCell = row.querySelector("td:nth-child(5)");
-        var positiveGapCell = row.querySelector("td:nth-child(6)");
-        var requirement = parseFloat(row.querySelector("td:nth-child(3) input").value);
+        var negativeGapCell = row.querySelector("td:nth-child(6)");
+        var positiveGapCell = row.querySelector("td:nth-child(7)");
+        var requirement = parseFloat(row.querySelector("td:nth-child(4) input").value);
         var actual1 = parseFloat(button.textContent);
         var gap1 = actual1 - requirement;
 
@@ -963,11 +965,11 @@ else if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating")
 
         function calculateGap2(button) {
             var row = button.closest('tr');
-            var negativeGapCell2 = row.querySelector("td:nth-child(16)");
-            var positiveGapCell2 = row.querySelector("td:nth-child(17)");
+            var negativeGapCell2 = row.querySelector("td:nth-child(17)");
+            var positiveGapCell2 = row.querySelector("td:nth-child(18)");
 
-            var requirement = parseFloat(row.querySelector("td:nth-child(3) input").value);
-            var actual1 = parseFloat(row.querySelector("td:nth-child(4) input").value);
+            var requirement = parseFloat(row.querySelector("td:nth-child(4) input").value);
+            //var actual1 = parseFloat(row.querySelector("td:nth-child(4) input").value);
             var actual2 = parseFloat(button.textContent);
             var gap2 = actual2 - requirement;
 
@@ -1003,30 +1005,37 @@ else if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating")
 
 
 <script src="~/Scripts/jquery-3.7.0.min.js"></script>
-<script>
-    var js = jQuery.noConflict(true);
-    js(document).ready(function () {
-        var rowsChecked = 0; // จำนวนแถวที่ถูกตรวจสอบ
-        var totalRowsToCheck = @rowsToCheck.Count; // จำนวนรายการแถวที่ต้องตรวจสอบ
-        console.log(totalRowsToCheck);
 
-        $('.dev-text').on('input', function () {
-            var hasValue = $(this).val() != '';
+    <script>
+        var js = jQuery.noConflict(true);
+        js(document).ready(function () {
+            var rowsChecked = 0; // จำนวนแถวที่ถูกตรวจสอบ
+            var totalRowsToCheck = @rowsToCheck.Count; // จำนวนรายการแถวที่ต้องตรวจสอบ
+            console.log(totalRowsToCheck);
 
-            if (hasValue) {
-                rowsChecked++;
-            } else {
-                rowsChecked--;
-            }
+            $('.dev-text').on('input', function () {
+                var hasValue = $(this).val() != '';
 
-            if (rowsChecked === totalRowsToCheck) {
+                if (hasValue) {                                                                                                             
+                    rowsChecked++;
+                } else {
+                    rowsChecked--;
+                }
+
+                if (rowsChecked === totalRowsToCheck) {
+                    $('#btn-sendForm').prop('disabled', false);
+                } else {
+                    $('#btn-sendForm').prop('disabled', true);
+                }
+            });
+
+            if (totalRowsToCheck == 0) {
                 $('#btn-sendForm').prop('disabled', false);
-            } else {
-                $('#btn-sendForm').prop('disabled', true);
             }
         });
-    });
-</script>
+    </script>
+
+
 
 <style>
     main {

@@ -92,6 +92,7 @@
                 <thead style="background-color: #2D4686; color: #C8E8FF">
                     <tr>
                         <th class="text-center" rowspan="2" data-sortable="false" width="1%">Critical</th>
+                        <th class="text-center" rowspan="2" width="1%">Code</th>
                         <th class="text-center" rowspan="2" width="9%">Competency</th>
                         <th class="text-center" rowspan="2" width="1%">R</th>
                         <th class="text-center" rowspan="2" width="1%">A1</th>
@@ -164,6 +165,7 @@
                                 }
                                 <input type="hidden" name="Critical_@i" value="@enroll.IDPGroupItem.Critical.ToString()" />
                             </td>
+                            <td class="text-center" style="font-size: 16px">@enroll.IDPGroupItem.CompetencyId</td>
                             <td style="font-size: 14px">@enroll.Competency.CompetencyNameTH</td>
                             <td class="text-center">
                                 @enroll.IDPGroupItem.Pl
@@ -308,7 +310,7 @@
                             <td class="text-center">
                                 <input class="form-check-input" type="checkbox" name="Q1_@i" id="Q1select-row-@i" value="1" @(enroll.ResultItem.Q1 == "1" ? "checked" : "") />
                             </td>
-                            <td class="text-center"> 
+                            <td class="text-center">
                                 <input class="form-check-input" type="checkbox" name="Q2_@i" id="Q1select-row-@i" value="1" @(enroll.ResultItem.Q2 == "1" ? "checked" : "") />
                             </td>
                             <td class="text-center">
@@ -603,9 +605,9 @@
         var row = button.closest('tr');
         var rowId = row.getAttribute('id');
         var viewGuid = '@ViewBag.Guid';
-        var negativeGapCell = row.querySelector("td:nth-child(5)");
-        var positiveGapCell = row.querySelector("td:nth-child(6)");
-        var requirement = parseFloat(row.querySelector("td:nth-child(3) input").value);
+        var negativeGapCell = row.querySelector("td:nth-child(6)");
+        var positiveGapCell = row.querySelector("td:nth-child(7)");
+        var requirement = parseFloat(row.querySelector("td:nth-child(4) input").value);
         var actual1 = parseFloat(button.textContent);
         var gap1 = actual1 - requirement;
 
@@ -673,11 +675,11 @@
 
         function calculateGap2(button) {
             var row = button.closest('tr');
-            var negativeGapCell2 = row.querySelector("td:nth-child(16)");
-            var positiveGapCell2 = row.querySelector("td:nth-child(17)");
+            var negativeGapCell2 = row.querySelector("td:nth-child(17)");
+            var positiveGapCell2 = row.querySelector("td:nth-child(18)");
 
-            var requirement = parseFloat(row.querySelector("td:nth-child(3) input").value);
-            var actual1 = parseFloat(row.querySelector("td:nth-child(4) input").value);
+            var requirement = parseFloat(row.querySelector("td:nth-child(4) input").value);
+            //var actual1 = parseFloat(row.querySelector("td:nth-child(4) input").value);
             var actual2 = parseFloat(button.textContent);
             var gap2 = actual2 - requirement;
 
