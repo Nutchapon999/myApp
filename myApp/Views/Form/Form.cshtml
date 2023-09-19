@@ -1,7 +1,9 @@
 ﻿@model IEnumerable<myApp.Models.Enrollment>
 @{
-    var rowsToCheck = new List<int>(); // สร้างรายการแถวที่ตรงตามเงื่อนไขและมีค่าใน <textarea>
-    var rows = new List<int>(); // สร้างรายการแถวที่ตรงตามเงื่อนไขและมีค่าใน <textarea>
+    var rowNotNull = new List<int>(); 
+    var rowNull = new List<int>(); 
+    var allRows = new List<int>(); 
+    List<string> idsToCheck = new List<string>();
 }
 <link rel="stylesheet" href="/CSS/Style.css">
 <form method="post" action="@Url.Action("SaveForm", "Form", new {enrollId = ViewBag.EnrollmentId, Guid = ViewBag.Guid, IDPGroupId = ViewBag.IDPGroupId})" enctype="multipart/form-data">
@@ -443,13 +445,9 @@
                                     {
                                         var cssClass = (enroll.IDPGroupItem.Critical == true && enroll.ResultItem.Actual1 < enroll.ResultItem.Requirement) ? "form-control dev-text" : "form-control";
                                         <textarea class="@cssClass" name="DevRst_@i" id="devRstSelect-row-@i" style="min-width: 100%;">@enroll.ResultItem.DevRst</textarea>
-                                        if (enroll.IDPGroupItem.Critical == true && enroll.ResultItem.Actual1 < enroll.ResultItem.Requirement && string.IsNullOrEmpty(enroll.ResultItem.DevRst))
+                                        if (enroll.IDPGroupItem.Critical == true && enroll.ResultItem.Actual1 < enroll.ResultItem.Requirement)
                                         {
-                                            rowsToCheck.Add(i);
-                                        }
-                                        if(enroll.IDPGroupItem.Critical == true && enroll.ResultItem.Actual1 < enroll.ResultItem.Requirement)
-                                        {
-                                            rows.Add(i);
+                                            idsToCheck.Add("devRstSelect-row-" + i); // เพิ่ม ID ในอาเรย์เมื่อเงื่อนไขเป็นจริง
                                         }
                                     }
                                     else
@@ -1016,70 +1014,56 @@ else if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating")
 
 
 <script src="~/Scripts/jquery-3.7.0.min.js"></script>
+<script>
+    var idsToCheckArray = @Html.Raw(Json.Encode(idsToCheck));
 
-    <script>
-        var js = jQuery.noConflict(true);
-        js(document).ready(function () {
-            var rowsChecked = 0; // จำนวนแถวที่ถูกตรวจสอบ
-            var totalRowsToCheck = @rowsToCheck.Count; // จำนวนรายการแถวที่ต้องตรวจสอบ
-            var totalRows = @rows.Count; // จำนวนรายการแถวที่ต้องตรวจสอบ
-            var rows = totalRows;
-            console.log("totalRowsToCheck: " + totalRowsToCheck);
-            console.log("totalRows: " + totalRows);
-            console.log("rowsChecked: " + rowsChecked);
-            console.log("rows: " + rows);
-            if (totalRowsToCheck == 0) {
-                $('#btn-sendForm').prop('disabled', false);
-            }
+    var js = jQuery.noConflict(true);
+    js(document).ready(function () {
+        // สร้างตัวแปร allTextareasNotNull เริ่มต้นเป็น true
+        var allTextareasNotNull = true;
 
-            $('.dev-text').on('input', function () {
-                var hasValue = $(this).val() != '';
-                var wasEmpty = !$(this).data('hasValue'); // เช็คว่ามีค่าอยู่แล้วหรือไม่
+        // Loop เช็กค่าใน <textarea> ที่มี ID ใน idsToCheckArray
+        idsToCheckArray.forEach(function (id) {
+            $('#' + id).on('input', function () {
+                allTextareasNotNull = true; // กำหนดให้ allTextareasNotNull เป็น true ก่อนตรวจสอบ
 
-                if (hasValue && !wasEmpty) {
-                    return;
-                }
+                idsToCheckArray.forEach(function (id) {
+                    var textareaValue = $('#' + id).val();
 
-                if (hasValue) {
-                    if (totalRowsToCheck == 0) {
-                        totalRows++;
-                        if (totalRows > rows) {
-                            totalRows = rows;
-                        }
-                    } else {
-                        rowsChecked++;
+                    if (textareaValue === null || textareaValue === "") {
+                        allTextareasNotNull = false;
                     }
-                } else {
-                    if (totalRowsToCheck == 0) {
-                        totalRows--;
-                    }
-                    else {
-                        rowsChecked--;
-                        if (rowsChecked < 0) {
-                            rowsChecked = 0;
-                        }
-                    }
-                }
+                });
 
-                $(this).data('hasValue', hasValue);
+                console.log(allTextareasNotNull);
 
-                console.log("totalRowsToCheck: " + totalRowsToCheck);
-                console.log("totalRows: " + totalRows);
-                console.log("rowsChecked: " + rowsChecked);
-
-                if (totalRowsToCheck == rowsChecked && totalRowsToCheck != 0) {
+                if (allTextareasNotNull) {
                     $('#btn-sendForm').prop('disabled', false);
-                } else if (totalRowsToCheck == 0 && totalRows == rows) {
-                    $('#btn-sendForm').prop('disabled', false);
-                } else if (totalRows != rows) {
-                    $('#btn-sendForm').prop('disabled', true);
                 } else {
                     $('#btn-sendForm').prop('disabled', true);
                 }
             });
-
         });
-    </script>
+
+        idsToCheckArray.forEach(function (id) {
+            var textareaValue = $('#' + id).val();
+
+            if (textareaValue === null || textareaValue === "") {
+                allTextareasNotNull = false;
+            }
+        });
+
+        console.log(allTextareasNotNull);
+
+        if (allTextareasNotNull) {
+            $('#btn-sendForm').prop('disabled', false);
+        } else {
+            $('#btn-sendForm').prop('disabled', true);
+        }
+    });
+
+    
+</script>
 
 
 
