@@ -653,6 +653,7 @@ namespace myApp.Controllers
             int count = app.GetCountResult(idpGroupId);
             List<Result> results = app.GetResultByIDPGroupId(idpGroupId);
             app.UpdateIDPGroupItems(idpGroupItems, idpGroupId);
+           
             if( count > 0)
             {
                 app.UpdateResultItem(idpGroupItems, idpGroupId);
@@ -837,6 +838,13 @@ namespace myApp.Controllers
                         try
                         {
                             int pl0 = app.CountPL0(idpGroupId);
+                            int compty = app.GetCountCompetencyThisId(idpGroupId);
+
+                            if (compty == 0)
+                            {
+                                TempData["ErrorMessage"] = "IDP Group นี้ยังไม่มี Competency";
+                                return RedirectToAction("AddEmployee", new { idpGroupId = idpGroupId });
+                            }
                             if (pl0 > 0)
                             {
                                 TempData["ErrorMessage"] = "ยังไม่ได้กำหนด Pl ให้ Competency บางข้อ";
@@ -854,8 +862,6 @@ namespace myApp.Controllers
 
                                 List<ResultItem> actual2 = app.GetPreActual2(id, year);
 
-                                
-
                                 app.UpdateStartWorkFlow(guid, username);
                                 app.InsertWorkflowHS0(position, username);
                                 app.InsertResultDetails(iDPGroupItems, guid, count, actual2);
@@ -863,7 +869,7 @@ namespace myApp.Controllers
                         }
                         catch
                         {
-                            TempData["ErrorMessage"] = "ทำไม่ได้";
+                            TempData["ErrorMessage"] = "ไม่สามารถทำได้";
                         }
 
                         //return RedirectToAction("AddEmployee", new { idpGroupId = idpGroupId });
@@ -1443,7 +1449,7 @@ namespace myApp.Controllers
                                 }
                                 User user = app.GetUserById(A);
 
-                                app.InsertResultEmployeesByUpload(user, Year, username, B);
+                                app.InsertResultEmployeesByUpload(user, Year, username, B); 
                             }
                             con.Close();
                         }

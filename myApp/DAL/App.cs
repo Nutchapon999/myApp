@@ -2723,7 +2723,8 @@ namespace myApp.DAL
                                         "FROM IDP_RESULT_ITEM RI " +
                                         "RIGHT JOIN IDP_RESULT R ON R.GUID = RI.GUID " +
                                         "JOIN MAS_USER_HR HR ON HR.ID = R.ID " +
-                                        "WHERE HR.ID = @Id AND R.YEAR = @Year - 1";
+                                        "JOIN IDP_USER_ENROLL EN ON EN.IDP_GROUP_ID = R.IDP_GROUP_ID AND EN.ID = R.ID " +
+                                        "WHERE HR.ID = @Id AND R.YEAR = @Year - 1 AND EN.STATUS = 'Success'";
 
                 command.Parameters.AddWithValue("@Id", id);
                 command.Parameters.AddWithValue("@Year", year);

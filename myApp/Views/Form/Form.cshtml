@@ -85,16 +85,22 @@
                     </h6>
                     <h6>
                         <i class="fa fa-solid fa-location-dot fs-4 ms-2"></i> ตำแหน่ง<strong>: @ViewBag.Position</strong>
-                        <i class="fa fa-home-user fs-4 ms-2"></i> แผนก<strong>: @ViewBag.Department</strong>
+                        <i class="fa fa-home-user fs-4 ms-2"></i> แผนก<strong>: @ViewBag.DepartmentName</strong>
                         <i class="fa fa-solid fa-building ms-2 fs-4"></i> บริษัท<strong>: @ViewBag.Company</strong>
                     </h6>
                 </div>
             </div>
         </div>
-        @if (ViewBag.Status == "Developing")
+        @if (ViewBag.Status == "Developing" && ViewBag.Approver != ViewBag.Username)
         {
             <div class="alert alert-warning ms-4 me-4" role="alert">
-                <h6 class="text-center" style="margin-bottom: 0">กรุณากรอก Development Result ของ Competency ที่มี Critical ซึ่งมี Gap < 0 ให้ครบก่อน</h6>
+                <h6 class="text-center" style="margin-bottom: 0"><i class="fa-solid fa-circle-exclamation"></i> กรุณากรอก Development Result ของ Competency ที่มี Critical ซึ่งมี Gap < 0 ให้ครบก่อน</h6>
+            </div>
+        }
+        @if (ViewBag.Status == "Developing" && ViewBag.Approver == ViewBag.Username)
+        {
+            <div class="alert alert-success ms-4 me-4" role="alert">
+                <h6 class="text-center" style="margin-bottom: 0"><i class="fa-solid fa-circle-check"></i> อนุมัติแบบประเมินแล้ว</h6>
             </div>
         }
         @if (TempData["ErrorMessage"] != null)
@@ -601,6 +607,7 @@
                                         <img src="~/Images/hexagon_icon.png" width="25" height="25" />
                                     }
                                 </td>
+                                <td>@enroll.IDPGroupItem.CompetencyId</td>
                                 <td>@enroll.Competency.CompetencyNameTH</td>
                                 <td class="text-center">@enroll.IDPGroupItem.Pl</td>
                                 <td class="text-center">@enroll.ResultItem.Actual1</td>
