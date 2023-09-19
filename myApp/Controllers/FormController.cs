@@ -41,8 +41,8 @@ namespace myApp.Controllers
             if (ConfigurationManager.AppSettings["IsDev"].ToString().ToLower() == "true")
             {
                 //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "suchada.t"); // Goodness
-                System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Ong-Ard.sin"); // Admin 
-                //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Rattanachai.p"); // User 
+                //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Ong-Ard.sin"); // Admin 
+                System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Rattanachai.p"); // User 
                 HttpContext.Response.Cookies.Add(UserCookie);
                 username = UserCookie.Value;
 

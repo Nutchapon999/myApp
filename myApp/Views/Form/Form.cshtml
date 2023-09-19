@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<myApp.Models.Enrollment>
 @{
     var rowsToCheck = new List<int>(); // สร้างรายการแถวที่ตรงตามเงื่อนไขและมีค่าใน <textarea>
+    var rows = new List<int>(); // สร้างรายการแถวที่ตรงตามเงื่อนไขและมีค่าใน <textarea>
 }
 <link rel="stylesheet" href="/CSS/Style.css">
 <form method="post" action="@Url.Action("SaveForm", "Form", new {enrollId = ViewBag.EnrollmentId, Guid = ViewBag.Guid, IDPGroupId = ViewBag.IDPGroupId})" enctype="multipart/form-data">
@@ -442,11 +443,14 @@
                                     {
                                         var cssClass = (enroll.IDPGroupItem.Critical == true && enroll.ResultItem.Actual1 < enroll.ResultItem.Requirement) ? "form-control dev-text" : "form-control";
                                         <textarea class="@cssClass" name="DevRst_@i" id="devRstSelect-row-@i" style="min-width: 100%;">@enroll.ResultItem.DevRst</textarea>
-                                        if (enroll.IDPGroupItem.Critical == true && enroll.ResultItem.Actual1 < enroll.ResultItem.Requirement)
+                                        if (enroll.IDPGroupItem.Critical == true && enroll.ResultItem.Actual1 < enroll.ResultItem.Requirement && string.IsNullOrEmpty(enroll.ResultItem.DevRst))
                                         {
                                             rowsToCheck.Add(i);
                                         }
-
+                                        if(enroll.IDPGroupItem.Critical == true && enroll.ResultItem.Actual1 < enroll.ResultItem.Requirement)
+                                        {
+                                            rows.Add(i);
+                                        }
                                     }
                                     else
                                     {
@@ -1018,27 +1022,62 @@ else if (ViewBag.Status == "Developing" || ViewBag.Status == "2nd Evaluating")
         js(document).ready(function () {
             var rowsChecked = 0; // จำนวนแถวที่ถูกตรวจสอบ
             var totalRowsToCheck = @rowsToCheck.Count; // จำนวนรายการแถวที่ต้องตรวจสอบ
-            console.log(totalRowsToCheck);
+            var totalRows = @rows.Count; // จำนวนรายการแถวที่ต้องตรวจสอบ
+            var rows = totalRows;
+            console.log("totalRowsToCheck: " + totalRowsToCheck);
+            console.log("totalRows: " + totalRows);
+            console.log("rowsChecked: " + rowsChecked);
+            console.log("rows: " + rows);
+            if (totalRowsToCheck == 0) {
+                $('#btn-sendForm').prop('disabled', false);
+            }
 
             $('.dev-text').on('input', function () {
                 var hasValue = $(this).val() != '';
+                var wasEmpty = !$(this).data('hasValue'); // เช็คว่ามีค่าอยู่แล้วหรือไม่
 
-                if (hasValue) {                                                                                                             
-                    rowsChecked++;
-                } else {
-                    rowsChecked--;
+                if (hasValue && !wasEmpty) {
+                    return;
                 }
 
-                if (rowsChecked === totalRowsToCheck) {
+                if (hasValue) {
+                    if (totalRowsToCheck == 0) {
+                        totalRows++;
+                        if (totalRows > rows) {
+                            totalRows = rows;
+                        }
+                    } else {
+                        rowsChecked++;
+                    }
+                } else {
+                    if (totalRowsToCheck == 0) {
+                        totalRows--;
+                    }
+                    else {
+                        rowsChecked--;
+                        if (rowsChecked < 0) {
+                            rowsChecked = 0;
+                        }
+                    }
+                }
+
+                $(this).data('hasValue', hasValue);
+
+                console.log("totalRowsToCheck: " + totalRowsToCheck);
+                console.log("totalRows: " + totalRows);
+                console.log("rowsChecked: " + rowsChecked);
+
+                if (totalRowsToCheck == rowsChecked && totalRowsToCheck != 0) {
                     $('#btn-sendForm').prop('disabled', false);
+                } else if (totalRowsToCheck == 0 && totalRows == rows) {
+                    $('#btn-sendForm').prop('disabled', false);
+                } else if (totalRows != rows) {
+                    $('#btn-sendForm').prop('disabled', true);
                 } else {
                     $('#btn-sendForm').prop('disabled', true);
                 }
             });
 
-            if (totalRowsToCheck == 0) {
-                $('#btn-sendForm').prop('disabled', false);
-            }
         });
     </script>
 
