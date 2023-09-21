@@ -159,7 +159,7 @@
                             </td>
                             <td class="text-center">
                                 <div class="btn-group" role="group" aria-label="Second group">
-                                    <a href="@Url.Action("Info", "Home",new { user = ViewBag.User, idpGroupId = emp.IDPGroupId, guid = emp.Result.GUID })" class="btn active-link-info" title="ผลลัพธ์">
+                                    <a href="@Url.Action("Info", "Home",new { user = ViewBag.User, idpGroupId = emp.IDPGroupId, guid = emp.Result.GUID , check = true})" class="btn active-link-info" title="ผลลัพธ์">
                                         <i class="fa fa-info gradient-text-edit fs-5" aria-hidden="true"></i>
                                     </a>
                                     <a id="link" href="@Url.Action("Form", "Home", new { user = ViewBag.User, idpGroupId = emp.IDPGroupId, guid = emp.Result.GUID })" class="btn active-link-form" title="ทำแบบประเมิน">

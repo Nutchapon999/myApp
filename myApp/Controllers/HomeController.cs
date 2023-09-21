@@ -1869,7 +1869,7 @@ namespace myApp.Controllers
         #endregion
 
         #region INFO
-        public ActionResult Info(string user, string idpGroupId, string guid)
+        public ActionResult Info(string user, string idpGroupId, string guid, bool check)
         {
 
             HttpCookie usernameCookie = Request.Cookies["username"];
@@ -1881,10 +1881,12 @@ namespace myApp.Controllers
 
                 ViewBag.isAdmin = isAdmin;
                 ViewBag.Username = username;
+                ViewBag.Check = check;
 
                 string year = app.GetYearByGuid(guid);
                 string idpGroupName = app.GetIDPGroupNameByIDPGroupId(idpGroupId);
                 ViewBag.Year = year;
+                ViewBag.User = user;
                 string id = app.GetIdByCookie(user);
                 User us = app.GetUserByCookie(user);
                 if (user != null)

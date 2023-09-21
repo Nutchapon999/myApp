@@ -170,40 +170,43 @@
                                 <td>@enroll.User.DepartmentName</td>
                                 <td class="text-center">@enroll.User.Company</td>
                                 <td class="text-center">
-                                    <button id="link" type="button" class="btn active-link-delete" data-bs-toggle="modal" data-bs-target="#deleteModal-@enroll.EnrollId" title="ลบ @enroll.Id">
-                                        <i class="fa fa-trash gradient-text-delete" aria-hidden="true"></i>
-                                    </button>
-                                    <div class="modal fade" id="deleteModal-@enroll.EnrollId" aria-labelledby="deleteModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog modal-dialog-centered">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h1 class="modal-title fs-5 fw-bold">
-                                                        <i class="fa-solid fa-trash-can gradient-text-delete"></i> ลบพนักงานออกจาก @ViewBag.IDPGroupId
-                                                    </h1>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <h5>
-                                                        <i class="fa-solid fa-key fs-4"></i><strong> รหัส:</strong> @enroll.Id
-                                                        <br />
-                                                        <i class="fa-solid fa-user fs-4 mt-2 user"></i><strong> ชื่อ:</strong> @enroll.User.Prefix @enroll.User.FirstNameTH @enroll.User.LastNameTH
-                                                        <br />
-                                                        <i class="fa-solid fa-ranking-star fs-4 mt-2"></i><strong> ตำแหน่งขั้น:</strong> @enroll.User.JobLevel
-                                                        <br />
-                                                        <i class="fa-solid fa-location-dot fs-4 mt-2"></i><strong> ตำแหน่ง:</strong> @enroll.User.Position
-                                                        <br />
-                                                        <i class="fa fa-home-user fs-4 mt-2"></i><strong> แผนก:</strong> @enroll.User.DepartmentName
-                                                        <br />
-                                                        <i class="fa-solid fa-building fs-4 mt-2"></i><strong> ชื่อ:</strong> @enroll.User.Company
-                                                    </h5>
-                                                </div>
-                                                <div class="modal-footer flex-nowrap p-0">
-                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" data-bs-dismiss="modal">
-                                                        <i class="fa-solid fa-ban gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">ยกเลิก</strong>
-                                                    </button>
-                                                    <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" onclick="deleteEnroll('@enroll.EnrollId')">
-                                                        <i class="fa-solid fa-trash-can gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ลบ</strong>
-                                                    </button>
+                                    <div class="btn-group" role="group" aria-label="Second group">
+                                        <a id="link" href="@Url.Action("Info", "Home", new {user = enroll.User.UserLogin, idpGroupId = ViewBag.IDPGroupId, guid = enroll.Result.GUID , check = false})" class='btn active-link-info' title='ผลลัพธ์'><i class='fa fa-info gradient-text-edit ' aria-hidden='true'></i></a>
+                                        <button id="link" type="button" class="btn active-link-delete" data-bs-toggle="modal" data-bs-target="#deleteModal-@enroll.EnrollId" title="ลบ @enroll.Id">
+                                            <i class="fa fa-trash gradient-text-delete" aria-hidden="true"></i>
+                                        </button>
+                                        <div class="modal fade" id="deleteModal-@enroll.EnrollId" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h1 class="modal-title fs-5 fw-bold">
+                                                            <i class="fa-solid fa-trash-can gradient-text-delete"></i> ลบพนักงานออกจาก @ViewBag.IDPGroupId
+                                                        </h1>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <h5>
+                                                            <i class="fa-solid fa-key fs-4"></i><strong> รหัส:</strong> @enroll.Id
+                                                            <br />
+                                                            <i class="fa-solid fa-user fs-4 mt-2 user"></i><strong> ชื่อ:</strong> @enroll.User.Prefix @enroll.User.FirstNameTH @enroll.User.LastNameTH
+                                                            <br />
+                                                            <i class="fa-solid fa-ranking-star fs-4 mt-2"></i><strong> ตำแหน่งขั้น:</strong> @enroll.User.JobLevel
+                                                            <br />
+                                                            <i class="fa-solid fa-location-dot fs-4 mt-2"></i><strong> ตำแหน่ง:</strong> @enroll.User.Position
+                                                            <br />
+                                                            <i class="fa fa-home-user fs-4 mt-2"></i><strong> แผนก:</strong> @enroll.User.DepartmentName
+                                                            <br />
+                                                            <i class="fa-solid fa-building fs-4 mt-2"></i><strong> ชื่อ:</strong> @enroll.User.Company
+                                                        </h5>
+                                                    </div>
+                                                    <div class="modal-footer flex-nowrap p-0">
+                                                        <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-submit" data-bs-dismiss="modal">
+                                                            <i class="fa-solid fa-ban gradient-icon-submit fs-4"></i> <strong class="gradient-icon-submit fs-4">ยกเลิก</strong>
+                                                        </button>
+                                                        <button type="button" class="btn btn-lg btn-link fs-6 py-3 text-decoration-none col-6 rounded-0 m-0 btn-cancel" onclick="deleteEnroll('@enroll.EnrollId')">
+                                                            <i class="fa-solid fa-trash-can gradient-icon-back fs-4"></i> <strong class="gradient-icon-back fs-4">ลบ</strong>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -329,7 +332,25 @@
     main {
         margin-top: -50px;
     }
+    .active-link-info {
+        border: none;
+        background-color: white;
+    }
 
+        .active-link-info:hover {
+            background-color: white;
+            border-bottom: 2px solid #0061ff;
+        }
+
+            .active-link-info:hover i {
+                transform: scale(1.2);
+            }
+
+    .gradient-text-edit {
+        background-image: linear-gradient( 0deg, hsl(220deg 100% 47%) 0%, hsl(216deg 100% 47%) 6%, hsl(213deg 100% 48%) 14%, hsl(209deg 100% 48%) 22%, hsl(206deg 100% 48%) 32%, hsl(202deg 100% 49%) 43%, hsl(199deg 100% 49%) 56%, hsl(195deg 100% 49%) 70%, hsl(192deg 100% 50%) 85%, hsl(188deg 100% 50%) 100% );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
     .background-container {
         background-color: white; /* Set the white background */
         display: inline-block; /* Display the container as an inline block to wrap the icon */

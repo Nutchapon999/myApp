@@ -2790,8 +2790,10 @@ namespace myApp.DAL
             using (SqlCommand command = new SqlCommand())
             {
                 command.Connection = connection;
-                command.CommandText = "SELECT en.ENROLL_ID, en.ID, en.IDP_GROUP_ID, en.STATUS, hr.PREFIX, hr.FIRSTNAME_TH, hr.LASTNAME_TH, hr.POSITION, hr.DEPARTMENT_NAME, hr.JOBLEVEL, hr.COMPANY " +
-                                      "FROM IDP_USER_ENROLL AS en JOIN MAS_USER_HR AS hr ON en.ID = hr.ID " +
+                command.CommandText = "SELECT * " +
+                                      "FROM IDP_USER_ENROLL AS en " +
+                                      "JOIN MAS_USER_HR hr ON en.ID = hr.ID " +
+                                      "JOIN IDP_RESULT RE ON EN.ID = RE.ID AND EN.IDP_GROUP_ID = RE.IDP_GROUP_ID " +
                                       "WHERE en.IDP_GROUP_ID = @IDPGroupId";
                 command.Parameters.AddWithValue("@IDPGroupId", idpGroupId);
 
@@ -2815,7 +2817,13 @@ namespace myApp.DAL
                         user.DepartmentName = reader["DEPARTMENT_NAME"] != DBNull.Value ? (string)reader["DEPARTMENT_NAME"] : null;
                         user.JobLevel = reader["JOBLEVEL"] != DBNull.Value ? (string)reader["JOBLEVEL"] : null;
                         user.Company = reader["COMPANY"] != DBNull.Value ? (string)reader["COMPANY"] : null;
+                        user.UserLogin = reader["USER_LOGIN"] != DBNull.Value ? (string)reader["USER_LOGIN"] : null;
 
+
+                        Result result = new Result();
+                        result.GUID = reader["GUID"] != DBNull.Value ? (string)reader["GUID"] : null;
+
+                        enrollment.Result = result;
                         enrollment.User = user;
 
                         enrollments.Add(enrollment);

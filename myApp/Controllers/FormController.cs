@@ -41,8 +41,8 @@ namespace myApp.Controllers
             if (ConfigurationManager.AppSettings["IsDev"].ToString().ToLower() == "true")
             {
                 //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "suchada.t"); // Goodness
-                //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Ong-Ard.sin"); // Admin 
-                System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Rattanachai.p"); // User 
+                System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Ong-Ard.sin"); // Admin 
+                //System.Web.HttpCookie UserCookie = new System.Web.HttpCookie("username", "Rattanachai.p"); // User 
                 HttpContext.Response.Cookies.Add(UserCookie);
                 username = UserCookie.Value;
 
@@ -403,12 +403,7 @@ namespace myApp.Controllers
                 //UPDATE RESULTITEMS
                 app.UpdateForm(resultItems, Guid);
 
-                //REMARK
-                if (status == "1st Evaluating" || (status == "2nd Evaluating" && actual2NullItems.Count == 0))
-                {
-                    if (remark == "") { remark = null; }
-                    app.InsertRemark(remark, username, joblevel, Guid);
-                }
+                
                 //LOG DATA
                 List<ResultItem> resultItemsAfter = app.GetResultItemByGuidAfterUpdate(Guid);
                 List<int> resultItemIds = app.GetResultItemIdByGuid(Guid);
@@ -463,6 +458,11 @@ namespace myApp.Controllers
                         TempData["ErrorMessage"] = "มี Competency ที่เป็น Critical และมี Gap แต่ยังไม่ได้ระบุ Development Result";
                         return RedirectToAction("Form", "Form", new { idpGroupId = IDPGroupId, guid = Guid });
                     }
+                }
+                if ((status == "1st Evaluating" && actual1NullItems.Count == 0) || (status == "2nd Evaluating" && actual2NullItems.Count == 0))
+                {
+                    if (remark == "") { remark = null; }
+                    app.InsertRemark(remark, username, joblevel, Guid);
                 }
                 //foreach(var hasGapResultItem in hasGap)
                 //{
